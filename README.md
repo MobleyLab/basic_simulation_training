@@ -1,0 +1,2 @@
+# basic_simulation_training
+A document for the Living Journal of Computational Molecular Science (LiveCoMS) which describes basic training for molecular simulations (oriented towards molecular dynamics (MD)), providing some training itself and linking out to other helpful information elsewhere. The intent is that this provide information on the prerequisites which will be required for understanding/following many of the other "best practices" documents being prepared.
