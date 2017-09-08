@@ -1,0 +1,287 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% LIVECOMS ARTICLE TEMPLATE FOR BEST PRACTICES GUIDE
+%%% ADAPTED FROM ELIFE ARTICLE TEMPLATE (8/10/2017)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% PREAMBLE 
+\documentclass[9pt,bestpractices]{livecoms}
+% Use the 'onehalfspacing' option for 1.5 line spacing
+% Use the 'doublespacing' option for 2.0 line spacing
+% Use the 'lineno' option for adding line numbers. 
+% The 'bestpractices' option for indicates that this is a best practices guide.
+% Omit the bestpractices option to remove the marking as a LiveCoMS paper.
+% Please note that these options may affect formatting.
+
+\usepackage{lipsum} % Required to insert dummy text
+\usepackage[version=4]{mhchem} 
+\usepackage{siunitx}
+\DeclareSIUnit\Molar{M}
+\newcommand{\versionnumber}{1.3}  % you should update the minor version number in preprints and major version number of submissions.
+\graphicspath{{figures/}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ARTICLE SETUP
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\title{This is the title : v\versionnumber}
+
+\author[1*]{Firstname Middlename Surname}
+\author[1,2\authfn{1}\authfn{3}]{Firstname Middlename Familyname}
+\author[2\authfn{1}\authfn{4}]{Firstname Initials Surname}
+\author[2*]{Firstname Surname}
+\affil[1]{Institution 1}
+\affil[2]{Institution 2}
+
+\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials. 
+\corr{email2@example.com}{FS}
+
+\contrib[\authfn{1}]{These authors contributed equally to this work}
+\contrib[\authfn{2}]{These authors also contributed equally to this work}
+
+\presentadd[\authfn{3}]{Department, Institute, Country}
+\presentadd[\authfn{4}]{Department, Institute, Country}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% ARTICLE START
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Please provide an abstract of no more than 250 words. Your abstract should explain the main contributions of your article, and should not contain any material that is not included in the main text.
+\end{abstract}
+
+
+\section{Introduction (Level 1 heading)}
+
+Your introduction goes here! Some examples of commonly used commands and features are listed below, to help you get started.
+
+Here's a second paragraph to test paragraph indents. \lipsum[1]
+
+\section{Results (Level 1 heading)}
+
+\lipsum[2-3]
+
+\begin{table}[bt]
+\caption{\label{tab:example}Automobile Land Speed Records (GR 5-10).}
+% Use ``S'' column identifier to align on decimal point 
+% ``l'' left aligns text in the column
+% ``r'' right aligns text in the column
+% ``c'' right aligns text in the column
+% & separates columns, \\ ends the row.
+
+\begin{tabular}{S l l c r} 
+\toprule
+{Speed (mph)} & Driver          & Car                        & Engine    & Date     \\
+\midrule
+407.447     & Craig Breedlove & Spirit of America          & GE J47    & 8/5/63   \\
+413.199     & Tom Green       & Wingfoot Express           & WE J46    & 10/2/64  \\
+434.22      & Art Arfons      & Green Monster              & GE J79    & 10/5/64  \\
+468.719     & Craig Breedlove & Spirit of America          & GE J79    & 10/13/64 \\
+526.277     & Craig Breedlove & Spirit of America          & GE J79    & 10/15/65 \\
+536.712     & Art Arfons      & Green Monster              & GE J79    & 10/27/65 \\
+555.127     & Craig Breedlove & Spirit of America, Sonic 1 & GE J79    & 11/2/65  \\
+576.553     & Art Arfons      & Green Monster              & GE J79    & 11/7/65  \\
+600.601     & Craig Breedlove & Spirit of America, Sonic 1 & GE J79    & 11/15/65 \\
+622.407     & Gary Gabelich   & Blue Flame                 & Rocket    & 10/23/70 \\
+633.468     & Richard Noble   & Thrust 2                   & RR RG 146 & 10/4/83  \\
+763.035     & Andy Green      & Thrust SSC                 & RR Spey   & 10/15/97\\
+\bottomrule
+\end{tabular}
+
+\medskip 
+Source: \url{https://www.sedl.org/afterschool/toolkits/science/pdf/ast_sci_data_tables_sample.pdf}
+
+\tabledata{This is a description of a data source.}
+
+\end{table}
+
+\subsection{Level 2 Heading}
+
+\lipsum[3]
+
+\subsubsection{Level 3 Heading}
+
+\lipsum[5]
+
+\paragraph{Level 4 Heading}
+\lipsum[7]
+
+\section{Discussion}
+
+\lipsum[9]
+
+\section{Methods and Materials}
+
+Guidelines can be included for standard research article sections, such as this one. 
+
+\lipsum[3]
+
+\section{Some \LaTeX{} Examples}
+\label{sec:examples}
+
+Use section and subsection commands to organize your document. \LaTeX{} handles all the formatting and numbering automatically. Use ref and label commands for cross-references.
+
+\subsection{Figures and Tables}
+
+Use the table and tabular commands for basic tables --- see \TABLE{example}, for example. 
+
+You can upload a figure (JPEG, PNG or PDF) using the project menu. To include it in your document, use the \verb|\includegraphics| command as in the code for \FIG{view}. 
+
+For a half-width figure or table with text wrapping around it, use 
+
+\begin{verbatim}
+\begin{wrapfigure}{l}{.46\textwidth}
+  \includegraphics[width=\hsize]{...}
+  \caption{...}\label{...}
+\end{wrapfigure}
+\end{verbatim}
+%
+as in \FIG{halfwidth}. For tables:
+
+\begin{verbatim}
+\begin{wraptable}{l}{.46\textwidth}{
+  \begin{tabular}{...}
+  ...
+  \end{tabular}}
+  \caption{...}\label{...}
+\end{wraptable}
+\end{verbatim}
+
+Be careful with these, though, as they may behave strangely near page boundaries, sectional headings, or in the neighbourhood of lists or too many floats.
+
+If you use the following prefixes for your \verb|\label|:
+%
+\begin{description}
+\item[Figures] \texttt{fig:}, e.g.~\verb|\label{fig:view}|
+\item[Tables] \texttt{tab:}, e.g.~\verb|\label{tab:example}|
+\item[Equations] \texttt{eq:}, e.g.~\verb|\label{eq:CLT}|
+\item[Boxes] \texttt{box:}, e.g.~\verb|\label{box:simple}|
+\end{description}
+%
+you can then use the convenience commands \verb|\FIG{view}|, \verb|\TABLE{example}|, \verb|\EQ{CLT}| and \verb|\BOX{simple}| \emph{without} the label prefixes, to generate cross-references \FIG{view}, \TABLE{example}, \EQ{CLT} and \BOX{simple}. Alternatively, use \verb|\autoref| with the full label, e.g.~\autoref{first:app} (although this may not work correctly for figures and tables in the appendices or boxes nor supplements at present).
+
+Really wide figures or tables, that take up the entire page, including the gutter space: use \verb|\begin{fullwidth}...\end{fullwidth}| as in \FIG{fullwidth}. And sometimes you may want to use feature boxes like \BOX{simple}.
+
+\begin{wrapfigure}{l}{.46\textwidth}
+\includegraphics[width=\hsize]{frog}
+\caption{A half-columnwidth image using wrapfigure, to be used sparingly. Note that using a wrapfigure before a sectional heading, near other floats or page boundaries is not recommended, as it may cause interesting layout issues. Use the optional argument to wrapfigure to control how many lines of text should be set half-width alongside it.}
+\label{fig:halfwidth}
+\end{wrapfigure}
+
+Some filler text to sit alongside the half-width figure. \lipsum[1-2]
+
+\begin{figure}
+\begin{fullwidth}
+\includegraphics[width=0.95\linewidth]{elife-18156-fig2}
+\caption{A very wide figure that takes up the entire page, including the gutter space.}
+\label{fig:fullwidth}
+\figsupp{There is no limit on the number of Figure Supplements for any one primary figure. Each figure supplement should be clearly labelled, Figure 1--Figure Supplement 1, Figure 1--Figure Supplement 2, Figure 2--Figure Supplement 1 and so on, and have a short title (and optional legend). Figure Supplements should be referred to in the legend of the associated primary figure, and should also be listed at the end of the article text file.}{\includegraphics[width=6cm]{frog}}
+\end{fullwidth}
+\end{figure}
+
+\subsection{Citations}
+
+LaTeX formats citations and references automatically using the bibliography records in your .bib file, which you can edit via the project menu. Use the \verb|\cite| command for an inline citation, like \cite{Aivazian917}, and the \verb|\citep| command for a citation in parentheses \citep{Aivazian917}. The LaTeX template uses a slightly-modified Vancouver bibliography style. 
+
+\begin{featurebox}
+\caption{This is an example feature box}
+\label{box:simple}
+This is a feature box. It floats!
+\medskip
+
+\includegraphics[width=5cm]{example-image}
+\featurefig{`Figure' and `table' captions in feature boxes should be entered with \texttt{\textbackslash featurefig} and \texttt{\textbackslash featuretable}. They're not really floats.}
+
+\lipsum[1]
+\end{featurebox}
+
+\subsection{Mathematics}
+
+\LaTeX{} is great at typesetting mathematics. Let $X_1, X_2, \ldots, X_n$ be a sequence of independent and identically distributed random variables with $\text{E}[X_i] = \mu$ and $\text{Var}[X_i] = \sigma^2 < \infty$, and let
+\begin{equation}
+\label{eq:CLT}
+S_n = \frac{X_1 + X_2 + \cdots + X_n}{n}
+      = \frac{1}{n}\sum_{i}^{n} X_i
+\end{equation}
+denote their mean. Then as $n$ approaches infinity, the random variables $\sqrt{n}(S_n - \mu)$ converge in distribution to a normal $\mathcal{N}(0, \sigma^2)$.
+
+\lipsum[3]
+
+\begin{figure}
+\includegraphics[width=\linewidth]{elife-13214-fig7}
+\caption{A text-width example.}
+\label{fig:view}
+%% If the optional argument in the square brackets is ``none'', then the caption *will not appear in the main figure at all* and only the full caption will appear under the supplementary figure at the end of the manuscript.
+\figsupp[Shorter caption for main text.]{This is a supplementary figure's full caption, which will be used at the end of the manuscript.}{\includegraphics[width=6cm]{frog}}
+\figsupp{This is another supplementary figure.}{\includegraphics[width=6cm]{frog}}
+\figdata{This is a description of a data source.}
+\figdata{This is another description of a data source.}
+\end{figure}
+
+\subsection{Other Chemistry Niceties}
+
+You can use commands from the \texttt{mhchem} and \texttt{siunitx} packages. For example: \ce{C32H64NO7S}; \SI{5}{\micro\metre}; \SI{30}{\degreeCelsius}; \SI{5e-17}{\Molar}
+
+\subsection{Lists}
+
+You can make lists with automatic numbering \dots
+
+\begin{enumerate}
+\item Like this,
+\item and like this.
+\end{enumerate}
+\dots or bullet points \dots
+\begin{itemize} 
+\item Like this,
+\item and like this.
+\end{itemize}
+\dots or with words and descriptions \dots
+\begin{description}
+\item[Word] Definition
+\item[Concept] Explanation
+\item[Idea] Text
+\end{description}
+
+Some filler text, because empty templates look really poorly. \lipsum[1]
+
+
+\section{Acknowledgments}
+
+Funder and other information can be given here.
+
+\nocite{*} % This command displays all refs in the bib file
+\bibliography{livecoms-sample}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% APPENDICES
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\appendix
+\begin{appendixbox}
+\label{first:app}
+\section{Firstly}
+\lipsum[1]
+
+%% Sadly, we can't use floats in the appendix boxes. So they don't ``float'', but use \captionof{figure}{...} and \captionof{table}{...} to get them properly caption.
+\begin{center}
+\includegraphics[width=\linewidth,height=7cm]{frog}
+\captionof{figure}{This is a figure in the appendix}
+\end{center}
+
+\section{Secondly}
+
+\lipsum[5-8]
+
+\begin{center}
+\includegraphics[width=\linewidth,height=7cm]{frog}
+\captionof{figure}{This is a figure in the appendix}
+\end{center}
+
+\end{appendixbox}
+
+\begin{appendixbox}
+\includegraphics[width=\linewidth,height=7cm]{frog}
+\captionof{figure}{This is a figure in the appendix}
+\end{appendixbox}
+\end{document}
