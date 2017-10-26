@@ -9,6 +9,7 @@ The current focus is on MD; Monte Carlo (MC) will be addressed in a separate doc
 (Add your name here if you help write; needs updating with list of people who contributed to outline)
 - Avisek Das (University of Michigan)
 - David Mobley (UC Irvine)
+- Jacob Monroe (UC Santa Barbara)
 
 ## List of Contributors
 <!-- We suggest listing contributers in order of addition. -->
