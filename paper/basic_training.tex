@@ -162,8 +162,9 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \end{itemize}
 \subsubsection{Online resources}
 \begin{itemize}
-\item David Kofke’s notes: http://www.eng.buffalo.edu/~kofke/ce530/Lectures/lectures.html
-\item Scott Shell’s notes: https://engineering.ucsb.edu/~shell/che210d/assignments.html
+\item David Kofke's notes: http://www.eng.buffalo.edu/~kofke/ce530/Lectures/lectures.html
+\item Scott Shell's notes: https://engineering.ucsb.edu/~shell/che210d/assignments.html
+%We should make these proper hyperlinks and also handle formatting (current line break issues).
 \end{itemize}
 
 \subsection{Classical electrostatics}
@@ -172,6 +173,19 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \item Long range nature of Coulomb interaction and why/when we need Ewald type sums
 \item Polarizability, dielectric constants
 \end{itemize}
+
+Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
+In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster). 
+This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
+
+The dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
+Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
+This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
+
+%DLM to self: Here I need to add discussion of polarizability, Ewald-type sums and when they are needed, etc.
+
+
+
 \subsubsection{Books}
 \begin{itemize}
 \item Griffiths
