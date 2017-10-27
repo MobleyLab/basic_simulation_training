@@ -334,38 +334,57 @@ For more specific details on procedures and parameters used in production simula
 \item How to choose parameters
 \end{itemize}
 
-\section{Checklist}
+\begin{Checklists*}[p!]
+
+\begin{checklist}{Take stock of your plans}
+
 \begin{itemize}
-\item \textbf{Count the cost:} Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation.
+\item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation.
 \item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
 \item Determine reference states that you are trying to emulate/discover.
-\begin{itemize}
-\item What Temp, pressure, etc.
-\item What values in experimental
-\item What values in literature?
+\item What temperature, pressure, etc. are you interested in?
+\item What is already known in the literature and what data do you wish to compare to?
 \end{itemize}
-\item Choose a simulation package suitable for simulating that ensemble (see best practices document) 
-\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoffs and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.)
+\end{checklist}
+
+\begin{checklist}{Prepare to implement your plans and make critical decisions about system type}
+
+\begin{itemize}
+\item Choose a simulation package suitable for simulating that ensemble (see best practices document) % link
+\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in [section] % reference section whatever
+\end{itemize}
+\end{checklist}
+
+\begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or periodicity is needed
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed
 \end{itemize}
-\item Choose appropriate settings for the ensemble:
+\end{checklist}
+
+\begin{checklist}{Choose appropriate settings for the desired ensemble:}
 \begin{itemize}
 \item Pick a thermostat that gives the correct distribution of temperatures, not just the correct average temperature
 \item Pick a barostat that gives the correct distribution of pressures
+\item Consider the known shortcomings and limitations of certain integrators and thermostats/barostats and whether your choices will impact the properties you are calculating
 \end{itemize}
-\item Choose an appropriate timestep for stability and avoiding energy drift
+\end{checklist}
+
+
+\begin{checklist}{Choose an appropriate timestep for stability and avoiding energy drift}
 \begin{itemize}
 \item This depends on factors such as the use of constraints in the system (e.g. for all-atom systems constraining hydrogen bonds can allow the use of a slightly longer timestep; 2 fs is relatively typical)
-\item If your initial structure is potentially strained, energy minimize before starting
-\item The shortcomings and limitations of certain integrators and thermostats/barostats
-\begin{itemize}
-\item Ergodicity issue with non-chained Nose-Hoover
-\item Error that is propagated with integrators in terms of dt
 \end{itemize}
-\end{itemize}
-\end{itemize}
+\end{checklist}
+
+%\begin{itemize}
+%\item Ergodicity issue with non-chained Nose-Hoover
+%\item Error that is propagated with integrators in terms of dt
+%\end{itemize}
+%DLM: These aren't quite statements so I'm not sure what they are supposed to be...?
+
+\end{Checklists*}
+
 
 
 
