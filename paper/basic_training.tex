@@ -85,13 +85,16 @@ We also provide a checklist of key issues to consider before and while setting u
 
 \section{Introduction}
 
+\todo[inline, color={yellow!20}]{DLM: We should go through and break all the material so that each sentence is on a separate line. This plays much nicer with GitHub's version control, otherwise anytime anyone changes a word in a paragraph it will look like the paragraph was completely rewritten...}
 
 Molecular simulation techniques play very important roles in our quest for understanding properties of molecular systems from a microscopic point of view. Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions. The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a “trajectory”. Relevant properties can be calculated for each snapshot or frame and averaged over the the entire trajectory to compute estimates of desired properties. 
+\todo[inline, color={yellow!20}]{DLM: We will need to police the document as there are a lot of copy-and-paste errors resulting from curly quotes, such as around ``trajectory'' in the preceding paragraph. They currently seem to appear OK in the PDF, but in the LaTeX source they are clearly incorrect.}
 
 Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC). In the MD method, an equation of motion is numerically integrated and a dynamical trajectory of the system is generated. MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system. In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time.
 Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system. However,  MC can be used  to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time. This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations. 
 
 Either method can be carried out with different physical theories to describe the particle-based model of the system under investigation. If a quantum mechanical description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or very few) empirical parameters, but with various approximations to the physics for tractability. In a classical description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
+\todo[inline, color={yellow!20}]{DLM: Comments like this can be converted to to-do items.}
 
 For the rest of this document we will restrict ourselves to classical Molecular Dynamics.
 
@@ -186,19 +189,40 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \subsection{Classical electrostatics}
 \subsubsection{Key concepts}
 \begin{itemize}
-\item Long range nature of Coulomb interaction and why/when we need Ewald type sums
+\item Long range nature of the Coulomb interaction 
 \item Polarizability, dielectric constants
+\item why/when we need Ewald-type sums
 \end{itemize}
 
 Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
 In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster). 
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
-The dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
+The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
 Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
+The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a charge in proximity.
 
-%DLM to self: Here I need to add discussion of polarizability, Ewald-type sums and when they are needed, etc.
+It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant.
+This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities [ref Amoeba, etc.] or via Drude oscillator-type approaches, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
+
+Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
+Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
+Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
+In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance [refs].
+Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range.
+Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
+First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
+But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
+The remaining option, then, is to apply periodic boundary conditions (see ~\ref{sec:periodic}) to tile all of space with repeating copies of the system.
+Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics
+where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
+
+In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
+A variety of different efficient lattice-sum schemes are available [refs].
+In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard.
+\todo[inline, color={yellow!20}]{DLM: Add reference to LR electrostatics section below (4.7) which should also reference this..}
+
 
 
 
@@ -245,6 +269,7 @@ This means that interactions in non-polar media such as non-polar solvents, or p
 \end{itemize}
 
 \subsection{Periodic boundary conditions}
+\label{sec:periodic}
 \begin{itemize}
 \item Why do we need it?
 \item Influence of periodic boundary condition on simulation setup
