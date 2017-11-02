@@ -2,17 +2,17 @@
 %%% LIVECOMS ARTICLE TEMPLATE FOR BEST PRACTICES GUIDE
 %%% ADAPTED FROM ELIFE ARTICLE TEMPLATE (8/10/2017)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%% PREAMBLE 
+%%% PREAMBLE
 \documentclass[9pt,bestpractices]{livecoms}
 % Use the 'onehalfspacing' option for 1.5 line spacing
 % Use the 'doublespacing' option for 2.0 line spacing
-% Use the 'lineno' option for adding line numbers. 
+% Use the 'lineno' option for adding line numbers.
 % The 'bestpractices' option for indicates that this is a best practices guide.
 % Omit the bestpractices option to remove the marking as a LiveCoMS paper.
 % Please note that these options may affect formatting.
 
 \usepackage{lipsum} % Required to insert dummy text
-\usepackage[version=4]{mhchem} 
+\usepackage[version=4]{mhchem}
 \usepackage{siunitx}
 \DeclareSIUnit\Molar{M}
 \usepackage[italic]{mathastext}
@@ -51,7 +51,7 @@
 \affil[6]{Univ 5}
 \affil[7]{Univ 6}
 
-%\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials. 
+%\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials.
 %\corr{email2@example.com}{FS}
 
 %\contrib[\authfn{1}]{These authors contributed equally to this work}
@@ -72,8 +72,8 @@
 
 \begin{abstract}
 This document attempts to provide a starting point for approaching molecular simulations, guiding beginning practitioners to what issues they need to know about before and while starting their first simulations, and why those issues are so critical.
-This document makes no claims to provide an adequate introduction to the subject on its own, but rather our goal is to help people know what issues are \emph{critical} before beginning, and to provide references to good resources on those topics. 
-We also provide a checklist of key issues to consider before and while setting up molecular simulations which may serve as a foundation for other best practices documents. 
+This document makes no claims to provide an adequate introduction to the subject on its own, but rather our goal is to help people know what issues are \emph{critical} before beginning, and to provide references to good resources on those topics.
+We also provide a checklist of key issues to consider before and while setting up molecular simulations which may serve as a foundation for other best practices documents.
 \end{abstract}
 \end{frontmatter}
 
@@ -86,12 +86,19 @@ We also provide a checklist of key issues to consider before and while setting u
 \section{Introduction}
 
 \todo[inline, color={yellow!20}]{DLM: We should go through and break all the material so that each sentence is on a separate line. This plays much nicer with GitHub's version control, otherwise anytime anyone changes a word in a paragraph it will look like the paragraph was completely rewritten...}
+Molecular simulation techniques play a very important role in our quest for understanding the properties, structure, and function of molecular systems from a microscopic point of view.
+Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications.
 
-Molecular simulation techniques play very important roles in our quest for understanding properties of molecular systems from a microscopic point of view. Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions. The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a “trajectory”. Relevant properties can be calculated for each snapshot or frame and averaged over the the entire trajectory to compute estimates of desired properties. 
-\todo[inline, color={yellow!20}]{DLM: We will need to police the document as there are a lot of copy-and-paste errors resulting from curly quotes, such as around ``trajectory'' in the preceding paragraph. They currently seem to appear OK in the PDF, but in the LaTeX source they are clearly incorrect.}
+The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory.
+Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
 
-Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC). In the MD method, an equation of motion is numerically integrated and a dynamical trajectory of the system is generated. MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system. In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time.
-Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system. However,  MC can be used  to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time. This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations. 
+Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC).
+In the MD method, an equation of motion is numerically integrated and a dynamical trajectory of the system is generated.
+MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system.
+In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time.
+Thus, the ``dynamics'' produced by an MC method is not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system.
+However, MC can be used to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time.
+This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations.
 
 Either method can be carried out with different physical theories to describe the particle-based model of the system under investigation. If a quantum mechanical description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or very few) empirical parameters, but with various approximations to the physics for tractability. In a classical description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
 \todo[inline, color={yellow!20}]{DLM: Comments like this can be converted to to-do items.}
@@ -107,7 +114,7 @@ There are several excellent textbooks on classical simulation methods, few of th
 \item Tuckermann
 \end{itemize}
 
-In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations. In practice, due to the interdisciplinary and somewhat technical nature of this field, many newcomers may find it difficult and time consuming to understand all the methodological issues involved in a simulation study.   The goal of this document is to introduce a new practitioner to the basic concepts and bare minimum scientific knowledge required for correct execution of these methods. We also provide a basic set of “best practices” that can be used to avoid common errors, missteps and confusion in elementary molecular simulations work. 
+In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations. In practice, due to the interdisciplinary and somewhat technical nature of this field, many newcomers may find it difficult and time consuming to understand all the methodological issues involved in a simulation study.   The goal of this document is to introduce a new practitioner to the basic concepts and bare minimum scientific knowledge required for correct execution of these methods. We also provide a basic set of “best practices” that can be used to avoid common errors, missteps and confusion in elementary molecular simulations work.
 
 Modern implementations of classical simulations rely on a large body of knowledge from the fields of computer science and numerical methods, which will not be covered in detail here. However, in conducting and analyzing the results of such simulations, it is very helpful if one is comfortable using a Linux environment and command line [link to help with this], as well as writing basic scripts in a variety of programming languages. A working knowledge of these topics is assumed; readers without such knowledge should be prepared to study on these topics when needed.
 
@@ -164,7 +171,7 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Ensembles, distribution functions for different ensembles. Equivalence of ensembles
-\item What equilibrium means and difference between equilibrium and non-equilibrium. For instance, what is usually called an ``equilibrium trajectory'' generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).  
+\item What equilibrium means and difference between equilibrium and non-equilibrium. For instance, what is usually called an ``equilibrium trajectory'' generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).
 \item Clarify differences between nonequilibrium ensembles: driven nonequilibrium steady-state, systems driven out of equilibrium by a time-dependent field, systems initially out of equilibrium but relaxing to equilibrium
 \item Time average and ensemble average
 \item Fluctuations
@@ -188,17 +195,18 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \end{itemize}
 
 \subsection{Classical electrostatics}
+\label{ref:classical_electrostatics}
 \subsubsection{Key concepts}
 
-%\item Long range nature of the Coulomb interaction 
+%\item Long range nature of the Coulomb interaction
 Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
-In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster). 
+In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster).
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
 %\item Polarizability, dielectric constants
 The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
-Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
-This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
+Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower.
+This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water.
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a charge in proximity.
 
 It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant.
@@ -217,7 +225,7 @@ The remaining option, then, is to apply periodic boundary conditions (see ~\ref{
 Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics
 where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
 
-In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
+In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present.
 A variety of different efficient lattice-sum schemes are available [refs].
 In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard.
 \todo[inline, color={yellow!20}]{DLM: Add reference to LR electrostatics section below (4.7) which should also reference this..}
@@ -248,7 +256,7 @@ In general these should be used whenever long range electrostatic interactions a
 \subsubsection{Key concepts}
 %\begin{itemize}
 
-%\item Bonded and nonbonded interactions. 
+%\item Bonded and nonbonded interactions.
 Key interactions between atoms and within or between molecules are typically thought of as consisting of two main types -- bonded and non-bonded interactions.
 While these arise from similar or related physical effects (ultimately all tracing back to QM and the basic laws of physics) they are typically treated in rather distinct manners in molecular simulations so it is important to consider the two categories separately.
 
@@ -303,28 +311,32 @@ For example, the AMBER family force fields usually reduce 1-4 electrostatics to 
 
 %Should create diagram!
 
-Periodic boundary conditions allow more accurate calculation of bulk properties. 
-More precisely, these conditions well-approximate the behavior of a small subsystem in a larger bulk phase (or at least are a better approximation than surrounding the simulation box with a vacuum). 
-This is possible because each particle interacts with periodic images of particles in the same system. 
-Clearly, though, it is undesirable for a single particle to interact with the same particle multiple times. 
-To prevent this, a cut-off of non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension. 
-Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as they must be large enough to capture all of the most significant non-bonded interactions. 
+Periodic boundary conditions allow more accurate estimation of bulk properties from simulations of finite, essentially nanoscale systems.
+More precisely, simulations of comparatively small systems with periodic boundary conditions can be a good approximation to the   behavior of a small subsystem in a larger bulk phase (or at least are a much better approximation than simply simulating a nanodroplet or a finite system surrounded by vacuum).
+Periodic boundary conditions can alleviate many of the issues with finite size effects because each particle interacts with periodic images of particles in the same system.
+Clearly, though, it is undesirable for a single particle to interact with the same particle multiple times.
+To prevent this, a cut-off of many non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension.
+(However, as noted in~Section{ref:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle.)
+Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as the box must be large enough to capture all of the most significant non-bonded interactions.
 Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{LeachBook}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
+%DLM: I have permission to migrate Shell's notes to GitHub, specifically to https://github.com/kofkeLab/Mol-Sim-Intro, so I should go ahead and prioritizing these particular notes there and then cite here.
 
-It is very important to note that periodic boundary conditions are simply an approximation to bulk behavior. 
-They DO NOT effectively simulate an infinitely sized simulation box. 
-This is most easily seen by imagining the placement of a solute in a periodic simulation box. 
-The solute will be replicated in all of the surrounding periodic images. 
-The concentration of solute is thus exactly one per the volume of the box. 
-Although proper selection of non-bonded cutoffs will guarantee that these solutes do not directly interact, they may indirectly interact through their perturbation of nearby solvent. 
-If the solvent does not reach a bulk-like state between solutes, the simulation will suffer from what are termed finite-size effects. 
+It is very important to note that periodic boundary conditions are simply an approximation to bulk behavior.
+They DO NOT effectively simulate an infinitely sized simulation box, though they do reduce many otherwise egregious finite-size effects.
+This is most easily seen by imagining the placement of a solute in a periodic simulation box.
+The solute will be replicated in all of the surrounding periodic images.
+The concentration of solute is thus exactly one per the volume of the box.
+Although proper selection of non-bonded cutoffs will guarantee that these solutes do not directly interact, they may indirectly interact through their perturbation of nearby solvent.
+If the solvent does not reach a bulk-like state between solutes, the simulation will still suffer from finite-size effects.
 
-In a sense, the very idea that the simulation cell is not infinite, but simply periodic, immediately gives rise to these effects. 
-Finite-size effects are particularly apparent in the electrostatic components of simulations, as these forces are inherently longer ranged than dispersion forces. 
-One should always check that unexpected long-range correlations (i.e. on the length-scale of the simulation box) do not exist in molecular structure, spatial position, or orientation. 
-It should also be noted that periodic boundary conditions innately change the definition of the system and the properties calculated from it. 
+Macroscopic, lab-scale systems, or bulk systems, typically consist of multiple moles of atoms/molecules, and thus from a simulation perspective are effectively infinite systems.
+We attempt to simulate these by simulating finite and fairly small systems, and, in a sense, the very idea that the simulation cell is not infinite, but simply periodic, immediately gives rise to finite-size effects.
+Thus, our typical goal is not to remove these completely but to reduce these to levels that they do not adversely impact the results of our simulations.
+Finite-size effects are particularly apparent in the electrostatic components of simulations, as these forces are inherently longer ranged than dispersion forces, as discussed in Section~\ref{sec:classical_electrostatics}.
+One should always check that unexpected long-range correlations (i.e. on the length-scale of the simulation box) do not exist in molecular structure, spatial position, or orientation.
+It should also be noted that periodic boundary conditions innately change the definition of the system and the properties calculated from it.
 Many derivations, especially those involving transport properties, such as diffusivity \citep{Yeh2004}, assume infinite and not periodic boundary conditions. %Other examples to cite? I think there's something with entropy, but I'll have to check this
-The resulting differences in seemingly well-known expressions for computing properties of interest are often subtle, yet may have a large impact on results. 
+The resulting differences in seemingly well-known expressions for computing properties of interest are often subtle, yet may have a large impact on results.
 Such considerations should be kept in mind when comparing results between simulations and with experiment.
 
 \subsection{Main steps of a molecular dynamics simulation}
@@ -337,37 +349,38 @@ While every system studied will present unique challenges and considerations, th
 \item Production
 \end{enumerate}
 
-Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials \citep{LemkulTutorials} \citep{AmberBeginner}. 
-It should be noted that these steps may be difficult to unambiguously differentiate and define in some cases. 
-Additionally, it is assumed that prior to performing any of these steps, an appropriate amount of deliberation has been devoted to clearly defining the system and determining the appropriate simulation techniques. 
+Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials \citep{LemkulTutorials} \citep{AmberBeginner}.
+It should be noted that these steps may be difficult to unambiguously differentiate and define in some cases.
+Additionally, it is assumed that prior to performing any of these steps, an appropriate amount of deliberation has been devoted to clearly defining the system and determining the appropriate simulation techniques.
 
-System preparation is the most variable of these steps, and often requires unique tools for every system of interest. 
-It is highly recommended that best practices documents specific to the system of interest be consulted. 
-If such documents do not exist, it is highly likely that a freely-available tool for constructing such a system does in fact exist. 
-Examples include tools for constructing specific crystal structures, proteins, and lipid membranes. %Need to include some things to cite here 
-The goal of all of these tools, and system preparation in general, is to create a representation of the system of interest that can be interpreted by the desired simulation package. 
-It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the state point of interest. 
-For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided. 
+System preparation is the most variable of these steps, and often requires unique tools for every system of interest.
+It is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
+If such documents do not exist, it is may be that a freely-available tool for constructing such a system does in fact exist.
+Examples include tools for constructing specific crystal structures, proteins, and lipid membranes. %Need to include some things to cite here
+The goal of all of these tools, and system preparation in general, is to create a representation of the system of interest that can be interpreted by the desired simulation package.
+It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the thermodynamic state point of interest.
+For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
 However, for a force field that reliably reproduces the energetics of a system, a starting configuration that is close to equilibrium is only a time-saving convenience in that it greatly reduces the equilibration time and overall simulation length by preventing trapping in metastable states.
 
-The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in one time step). 
-This involves standard minimization algorithms such as steepest descent. 
+The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
+This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
-At the end of energy minimization, a system configuration should be achieved with small enough forces on particles that the desired time-step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4). 
-Such a configuration is a suitable starting point for molecular dynamics techniques. 
-However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities. 
-These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved. 
-Even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to the system as it approaches the correct partitioning of kinetic and potential energies. 
-For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even in the NVE ensemble. 
-Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible. 
-This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired. 
-This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see the below section on Thermostats), and the temperature fluctuates with the kinetic energy at each time step. 
-Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired. 
-In this case, the system may be scaled to the desired average volume before the production simulation. 
-The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibriation work-flow for common production ensembles. 
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time-step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
+Such a configuration is a suitable starting point for molecular dynamics techniques.
+However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
+These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
+Even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
+For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble.
+Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
+This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired.
+This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see the below section on Thermostats), and the temperature fluctuates with the kinetic energy at each time step.
+Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired.
+In this case, the system may be scaled to the desired average volume before the production simulation.
+The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibriation work-flow for common production ensembles.
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
-For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties. 
+For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
+%DLM: SHould we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
 
 \begin{figure}[h]
 \centering
@@ -376,12 +389,14 @@ For more information on equilibration procedures, see \citet{LeachBook}, section
 \label{eqworkflow}
 \end{figure}
 
-Once equilibration is complete, the production simulation may be performed. 
-The production simulation is that from which specific properties of the system of interest will be calculated. 
-As mentioned above, the equilibration procedure should be selected that is appropriate for the desired production ensemble. 
-It should be noted that "equilibration" within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing properties). 
-This falls under the category of correctly obtaining unbiased statistics and convergence, which is covered in another best-practices document. %How to cite? Do we even cite this? 
-Otherwise, if a brief simulation in the same ensemble is not performed during the equilibration step immediately prior to production, any period of the production simulation should be ignored where drift is observed in the energies, temperatures, pressures, densities, or other defining state-variables of the ensemble. 
+Once equilibration is complete, the production simulation may be performed.
+The production simulation is that from which specific properties of the system of interest will be calculated.
+As mentioned above, the equilibration procedure should be selected that is appropriate for the desired production ensemble.
+It should be noted that "equilibration" within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing properties).
+%DLM: See comments above about migrating to GitHub/citing.
+This falls under the category of correctly obtaining unbiased statistics and convergence, which is covered in another best-practices document. %How to cite? Do we even cite this?
+%SHould cite; we can ask Zuckerman as I think he's in charge of that. Or Zuckerman and SHirts, as Shirts should have the overall list.
+Otherwise, if a brief simulation in the same ensemble is not performed during the equilibration step immediately prior to production, any period of the production simulation should be ignored where drift is observed in the energies, temperatures, pressures, densities, or other defining state-variables of the ensemble.
 This of course proceeds estimation of convergence in property calculation.
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
@@ -412,7 +427,7 @@ For more specific details on procedures and parameters used in production simula
 \item Cut-off is bad
 \item Need for special treatment
 \item Idea of an Ewald sum
-\item PPPM 
+\item PPPM
 \item How to choose parameters
 \end{itemize}
 
