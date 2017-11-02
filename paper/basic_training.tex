@@ -71,8 +71,8 @@
 \maketitle
 
 \begin{abstract}
-This document attempts to provide a starting point for approaching molecular simulations, guiding beginning practitioners to what issues they need to know about before and while starting their first simulations, and why those issues are so critical.
-This document makes no claims to provide an adequate introduction to the subject on its own, but rather our goal is to help people know what issues are \emph{critical} before beginning, and to provide references to good resources on those topics.
+This document provides a starting point for approaching molecular simulations, guiding beginning practitioners to what issues they need to know about before and while starting their first simulations, and why those issues are so critical.
+This document makes no claims to provide an adequate introduction to the subject on its own. Instead, our goal is to help people know what issues are \emph{critical} before beginning, and to provide references to good resources on those topics.
 We also provide a checklist of key issues to consider before and while setting up molecular simulations which may serve as a foundation for other best practices documents.
 \end{abstract}
 \end{frontmatter}
@@ -98,9 +98,13 @@ MD simulations can be used for investigating structural, dynamic, and thermodyna
 In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time.
 Thus, the ``dynamics'' produced by an MC method is not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system.
 However, MC can be used to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time.
-This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations.
+This foundation document will focus on the concepts needed to knowledgeably carry out MD simulations. 
+Many, but not all, of the concepts here are also useful for MC simulations.
 
-Either method can be carried out with different physical theories to describe the particle-based model of the system under investigation. If a quantum mechanical description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or very few) empirical parameters, but with various approximations to the physics for tractability. In a classical description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
+Either method can be carried out with different underlying physical theories to describe the particle-based model of the system under investigation. 
+If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability. 
+In a classical description, the molecules are represented by particles representing atoms or groups of atoms. 
+Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
 \todo[inline, color={yellow!20}]{DLM: Comments like this can be converted to to-do items.}
 
 For the rest of this document we will restrict ourselves to classical Molecular Dynamics.
@@ -222,14 +226,12 @@ Once this is decided, it  leaves simulators with two main options, only one of w
 First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
 But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
 The remaining option, then, is to apply periodic boundary conditions (see ~\ref{sec:periodic}) to tile all of space with repeating copies of the system.
-Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics
-where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
+Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
 
 In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present.
 A variety of different efficient lattice-sum schemes are available [refs].
 In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard.
 \todo[inline, color={yellow!20}]{DLM: Add reference to LR electrostatics section below (4.7) which should also reference this..}
-
 
 
 
