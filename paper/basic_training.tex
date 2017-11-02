@@ -164,7 +164,7 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Ensembles, distribution functions for different ensembles. Equivalence of ensembles
-\item What equilibrium means and difference between equilibrium and non-equilibrium. For instance, what is usually called an "Äòequilibrium trajectory"Äô generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).  
+\item What equilibrium means and difference between equilibrium and non-equilibrium. For instance, what is usually called an ``equilibrium trajectory'' generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).  
 \item Clarify differences between nonequilibrium ensembles: driven nonequilibrium steady-state, systems driven out of equilibrium by a time-dependent field, systems initially out of equilibrium but relaxing to equilibrium
 \item Time average and ensemble average
 \item Fluctuations
@@ -189,16 +189,13 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 
 \subsection{Classical electrostatics}
 \subsubsection{Key concepts}
-\begin{itemize}
-\item Long range nature of the Coulomb interaction 
-\item Polarizability, dielectric constants
-\item why/when we need Ewald-type sums
-\end{itemize}
 
+%\item Long range nature of the Coulomb interaction 
 Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
 In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster). 
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
+%\item Polarizability, dielectric constants
 The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
 Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
@@ -207,6 +204,7 @@ The dielectric constant of a medium also relates to the degree of its electrosta
 It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant.
 This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities [ref Amoeba, etc.] or via Drude oscillator-type approaches, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
 
+%\item why/when we need Ewald-type sums
 Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
 Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
 Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
@@ -246,16 +244,42 @@ In general these should be used whenever long range electrostatic interactions a
 \end{itemize}
 \subsubsection{Online resources}
 
-\subsection{Intermolecular interactions}
+\subsection{Molecular interactions}
 \subsubsection{Key concepts}
-\begin{itemize}
-\item Bonded and nonbonded interactions. 
-\item Different types of nonbonded interactions
-\item Fixed charge vs. polarizable models
-\end{itemize}
+%\begin{itemize}
+
+%\item Bonded and nonbonded interactions. 
+Key interactions between atoms and within or between molecules are typically thought of as consisting of two main types -- bonded and non-bonded interactions.
+While these arise from similar or related physical effects (ultimately all tracing back to QM and the basic laws of physics) they are typically treated in rather distinct manners in molecular simulations so it is important to consider the two categories separately.
+
+%Bonded interactions
+Bonded interactions are those between atoms which are connected, or nearly so, and relating to the bonds connecting these atoms.
+In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles.
+Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper'' torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring).
+It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
+
+%\item Different types of nonbonded interactions
+Nonbonded interactions between atoms are all interactions which are included in the potential energy of the system \emph{aside} from bonded interactions.
+Commonly these include at least point-charge Coulomb electrostatic interactions and ``non-polar'' interactions modeled by the Lennard-Jones potential or another similar potential which describes short range repulsion and weak long-range interaction even between non-polar atoms.
+%\item Fixed charge vs. polarizable models
+Additional terms may also be included, such as interactions between fixed multipoles, interactions between polarizable sites, or occasionally explicit potentials for hydrogen bonding or other specialized terms.
+These are particularly common in polarizable force fields such as the AMOEBA model.
+
+%Have to address exclusions/1-4s
+Often, the energy functions used by molecular simulations explicitly neglect nonbonded interactions between atoms which are immediately bonded to one another, and atoms which are separated by only one intervening atom, partly to make it easier to ensure that these atoms have preferred geometries dictated by their defined equilibrium lengths/angles regardless of the nonbonded interactions which would otherwise be present.
+This neglect of especially short range nonbonded interactions between near neighbors is called ``exclusion'', and energy functions typically specify which interactions are excluded.
+
+The transition to torsions, especially proper torsions, is where exclusions typically end.
+However, many all-atom energy functions commonly used in biomolecular simulations retain only \emph{partial} nonbonded interactions between terminal atoms involved in a torsion.
+The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3, and 4, so the terminal atoms could be called atoms 1 and 4, and nonbonded interactions between such atoms are called ``1-4 interactions''.
+These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
+For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
+
+
+%\end{itemize}
 \subsubsection{Books}
 \begin{itemize}
-\item ‚ÄúIntermolecular and surface forces‚Äù by Jacob N. Israelachvili
+\item ``Intermolecular and surface forces'' by Jacob N. Israelachvili
 \end{itemize}
 \subsubsection{Online resources}
 
