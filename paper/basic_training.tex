@@ -15,8 +15,19 @@
 \usepackage[version=4]{mhchem} 
 \usepackage{siunitx}
 \DeclareSIUnit\Molar{M}
+\usepackage[italic]{mathastext}
 \newcommand{\versionnumber}{0.1}  % you should update the minor version number in preprints and major version number of submissions.
+\newcommand{\githubrepository}{\url{https://github.com/MobleyLab/basic_simulation_training}}  %this should be the main github repository for this article
 \graphicspath{{figures/}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Place any additional macros here.  Please use \newcommand* where
+%% possible
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[colorinlistoftodos]{todonotes}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ARTICLE SETUP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,7 +51,6 @@
 \affil[6]{Univ 5}
 \affil[7]{Univ 6}
 
-
 %\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials. 
 %\corr{email2@example.com}{FS}
 
@@ -50,26 +60,41 @@
 %\presentadd[\authfn{3}]{Department, Institute, Country}
 %\presentadd[\authfn{4}]{Department, Institute, Country}
 
+\blurb{This LiveCoMS document is maintained online on GitHub at \githubrepository; to provide feedback, suggestions, or help improve it, please visit the GitHub repository and participate via the issue tracker.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ARTICLE START
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{document}
-
+\begin{frontmatter}
 \maketitle
 
 \begin{abstract}
-Abstract will be added later.
+This document attempts to provide a starting point for approaching molecular simulations, guiding beginning practitioners to what issues they need to know about before and while starting their first simulations, and why those issues are so critical.
+This document makes no claims to provide an adequate introduction to the subject on its own, but rather our goal is to help people know what issues are \emph{critical} before beginning, and to provide references to good resources on those topics. 
+We also provide a checklist of key issues to consider before and while setting up molecular simulations which may serve as a foundation for other best practices documents. 
 \end{abstract}
+\end{frontmatter}
 
+\todo[inline, color={yellow!20}]{DLM: Authors editing should insert their info in the authors list above.}
+
+% List TODOs here
+\todototoc
+\listoftodos
 
 \section{Introduction}
 
+\todo[inline, color={yellow!20}]{DLM: We should go through and break all the material so that each sentence is on a separate line. This plays much nicer with GitHub's version control, otherwise anytime anyone changes a word in a paragraph it will look like the paragraph was completely rewritten...}
+
 Molecular simulation techniques play very important roles in our quest for understanding properties of molecular systems from a microscopic point of view. Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions. The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a “trajectory”. Relevant properties can be calculated for each snapshot or frame and averaged over the the entire trajectory to compute estimates of desired properties. 
+\todo[inline, color={yellow!20}]{DLM: We will need to police the document as there are a lot of copy-and-paste errors resulting from curly quotes, such as around ``trajectory'' in the preceding paragraph. They currently seem to appear OK in the PDF, but in the LaTeX source they are clearly incorrect.}
 
-Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC). In the MD method, an equation of motion is numerically integrated and a dynamical trajectory of the system is generated. MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system. In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time. Thus, the “dynamics” produced by an MC method are not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system. However, it is MC can be used  to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time. This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations. 
+Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC). In the MD method, an equation of motion is numerically integrated and a dynamical trajectory of the system is generated. MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system. In the MC method, probabilistic rules are used to generate a new configuration from an existing configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time.
+Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, in the sense that it may or may not follow the physical time evolution of the system. However,  MC can be used  to study dynamical behavior in model systems or in systems where MD simulations cannot be carried out due to computational cost, with a suitable mapping between MC step-size and a physical unit of time. This foundation document will focus on the concepts needed to knowledgeable carry out MD simulations. Many, but not all, of the concepts here are also useful for MC simulations. 
 
-Either method can be carried out with different physical theories to describe the particle-based model of the system under investigation. If a quantum mechanical description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or very few) empirical parameters, but with various approximations to the physics for tractability. In a classical description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we’re good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
+Either method can be carried out with different physical theories to describe the particle-based model of the system under investigation. If a quantum mechanical description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or very few) empirical parameters, but with various approximations to the physics for tractability. In a classical description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions. Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. {\color{red} [Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good] [Add in general, that the topology does not change--most FF do not allow chemical reactions]}
+\todo[inline, color={yellow!20}]{DLM: Comments like this can be converted to to-do items.}
 
 For the rest of this document we will restrict ourselves to classical Molecular Dynamics.
 
@@ -139,7 +164,8 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Ensembles, distribution functions for different ensembles. Equivalence of ensembles
-\item [DMZ suggests] What equilibrium means and difference between equil and non-eq.  For instance, what is usually called an ‘equilibrium trajectory’ generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).  [JDC suggests] Would also help to clarify differences between nonequilibrium ensembles: driven nonequilibrium steady-state, systems driven out of equilibrium by a time-dependent field, systems initially out of equilibrium but relaxing to equilibrium
+\item What equilibrium means and difference between equilibrium and non-equilibrium. For instance, what is usually called an ``equilibrium trajectory'' generally will not embody a good sample of the equilibrium ensemble due to insufficient sampling.  On the other hand, truly non-equilibrium conditions such as driving, relaxation are fundamentally different.  Note that relaxation can occur to the equilibrium ensemble or a non-equilibrium condition (e.g., steady state).  
+\item Clarify differences between nonequilibrium ensembles: driven nonequilibrium steady-state, systems driven out of equilibrium by a time-dependent field, systems initially out of equilibrium but relaxing to equilibrium
 \item Time average and ensemble average
 \item Fluctuations
 \item Correlation functions
@@ -156,16 +182,49 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \end{itemize}
 \subsubsection{Online resources}
 \begin{itemize}
-\item David Kofke’s notes: http://www.eng.buffalo.edu/~kofke/ce530/Lectures/lectures.html
-\item Scott Shell’s notes: https://engineering.ucsb.edu/~shell/che210d/assignments.html
+\item David Kofke's notes: http://www.eng.buffalo.edu/~kofke/ce530/Lectures/lectures.html
+\item Scott Shell's notes: https://engineering.ucsb.edu/~shell/che210d/assignments.html
+%We should make these proper hyperlinks and also handle formatting (current line break issues).
 \end{itemize}
 
 \subsection{Classical electrostatics}
 \subsubsection{Key concepts}
-\begin{itemize}
-\item Long range nature of Coulomb interaction and why/when we need Ewald type sums
-\item Polarizability, dielectric constants
-\end{itemize}
+
+%\item Long range nature of the Coulomb interaction 
+Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
+In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster). 
+This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
+
+%\item Polarizability, dielectric constants
+The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$.
+Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
+This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
+The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a charge in proximity.
+
+It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant.
+This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities [ref Amoeba, etc.] or via Drude oscillator-type approaches, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
+
+%\item why/when we need Ewald-type sums
+Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
+Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
+Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
+In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance [refs].
+Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range.
+Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
+First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
+But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
+The remaining option, then, is to apply periodic boundary conditions (see ~\ref{sec:periodic}) to tile all of space with repeating copies of the system.
+Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics
+where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
+
+In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
+A variety of different efficient lattice-sum schemes are available [refs].
+In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard.
+\todo[inline, color={yellow!20}]{DLM: Add reference to LR electrostatics section below (4.7) which should also reference this..}
+
+
+
+
 \subsubsection{Books}
 \begin{itemize}
 \item Griffiths
@@ -185,16 +244,42 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \end{itemize}
 \subsubsection{Online resources}
 
-\subsection{Intermolecular interactions}
+\subsection{Molecular interactions}
 \subsubsection{Key concepts}
-\begin{itemize}
-\item Bonded and nonbonded interactions. 
-\item Different types of nonbonded interactions
-\item Fixed charge vs. polarizable models
-\end{itemize}
+%\begin{itemize}
+
+%\item Bonded and nonbonded interactions. 
+Key interactions between atoms and within or between molecules are typically thought of as consisting of two main types -- bonded and non-bonded interactions.
+While these arise from similar or related physical effects (ultimately all tracing back to QM and the basic laws of physics) they are typically treated in rather distinct manners in molecular simulations so it is important to consider the two categories separately.
+
+%Bonded interactions
+Bonded interactions are those between atoms which are connected, or nearly so, and relating to the bonds connecting these atoms.
+In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles.
+Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper'' torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring).
+It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
+
+%\item Different types of nonbonded interactions
+Nonbonded interactions between atoms are all interactions which are included in the potential energy of the system \emph{aside} from bonded interactions.
+Commonly these include at least point-charge Coulomb electrostatic interactions and ``non-polar'' interactions modeled by the Lennard-Jones potential or another similar potential which describes short range repulsion and weak long-range interaction even between non-polar atoms.
+%\item Fixed charge vs. polarizable models
+Additional terms may also be included, such as interactions between fixed multipoles, interactions between polarizable sites, or occasionally explicit potentials for hydrogen bonding or other specialized terms.
+These are particularly common in polarizable force fields such as the AMOEBA model.
+
+%Have to address exclusions/1-4s
+Often, the energy functions used by molecular simulations explicitly neglect nonbonded interactions between atoms which are immediately bonded to one another, and atoms which are separated by only one intervening atom, partly to make it easier to ensure that these atoms have preferred geometries dictated by their defined equilibrium lengths/angles regardless of the nonbonded interactions which would otherwise be present.
+This neglect of especially short range nonbonded interactions between near neighbors is called ``exclusion'', and energy functions typically specify which interactions are excluded.
+
+The transition to torsions, especially proper torsions, is where exclusions typically end.
+However, many all-atom energy functions commonly used in biomolecular simulations retain only \emph{partial} nonbonded interactions between terminal atoms involved in a torsion.
+The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3, and 4, so the terminal atoms could be called atoms 1 and 4, and nonbonded interactions between such atoms are called ``1-4 interactions''.
+These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
+For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
+
+
+%\end{itemize}
 \subsubsection{Books}
 \begin{itemize}
-\item “Intermolecular and surface forces” by Jacob N. Israelachvili
+\item ``Intermolecular and surface forces'' by Jacob N. Israelachvili
 \end{itemize}
 \subsubsection{Online resources}
 
@@ -209,6 +294,7 @@ In a nutshell, basic familiarity with thermodynamics is absolutely necessary for
 \end{itemize}
 
 \subsection{Periodic boundary conditions}
+\label{sec:periodic}
 \begin{itemize}
 \item Why do we need it?
 \item Influence of periodic boundary condition on simulation setup
@@ -330,38 +416,52 @@ For more specific details on procedures and parameters used in production simula
 \item How to choose parameters
 \end{itemize}
 
-\section{Checklist}
+\begin{Checklists*}[p!]
+
+\begin{checklist}{Take stock of your plans}
+
 \begin{itemize}
-\item \textbf{Count the cost:} Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation.
+\item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation.
 \item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
 \item Determine reference states that you are trying to emulate/discover.
-\begin{itemize}
-\item What Temp, pressure, etc.
-\item What values in experimental
-\item What values in literature?
+\item What temperature, pressure, etc. are you interested in?
+\item What is already known in the literature and what data do you wish to compare to?
 \end{itemize}
-\item Choose a simulation package suitable for simulating that ensemble (see best practices document) 
-\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoffs and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.)
+\end{checklist}
+
+\begin{checklist}{Prepare to implement your plans and make critical decisions about system type}
+
+\begin{itemize}
+\item Choose a simulation package suitable for simulating that ensemble (see best practices document) % link
+\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in [section] % reference section whatever
+\end{itemize}
+\end{checklist}
+
+\begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or periodicity is needed
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed
 \end{itemize}
-\item Choose appropriate settings for the ensemble:
+\end{checklist}
+
+\begin{checklist}{Choose appropriate settings for the desired ensemble:}
 \begin{itemize}
 \item Pick a thermostat that gives the correct distribution of temperatures, not just the correct average temperature
 \item Pick a barostat that gives the correct distribution of pressures
+\item Consider the known shortcomings and limitations of certain integrators and thermostats/barostats and whether your choices will impact the properties you are calculating
 \end{itemize}
-\item Choose an appropriate timestep for stability and avoiding energy drift
+\end{checklist}
+
+
+\begin{checklist}{Choose an appropriate timestep for stability and avoiding energy drift}
 \begin{itemize}
 \item This depends on factors such as the use of constraints in the system (e.g. for all-atom systems constraining hydrogen bonds can allow the use of a slightly longer timestep; 2 fs is relatively typical)
-\item If your initial structure is potentially strained, energy minimize before starting
-\item The shortcomings and limitations of certain integrators and thermostats/barostats
-\begin{itemize}
-\item Ergodicity issue with non-chained Nose-Hoover
-\item Error that is propagated with integrators in terms of dt
 \end{itemize}
-\end{itemize}
-\end{itemize}
+\end{checklist}
+
+
+\end{Checklists*}
+
 
 
 
