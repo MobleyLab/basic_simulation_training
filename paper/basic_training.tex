@@ -459,8 +459,47 @@ distribution that can scale or modify these properties of selected particles.
 Extended system thermostats are similar to what their name suggests,
 the system has an added variable that has a degree of freedom.
 This emulates an external heat bath that can interact with the particles in the
-system observing 
+system affecting their momenta in a predictable fashion.
 
+\subsubsection{Popular Thermostats}
+Within this section, various thermostats will be briefly explored, with a small
+description of their uses and possible issues that are associated with each.
+This is by no means an exhaustive study of available thermostats, just some
+of the more popular and historic thermostats used in MD.
+
+\subparagraph{Deterministic Thermostats}
+\begin{enumerate}
+\item Velocity Scaling
+\item Hoover
+\item Berendsen
+\end{enumerate}
+
+\subparagraph{Stochastic Thermostats}
+\begin{enumerate}
+\item Andersen
+\item Langevin
+\end{enumerate}
+
+\subparagraph{Extended System Thermostats}
+\begin{enumerate}
+\item Nosé-Hoover
+\item  Nosé-Hoover Chain
+\end{enumerate}
+
+\subsubsection{Nuances and Pitfalls}
+
+\subsubsection{Summary}
+To summarize, observe (\ref{tstat_summary}), as a general summary and
+guide for exploring the usage of various thermostats.
+Ensure that the thermostat is properly sampling the canonical ensemble,
+or ensemble of choice. 
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{thermostat_summary.pdf}
+\caption{Basic summary of popular thermostats}
+\label{tstat_summary}
+\end{figure}
 
 \subsection{Barostats}
 \begin{itemize}
