@@ -48,8 +48,8 @@
 \affil[3]{University of California, Santa Barbara}
 \affil[4]{Univ 4}
 \affil[5]{National Institutes of Standard and Technology}
-\affil[6]{Univ 5}
-\affil[7]{Univ 6}
+\affil[6]{Vanderbilt University}
+\affil[7]{Univ 7}
 
 %\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials.
 %\corr{email2@example.com}{FS}
@@ -317,8 +317,7 @@ Periodic boundary conditions allow more accurate estimation of bulk properties f
 More precisely, simulations of comparatively small systems with periodic boundary conditions can be a good approximation to the   behavior of a small subsystem in a larger bulk phase (or at least are a much better approximation than simply simulating a nanodroplet or a finite system surrounded by vacuum).
 Periodic boundary conditions can alleviate many of the issues with finite size effects because each particle interacts with periodic images of particles in the same system.
 Clearly, though, it is undesirable for a single particle to interact with the same particle multiple times.
-To prevent this, a cut-off of many non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension.
-(However, as noted in~Section{ref:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle.)
+To prevent this, a cut-off of many non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension.(However, as noted in~Section{ref:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle.)
 Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as the box must be large enough to capture all of the most significant non-bonded interactions.
 Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{LeachBook}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
 %DLM: I have permission to migrate Shell's notes to GitHub, specifically to https://github.com/kofkeLab/Mol-Sim-Intro, so I should go ahead and prioritizing these particular notes there and then cite here.
@@ -404,10 +403,64 @@ For more specific details on procedures and parameters used in production simula
 
 \subsection{Thermostats}
 \begin{itemize}
+\item Motivation
 \item What is it?
 \item Brief description of how it works
 \item Popular thermostats
+\item Pitfalls and nuances
 \end{itemize}
+
+% Motivation for using thermostats
+\subsubsection{Motivation}
+As mentioned throughout the article above, molecular dynamics simulations
+are used to observe and glean properties of interest from some system of
+study.
+However, these properties traditionally are not measurable from the
+initial configuration of the system, nor is that usually physically meaningful.
+This generally requires transitioning the system to some other state point to
+collect the proper data once the system has equilibrated.
+In many cases, to emulate experiment, sampling from
+the canonical (constant-temperature) ensemble is 
+desired\cite{thermostatAlgorithms2005}.
+Generally, if the temperature of the system must be changed during the
+simulation, some thermostat algorithm will be employed.
+This section will review the background information about
+thermostats and how they work, some popular thermostats, and
+common issues to understand and avoid when using thermostats
+in MD simulations.
+
+% relevant background information needed to understand thermostats
+\subsubsection{Background and How They Work}
+The difference between the types of temperatures that are measured in
+a simulation is important to know.
+There is the target temperature, a temperature value that the system
+attempts to average about.
+When specifying a temperature to thermostat
+to, this is the target temperature.
+However, due to the fluctuations, it is not
+guaranteed that the temperature measured at singular point in time will be the 
+target temperature.
+Called the kinetic temperature, or instantaneous temperature, this value is
+derived from the equipartition theorem usually.
+It should be noted that this value can be greater than, less than, or equal
+to the average kinetic energy. The kinetic temperature should also be
+paid special attention to when describing the system.
+The kinetic temperature does \textbf{not} state "the temperature is at
+some value $T$", it merely states: "the energy of the system is similar to that
+of a system at temperature $T$".
+
+Finally there are generally three types of thermostats: deterministic,
+stochastic, and extended system.
+Deterministic thermostats are usually known to scale the momenta or forces 
+on the particles in the system based on their fitness to the target temperature.
+Stochastic thermostats behave similarly to the deterministic thermostats,
+however, there is a random force or momenta sampled out of a probability 
+distribution that can scale or modify these properties of selected particles.
+Extended system thermostats are similar to what their name suggests,
+the system has an added variable that has a degree of freedom.
+This emulates an external heat bath that can interact with the particles in the
+system observing 
+
 
 \subsection{Barostats}
 \begin{itemize}
