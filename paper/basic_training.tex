@@ -27,6 +27,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{enumitem} % better handling
+\usepackage{pifont} % some unicode-eqsue characters 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -684,7 +685,6 @@ system of interest.
 \item What is it?
 \item Brief description of how it works
 \item Popular thermostats
-\item Pitfalls and nuances
 \end{itemize}
 
 % Motivation for using thermostats
@@ -782,15 +782,16 @@ of the more popular and historic thermostats used in MD.
         the system is at when the thermostat is applied, it will stay there. 
 
     \item \textbf{Berendsen}
-        The Berendsen\cite{berendsen1984molecular} thermostat is another type of
+
+        The Berendsen thermostat is another type of
         velocity rescaling thermostat, but instead of the rescaling happening
         very abruptly each force adjustment time, we include a relaxation term
-        to allow the system to more slowly approach the target temperature. With
-        the introduction of a coupling parameter $\tau$, the strength of this
-        parameter will determine how fast the system will approach the target
-        temperature. However, it should be noted that while allowing for
-        temperature fluctuations, the Berendsen thermostat is not canonical nor
-        is it reversible.
+        to allow the system to more slowly approach the target
+        temperature\cite{berendsen1984molecular} . With the introduction of a
+        coupling parameter $\tau$, the strength of this parameter will determine
+        how fast the system will approach the target temperature. However, it
+        should be noted that while allowing for temperature fluctuations, the
+        Berendsen thermostat is not canonical nor is it reversible.
 
 \end{enumerate}
 
@@ -798,32 +799,87 @@ of the more popular and historic thermostats used in MD.
 \begin{enumerate}[listparindent=\parindent]
     \item \textbf{Andersen}
 
-    The Andersen thermostat is the first of two stochastic thermostats
-        that will be explored. 
+        The Andersen\cite{andersen1980molecular} thermostat is the first of two
+        stochastic thermostats that will be explored.  This thermostat has
+        vestiges of the rescaling thermostats mentioned earlier, but with a
+        randomization element also included. In this case, the Andersen
+        thermostat attempts to model a system that is coupled to some random
+        degree of freedom\cite{andersen1980molecular, thermostatAlgorithms2005}.
+        In this case, this random element will be a new set of velocities that
+        are chosen from a probability distribution and then if the reassignment
+        probability passes, the velocities of the particle will be replaced. The
+        number of particles affected, time between "collisions", and how often
+        this is applied to the system are possible variations of this
+        thermostat. Like the previous thermostats, this is not reversible, but
+        the Andersen thermostat does reproduce the canonical ensemble.
     
     \item \textbf{Langevin}
+
+        The Langevin\cite{schneider1978molecular} thermostat applies the idea
+        of an implicit solvent as a way to randomly impart or remove some forces
+        acting on the particles.  With a general equation of the form $F =
+        F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is
+        the standard interactions calculated during the course of the
+        simulation, $F_{friction}$ is the damping parameter used to tune the
+        "viscosity" of the implicit bath, and $F_{random}$ is a random force
+        perturbing the forces on the particles.  Careful consideration must be
+        taken when choosing the friction damping parameter.
 
 
 \end{enumerate}
 
 \subparagraph{Extended System Thermostats}
 \begin{enumerate}[listparindent=\parindent]
+
 \item Nosé-Hoover
+
+    The Nosé-Hoover thermostat\cite{thermostatAlgorithms2005} essentially
+    abstracts away the thermal bath from the previous thermostats and
+    condenses it into a singular additional degree of freedom. This bath
+    with a "mass" that can be changed can interact with the particles in the
+    system in a predictable and reproducible way while maintaining the
+    canonical ensemble. This is one of the most widely implemented and used
+    thermostats due to these attributes. However, it should be noted that
+    with small enough systems, ergodicity can be an issue and the thermostat
+    might not properly sample the canonical ensemble
+    \cite{martyna1992nose,thermostatAlgorithms2005}.
+    
+    
 \item Nosé-Hoover Chain
+
+    Briefly mentioned above, there are certain conditions where the Nosé-Hoover
+    thermostat might not be sufficient to properly sample the system, due to
+    system size and ergodicity issues\cite{martyna1992nose,
+    thermostatAlgorithms2005}. However, Martyna et. al.
+    \cite{martyna1992nose} discovered that by coupling more heat baths to
+    the system, the canonical ensemble can be rediscovered, at the minimal
+    increase in computations required. In certain situations, it will be
+    useful to chain additional heat baths to the system when under the
+    Nosé-Hoover thermostat.
+
 \end{enumerate}
 
-\subsubsection{Nuances and Pitfalls}
 
 \subsubsection{Summary}
-To summarize, observe (\ref{tstat_summary}), as a general summary and
-guide for exploring the usage of various thermostats.
-Ensure that the thermostat is properly sampling the canonical ensemble,
-or ensemble of choice. 
+To summarize, observe (\ref{tstat_summary}), as a general summary and guide for
+exploring the usage of various thermostats. Make sure to pay special attention
+to the reversibility when measuring time dependent properties, the ensemble
+sampled for all cases, and if a proper distribution of momenta and kinetic
+energy fluctuations are supported.  Do note that depending on the system of
+interest, it might not be necessary to worry about some of this information when
+initializing the system for a production run. For example, if the thermal
+history of the system is not necessary during equilibration, a faster algorithm
+like Andersen or Berendsen could possibly be implemented, then switch to
+Nosé-Hoover when at the production run. Knowing the system you are simulating
+and the benefits and weaknesses to each thermostat is crucial to successfully
+and efficiently collect meaningful, physical data.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{thermostat_summary.pdf}
-\caption{Basic summary of popular thermostats}
+    \caption{Basic summary of popular thermostats, where \ding{55} signifies
+    that the thermostat does not fulfill that statement, \ding{51} does, and
+    (\ding{51}) does under certain circumstances.}
 \label{tstat_summary}
 \end{figure}
 
