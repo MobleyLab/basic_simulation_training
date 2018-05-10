@@ -330,7 +330,12 @@ For example, the AMBER family force fields usually reduce 1-4 electrostatics to 
 \item Finite size effects
 \end{itemize}
 
-\todo[inline, color={green!20}]{JIM: Create a diagram to demonstrate periodic boundary conditions}
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{PBC_figure.pdf}
+\caption{Periodic boundary conditions are shown for a simple 2D system. Note that the simulated system is a sub-ensemble within an infinitely sized system of identical, small ensembles.}
+\label{pbcfig}
+\end{figure}
 
 Periodic boundary conditions allow more accurate estimation of bulk properties from simulations of finite, essentially nanoscale systems.
 More precisely, simulations of comparatively small systems with periodic boundary conditions can be a good approximation to the behavior of a small subsystem in a larger bulk phase (or at least are a much better approximation than simply simulating a nanodroplet or a finite system surrounded by vacuum).
