@@ -10,6 +10,7 @@ The current focus is on MD; Monte Carlo (MC) will be addressed in a separate doc
 - Avisek Das (University of Michigan)
 - David Mobley (UC Irvine)
 - Jacob Monroe (UC Santa Barbara)
+- Justin Gilmer (Vanderbilt University)
 
 ## List of Contributors
 <!-- We suggest listing contributers in order of addition. -->
