@@ -94,6 +94,7 @@ which may serve as a foundation for other best practices documents.
 \listoftodos
 
 \section{Introduction}
+\label{sec:intro}
 
 \todo[inline, color={yellow!20}]{DLM: We should go through and break all the
 material so that each sentence is on a separate line. This plays much nicer with
@@ -159,6 +160,7 @@ For the rest of this document we will restrict ourselves to classical Molecular
 Dynamics.
 
 \section{Scope of this document}
+\label{sec:scope}
 There are several excellent textbooks on classical simulation methods, few of
 them are listed below.
 
@@ -191,6 +193,7 @@ these topics when needed.
 
 
 \section{Science topics}
+\label{sec:science}
 A variety of fields provide the foundation for our simulation methods and
 analysis of the data produced by these methods. A new practitioner does not have
 to be an expert of all these fields but needs to understand some key concepts
@@ -198,6 +201,7 @@ from each of these disciplines. Here are topics we believe even basic users of
 molecular simulations need to grasp.
 
 \subsection{Classical mechanics}
+\label{sec:classical_mechanics}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Newton’s equation of motion and constants of motion
@@ -246,6 +250,7 @@ quality of the energy conservation.
 
 
 \subsection{Thermodynamics}
+\label{sec:thermodynamics}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Temperature, pressure, stress
@@ -270,6 +275,7 @@ Equilibrium thermodynamics is taught in most undergraduate programs in physics, 
 \subsubsection{Online resources}
 
 \subsection{Classical statistical mechanics}
+\label{sec:stat_mech}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Ensembles, distribution functions for different ensembles. Equivalence of ensembles
@@ -306,7 +312,7 @@ Equilibrium thermodynamics is taught in most undergraduate programs in physics, 
 \end{itemize}
 
 \subsection{Classical electrostatics}
-\label{ref:classical_electrostatics}
+\label{sec:classical_electrostatics}
 \subsubsection{Key concepts}
 
 %\item Long range nature of the Coulomb interaction
@@ -410,6 +416,7 @@ which should also reference this..}
 \subsubsection{Online resources}
 
 \subsection{Molecular interactions}
+\label{sec:mol_interactions}
 \subsubsection{Key concepts}
 %\begin{itemize}
 
@@ -488,6 +495,7 @@ value.
 \section{Basic simulation concepts and terminology}
 
 \subsection{Force fields}
+\label{sec:force_fields}
 \begin{itemize}
 \item What are they?
 \item Functional forms for various terms
@@ -515,7 +523,7 @@ More precisely, simulations of comparatively small systems with periodic boundar
 Periodic boundary conditions can alleviate many of the issues with finite size effects because each particle interacts with periodic images of particles in the same system.
 Clearly, though, it is undesirable for a single particle to interact with the same particle multiple times.
 To prevent this, a cut-off of many non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension.
-(However, as noted in~Section{ref:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle. 
+(However, as noted in Section~\ref{sec:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle. 
 Instead, what are often termed ``cut-offs'' that are applied to electrostatics are instead a shift from short-range to long-range treatments.)
 Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as the box must be large enough to capture all of the most significant non-bonded interactions.
 Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{LeachBook}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
@@ -541,6 +549,7 @@ The resulting differences in seemingly well-known expressions for computing prop
 Such considerations should be kept in mind when comparing results between simulations and with experiment.
 
 \subsection{Main steps of a molecular dynamics simulation}
+\label{sec:main_steps}
 While every system studied will present unique challenges and considerations,
 the process of performing a molecular dynamics simulation generally follows
 these steps:
@@ -610,6 +619,7 @@ This of course preceeds estimation of convergence in property calculation.
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
 \subsection{Thermostats}
+\label{sec:thermostats}
 \begin{itemize}
 \item Motivation
 \item What is it?
@@ -814,6 +824,7 @@ and efficiently collect meaningful, physical data.
 \end{figure}
 
 \subsection{Barostats}
+\label{sec:barostats}
 \begin{itemize}
 \item What is it?
 \item Brief description of how it works
@@ -821,6 +832,7 @@ and efficiently collect meaningful, physical data.
 \end{itemize}
 
 \subsection{Integrators}
+\label{sec:integrators}
 \begin{itemize}
 \item Numerical solution of dynamical equations of motions
 \item Importance of energy conservation
@@ -829,6 +841,7 @@ and efficiently collect meaningful, physical data.
 \end{itemize}
 
 \subsection{Long range electrostatics}
+\label{sec:lr_electrostatics}
 \begin{itemize}
 \item Cut-off is bad
 \item Need for special treatment
