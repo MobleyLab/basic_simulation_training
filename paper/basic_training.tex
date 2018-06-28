@@ -94,6 +94,7 @@ which may serve as a foundation for other best practices documents.
 \listoftodos
 
 \section{Introduction}
+\label{sec:intro}
 
 \todo[inline, color={yellow!20}]{DLM: We should go through and break all the
 material so that each sentence is on a separate line. This plays much nicer with
@@ -159,6 +160,7 @@ For the rest of this document we will restrict ourselves to classical Molecular
 Dynamics.
 
 \section{Scope of this document}
+\label{sec:scope}
 There are several excellent textbooks on classical simulation methods, few of
 them are listed below.
 
@@ -191,6 +193,7 @@ these topics when needed.
 
 
 \section{Science topics}
+\label{sec:science}
 A variety of fields provide the foundation for our simulation methods and
 analysis of the data produced by these methods. A new practitioner does not have
 to be an expert of all these fields but needs to understand some key concepts
@@ -198,6 +201,7 @@ from each of these disciplines. Here are topics we believe even basic users of
 molecular simulations need to grasp.
 
 \subsection{Classical mechanics}
+\label{sec:classical_mechanics}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Newton’s equation of motion and constants of motion
@@ -246,6 +250,7 @@ quality of the energy conservation.
 
 
 \subsection{Thermodynamics}
+\label{sec:thermodynamics}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Temperature, pressure, stress
@@ -270,6 +275,7 @@ Equilibrium thermodynamics is taught in most undergraduate programs in physics, 
 \subsubsection{Online resources}
 
 \subsection{Classical statistical mechanics}
+\label{sec:stat_mech}
 \subsubsection{Key concepts}
 \begin{itemize}
 \item Ensembles, distribution functions for different ensembles. Equivalence of ensembles
@@ -306,7 +312,7 @@ Equilibrium thermodynamics is taught in most undergraduate programs in physics, 
 \end{itemize}
 
 \subsection{Classical electrostatics}
-\label{ref:classical_electrostatics}
+\label{sec:classical_electrostatics}
 \subsubsection{Key concepts}
 
 %\item Long range nature of the Coulomb interaction
@@ -410,6 +416,7 @@ which should also reference this..}
 \subsubsection{Online resources}
 
 \subsection{Molecular interactions}
+\label{sec:mol_interactions}
 \subsubsection{Key concepts}
 %\begin{itemize}
 
@@ -488,12 +495,75 @@ value.
 \section{Basic simulation concepts and terminology}
 
 \subsection{Force fields}
+\label{sec:force_fields}
 \begin{itemize}
 \item What are they?
 \item Functional forms for various terms
 \item Common force fields
 \item Limitations
 \end{itemize}
+
+The term "force field" simply refers to the included terms, particular form,
+and specific implementation details, including parameter values, of the 
+chosen potential energy function. Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
+Here, we very briefly describe the mathematical forms used to represent such interactions.
+
+Non-bonded interactions of the Lennard-Jones form are well-described 
+throughout the literature (for instance see Ch. 4 of \citet{LeachBook}). 
+Coulombic interactions, including both short and long-range components, are 
+described in detail elsewhere in this document.
+To represent bonded interactions, harmonic potentials are often employed. 
+The same is true for angles between three bonded atoms, but the harmonic potential 
+is applied with respect to the angle formed and not the distance between atoms. 
+Torsional terms are also commonly employed, usually consisting as sums of 
+cosines. More exotic potentials based on three-body intermolecular 
+orientations, or terms directly coupling bond lengths and bending angles are 
+also possible. Additionally, other choices of potential function are of course 
+acceptable, including Buckingham or Morse potentials, or the use of "improper" 
+dihedral terms to enforce planarity of cyclic portions of molecules. 
+%JIM: Not sure if it's important, but I wanted to include something
+%about force field terms like CMAP, as well as external fields. The 
+%below sentence is an attempt at that, but it may not be needed.
+This may even include empirical corrections based on discrete binning 
+along a particular set of degrees of freedom, as well as applied external  
+fields (i.e. electric fields) and force field terms describing the effect of 
+degrees of freedom, such as solvent, that have been removed from the system via 
+"coarse-graining." For a more in-depth discussion of common (and even less common) force field terms, see Ch. 4 of \citet{LeachBook}.
+
+Functional forms used to describe specific terms in a potential energy function 
+may be vastly different in mathematical character even though they seek to describe the same physics. For this reason, one functional form may be preferred above another due to 
+enhanced numerical stability or simplicity of implementation, even though it is not as 
+faithful to the underlying physics. In this regard, force field selection is a form of 
+selecting a model - one should carefully weigh the virtues of accuracy and convenience 
+or speed, and be ever-conscious of the limitations introduced by this decision.
+It is also important to know that most MD simulation engines only support a 
+subset of functional forms. For those forms that are supported, 
+the user manuals of these software packages are often excellent resources 
+for learning more about the rationale and limitations of different 
+potential energy functions and terms (see Part II of Amber reference manuals\citep{AmberManual} 
+and Ch. 4 of the reference manual for GROMACS \citep{GROMACSManual}).
+
+Many examples of force fields abound in the literature, in fact too many to provide 
+even a representative sample or list of citations, as most force fields are 
+specifically developed for particular systems under study.
+\todo[inline, color={green!20}]{JIM: Should we actually cite any force fields?}.
+For almost all force fields, many versions, variants, and 
+modifications exist. Each force field version not only includes specific functional 
+forms to describe intermolecular potentials, but also specifies the parameters 
+governing such interactions. Parameters are usually specific to certain types 
+of atoms, bonds, molecules, etc., and include point charges on atoms if 
+electrostatic terms are in use. A subtle and often overlooked point involving 
+force field implementation concerns the consistent treatment of constraints, 
+cut-offs or other simulation settings that impact the potential energy 
+function. To exactly replicate a described parametrization of a force field, 
+constraints should be specified consistently in addition to usage of the same 
+intermolecular cut-offs as used in the original paper. The choice of how to 
+apply a cutoff, such as through direct truncation, shifting of the potential 
+energy function, or through the use of switching functions, should be 
+maintained if identical matches to properties of interest are desired. This is 
+especially important for the purposes of free energy calculations, where the 
+potential energy itself is recorded.
+
 
 \subsection{Periodic boundary conditions}
 \label{sec:periodic}
@@ -515,7 +585,7 @@ More precisely, simulations of comparatively small systems with periodic boundar
 Periodic boundary conditions can alleviate many of the issues with finite size effects because each particle interacts with periodic images of particles in the same system.
 Clearly, though, it is undesirable for a single particle to interact with the same particle multiple times.
 To prevent this, a cut-off of many non-bonded interactions should be chosen that is less than half the length of the simulation box in any dimension.
-(However, as noted in~Section{ref:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle. 
+(However, as noted in Section~\ref{sec:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle. 
 Instead, what are often termed ``cut-offs'' that are applied to electrostatics are instead a shift from short-range to long-range treatments.)
 Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as the box must be large enough to capture all of the most significant non-bonded interactions.
 Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{LeachBook}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
@@ -541,6 +611,7 @@ The resulting differences in seemingly well-known expressions for computing prop
 Such considerations should be kept in mind when comparing results between simulations and with experiment.
 
 \subsection{Main steps of a molecular dynamics simulation}
+\label{sec:main_steps}
 While every system studied will present unique challenges and considerations,
 the process of performing a molecular dynamics simulation generally follows
 these steps:
@@ -586,7 +657,7 @@ This definition, though not perfectly rigorous, is usually suitable for assessin
 The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibriation work-flow for common production ensembles.
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
-%DLM: SHould we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
+%DLM: Should we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
 %JIM: I tried this out above.
 
 \begin{figure}[h]
@@ -610,6 +681,7 @@ This of course preceeds estimation of convergence in property calculation.
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
 \subsection{Thermostats}
+\label{sec:thermostats}
 \begin{itemize}
 \item Motivation
 \item What is it?
@@ -814,6 +886,7 @@ and efficiently collect meaningful, physical data.
 \end{figure}
 
 \subsection{Barostats}
+\label{sec:barostats}
 \begin{itemize}
 \item What is it?
 \item Brief description of how it works
@@ -821,6 +894,7 @@ and efficiently collect meaningful, physical data.
 \end{itemize}
 
 \subsection{Integrators}
+\label{sec:integrators}
 \begin{itemize}
 \item Numerical solution of dynamical equations of motions
 \item Importance of energy conservation
@@ -829,6 +903,7 @@ and efficiently collect meaningful, physical data.
 \end{itemize}
 
 \subsection{Long range electrostatics}
+\label{sec:lr_electrostatics}
 \begin{itemize}
 \item Cut-off is bad
 \item Need for special treatment
