@@ -364,6 +364,12 @@ chosen potential energy function.
 Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
+\footnote{It is worth noting there is a occasionally a bit of ambiguity when the term ``force field'' is used.
+In some cases it is used to refer to a library of parameters that could be applied to assign an energy function to a specific molecular system via a parameterization process after applying some specific chemical perception like atom typing to that system~\cite{Mobley:2018:bioRxiv}.
+For example, one might speak of the AMBER ff15SB [ref] protein force field, which essentially provides a recipe for assigning parameters to a protein once atom types are assigned.
+In other cases, ``force field'' is used to refer to the specifics of the potential energy function after application to a specific system --- what could also be called a ``parameterized system''. 
+For our purposes here, the distinction between a force field library and a parameterized system is not particularly important, but it is worth noting the potential ambiguity. }
+
 Non-bonded interactions of the Lennard-Jones form are well-described  throughout the literature (for instance see Ch. 4 of \citet{LeachBook}). 
 Coulombic interactions, including both short and long-range components, are described in detail elsewhere in this document.
 To represent bonded interactions, harmonic potentials are often employed. 
