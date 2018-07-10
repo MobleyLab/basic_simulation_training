@@ -45,6 +45,10 @@
 \newif\if@lessons
 \DeclareOption{lessons}{\@lessonstrue}
 
+%Publication Information
+\newif\if@pubversion
+\DeclareOption{pubversion}{\@pubversiontrue}
+
 %% Linespacing.
 \newif\if@onehalfspacing
 \newif\if@doublespacing
@@ -115,7 +119,7 @@
 
 \RequirePackage[labelfont={bf},%
                 labelsep=period,%
-                justification=raggedright,%
+                justification=justified,%
                 singlelinecheck=false,%
                 tableposition=top,font=small]
                 {caption}
@@ -123,7 +127,7 @@
 % \captionsetup*[table]{skip=\medskipamount}
 
 
-\RequirePackage[super,sort&compress]{natbib}
+\RequirePackage[square,numbers,sort&compress]{natbib}
 \RequirePackage{natmove}
 \renewcommand{\bibfont}{\small}
 % modifed from https://github.com/gbhutani/vancouver_authoryear_bibstyle/
@@ -218,16 +222,57 @@
 % nothing
 \fi
 
-\ifdocumenttype
 \fancyhf{}
+\ifdocumenttype
 \chead{%
 \setlength{\fboxsep}{3pt}
 \colorbox{LiveCoMSMediumGrey}{\begin{minipage}{\headwidth}\centering\color{white} A LiveCoMS \documenttype\end{minipage}}%
 }
 \fi
 
+% Publication information in document footer
+% *ONLY INCLUDED IF "pubversion" CLASS OPTION IS INVOKED*
+\def\@publishedDOI{}
+\def\@publishedvolume{}
+\def\@publishedyear{}
+\def\@publishedarticlenum{}
+\def\@publisheddatereceived{}
+\def\@publisheddateaccepted{}
+\def \DOIprefix{10.XXXX} %May be able to use this later
+\newcommand{\pubDOI}[1]{%
+  \appto{\@publishedDOI}{#1}{}{}
+}
+\newcommand{\pubvolume}[1]{%
+  \appto{\@publishedvolume}{#1}{}{}
+}
+\newcommand{\pubyear}[1]{%
+  \appto{\@publishedyear}{#1}{}{}
+}
+\newcommand{\articlenum}[1]{%
+  \appto{\@publishedarticlenum}{#1}{}{}
+}
+\newcommand{\datereceived}[1]{%
+  \appto{\@publisheddatereceived}{#1}{}{}
+}
+\newcommand{\dateaccepted}[1]{%
+  \appto{\@publisheddateaccepted}{#1}{}{}
+}
+
 % Footers
-\rfoot{\small\color{LiveCoMSMediumGrey}\thepage\space of\space\pageref{LastPage}}%
+\if@pubversion
+\lfoot{\ifthenelse{\value{page}=1}
+  {\small\color{LiveCoMSMediumGrey}Received: \@publisheddatereceived \\ Accepted: \@publisheddateaccepted}
+  {~\\~}
+}%
+%\lfoot{\small\color{LiveCoMSMediumGrey}Received: \@publisheddatereceived \\
+%  Accepted: \@publisheddateaccepted}%
+\cfoot{\small\color{white} \vspace{\baselineskip} \small\color{LiveCoMSMediumGrey} \thepage\space of\space\pageref{LastPage}}%
+\rfoot{\small\color{LiveCoMSMediumGrey}DOI: \href{https://dx.doi.org/\@publishedDOI}{\@publishedDOI}\\
+  {\it Living J. Comp. Mol. Sci.} \@publishedyear, \@publishedvolume, \@publishedarticlenum }%
+\else
+\cfoot{\small\color{white} \vspace{\baselineskip} \small\color{LiveCoMSMediumGrey} \thepage\space of\space\pageref{LastPage}}%
+%\rfoot{\small\color{LiveCoMSMediumGrey}Page \thepage\space of\space\pageref{LastPage}}%
+\fi
 \preto{\footrule}{\color{LiveCoMSMediumGrey}}
 \renewcommand{\headrulewidth}{0pt}% % No header rule
 \renewcommand{\footrulewidth}{0.4pt}% % No footer rule
@@ -238,16 +283,16 @@
 % \setcounter{secnumdepth}{0}
 \RequirePackage[explicit]{titlesec}
 \titleformat{\section}
-  {\LARGE\bfseries}
+  {\LARGE\bfseries\raggedright}
   {\thesection}{1em}{#1}[]
 \titleformat{\subsection}
-  {\Large\bfseries\color{LiveCoMSMediumGrey}}
+  {\Large\bfseries\raggedright\color{LiveCoMSMediumGrey}}
   {\thesubsection}{1em}{#1}[]
 \titleformat{\subsubsection}
-  {\large\color{LiveCoMSMediumGrey}}
+  {\large\raggedright\color{LiveCoMSMediumGrey}}
   {\thesubsubsection}{1em}{#1}[]
 \titleformat{\paragraph}
-  {\large\color{LiveCoMSMediumGrey}}
+  {\large\raggedright\color{LiveCoMSMediumGrey}}
   {\theparagraph}{1em}{#1}[]
 \titlespacing*{\section}{0pc}{3ex \@plus4pt \@minus3pt}{0pt}
 \titlespacing*{\subsection}{0pc}{2.5ex \@plus3pt \@minus2pt}{0pt}
@@ -330,7 +375,30 @@
 %% Added for LiveComs
 \RequirePackage{environ}
 \RequirePackage{textpos}
+
+%% Abstract outside frontmatter will throw an error!
+\RenewEnviron{abstract}{%
+  \ClassError{livecome}
+  {Nope nope nope, please put the abstract inside the frontmatter environment.}
+  {Please put the abstract inside the frontmatter environment.}
+}
+
 \NewEnviron{frontmatter}{%
+  %% Define abstract's behavior when placed in frontmatter
+  \renewenvironment{abstract}{%
+     \setlength{\parindent}{0pt} %\raggedright
+     \raisebox{-16pt-\baselineskip}[0pt][0pt]{\makebox[0pt][r]{\parbox[t]{3cm}{%
+       \raggedright\itshape\footnotesize\@blurb\par\medskip%
+       This version dated \@date%
+     }\hspace*{1cm}}}%
+     \textcolor{LiveCoMSMediumGrey}{\rule{\textwidth}{2pt}}
+     \vskip16pt
+     \textcolor{LiveCoMSLightBlue}{\large\bfseries\abstractname\space}
+  }{%
+     \vskip8pt
+     \textcolor{LiveCoMSMediumGrey}{\rule{\textwidth}{2pt}}
+     \vskip16pt
+  }
   \twocolumn[%
     \protecting{%\begin{minipage}[b]{3cm}
     % \small\itshape
@@ -350,18 +418,6 @@
   \vskip16pt
   {\@author\par}
   \vskip8pt
-}
-
-\renewenvironment{abstract}{%
-   \setlength{\parindent}{0pt}\raggedright
-   \raisebox{-16pt-\baselineskip}[0pt][0pt]{\makebox[0pt][r]{\parbox[t]{3cm}{\raggedright\itshape\footnotesize\@blurb}\hspace*{1cm}}}%
-   \textcolor{LiveCoMSMediumGrey}{\rule{\textwidth}{2pt}}
-   \vskip16pt
-   \textcolor{LiveCoMSLightBlue}{\large\bfseries\abstractname\space}
-}{%
-   \vskip8pt
-   \textcolor{LiveCoMSMediumGrey}{\rule{\textwidth}{2pt}}
-   \vskip16pt
 }
 
 %% Insert a grey line to separate floats from main text
@@ -593,7 +649,7 @@
 %   \end{mdframed}
 % }
 
-\RequirePackage[colorlinks=true,allcolors=black,citecolor=LiveCoMSMediumGrey,linkcolor=LiveCoMSMediumGrey,urlcolor=LiveCoMSLightBlue]{hyperref}
+\RequirePackage[colorlinks=true,allcolors=black,citecolor=LiveCoMSLightBlue,linkcolor=LiveCoMSMediumGrey,urlcolor=LiveCoMSLightBlue]{hyperref}
 \urlstyle{sf}
 
 % Other desired commands
