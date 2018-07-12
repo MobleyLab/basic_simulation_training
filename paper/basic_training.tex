@@ -29,7 +29,7 @@
 \usepackage{enumitem} % better handling
 \usepackage{pifont} % some unicode-eqsue characters 
 \newcommand{\conf}{\mathbf{r}^N}
-\newcomman{\peq}{p^{\mathrm{eq}}}
+\newcommand{\peq}{p^{\mathrm{eq}}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -250,7 +250,7 @@ But in both fundamental and practical ways, this ordering is wrong.
 Think Arrhenius first, then Boltzmann.
 
 MD simulation, like nature itself, runs dynamics.  
-Any equilibrium phenomena may (or may not) occur as a consequence and equilibrium behavior is hardly automatic [Zuckerman-book].  
+Any equilibrium phenomena may (or may not) occur as a consequence and equilibrium behavior is hardly automatic~\cite{Zuckerman:2010:}.  
 In fact, based on current and foreseeable computational technology, it is much safer to assume that your simulation will not exhibit equilibrium behavior.  
 However, an MD simulation is guaranteed to exhibit dynamical behavior.
 
@@ -267,15 +267,15 @@ In Fig.\ \ref{landscapes}(a), assume you have started an MD simulation in basin 
 The trajectory is likely to remain in that basin for a period of time -- the “dwell” timescale -- which increases exponentially with the barrier height according to the (reciprocal) Arrhenius factor as $\exp[(U^\ddagger - U_A)/k_B T]$; barriers many times the thermal energy $k_BT$ imply long dwells.  
 The rate $k_{AB}$, which is the transition probability per unit time, exhibits reciprocal behavior -- i.e., $k_{AB} \sim \exp[-(U^\ddagger - U_A)/k_B T]$ according to the traditional Arrhenius factor.  
 Note that all transitions occur in a random, \emph{stochastic} fashion and are not predictable except in terms of average behavior.  
-More detailed discussions of rate constants can be found in numerous textbooks (e.g., [Zuckerman-book, Dill-book]).
+More detailed discussions of rate constants can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
 
 Once you have understood that MD behavior reflects system timescales, you must set this behavior in the context of an \emph{extremely} complex energy landscape consisting of almost innumerable minima and barriers, as schematized in Fig.\ \ref{landscapes}(b).  
 Each small basin represents something like a different rotameric state of a protein side chain or perhaps a tiny part of the Ramachandran spaces (backbone phi-psi angles) for one or a few residues.  
 Observing the large-scale function motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
 Because functional biomolecular timescales tend to be on $\mu$s - ms scales, it is challenging if not impossible to observe them in traditional MD simulations.  
-There are numerous enhanced sampling approaches [Zuckerman-annrev; Chong-Zuckerman-path-sampling] but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose [Zuckerman-Grossfield; UQ BP].
+There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:Annu.Rev.Biophys., Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
-What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration [Zuckerman-blog, Zuckerman-book].  
+What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
 In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
 Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
@@ -284,18 +284,18 @@ It is sometimes suggested that multiple MD trajectories starting structures can 
 
 A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
-Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of “detailed balance.”  
+Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''
 There is a closely related connection for on- and off-rates with the binding equilibrium constant.  
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the “potential of mean force” (PMF): the Boltzmann factor of the PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
-These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$ for constant $T$ and $G$ for both constant $T$ and pressure -- which are not essential to our introduction [Zuckerman-book,Dill-book].
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$ for constant $T$ and $G$ for both constant $T$ and pressure -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.  
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.  
 However, in a living cell where there is no shortage of time, biomolecules may exhibit non-equilibrium behavior for a quite different reason -- because they are \emph{driven} by the continual addition and removal of (possibly energy-carrying) substrate and product molecules.  
 In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann factor distribution.  
-Specialized simulation approaches are available to study such systems [Zuckerman-Chong-reviews] but they are not beginner-friendly.  
-Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level [http://www.physicallensonthecell.org/].
+Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:Annu.Rev.Biophys.} but they are not beginner-friendly.  
+Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level (e.g. \url{http://www.physicallensonthecell.org/}).
 
 \subsection{Classical electrostatics}
 \label{sec:classical_electrostatics}
