@@ -428,16 +428,10 @@ The same is true for angles between three bonded atoms, but the harmonic potenti
 Torsional terms are also commonly employed, usually consisting as sums of  cosines.
 More exotic potentials based on three-body intermolecular  orientations, or terms directly coupling bond lengths and bending angles are also possible. 
 Additionally, other choices of potential function are of course  acceptable, including Buckingham or Morse potentials, or the use of ``improper'' dihedral terms to enforce planarity of cyclic portions of molecules. 
-%JIM: Not sure if it's important, but I wanted to include something
-%about force field terms like CMAP, as well as external fields. The 
-%below sentence is an attempt at that, but it may not be needed.
-%DLM: Seems OK; needs references?
-%JIM: Good? I feel a little bad citing the Shell group, but it's a nice example of examining potential functions that coarse-grain out the solvent to different degrees, even including "local density" potential functions. It's maybe a little much, but provides good examples for the types of exotic force field terms I'm thinking about.
 This may even include empirical corrections based on discrete binning along a particular set of degrees of freedom~\citep{mackerell2004CMAP, perez2015}, as well as applied external fields (i.e. electric fields) and force field terms describing the effect of degrees of freedom, such as solvent, that have been removed from the system via ``coarse-graining.''~\citep{sanyal2016}
-For a more in-depth discussion of common (and even less common) force field terms, see Ch. 4 of \citet{LeachBook}, or for an in-depth review of those specific to simulating biomolecules, see \citet{Ponder2003}.
+For a more in-depth discussion of common (as well as less common) force field terms, see Ch. 4 of \citet{LeachBook}, or for an in-depth review of those specific to simulating biomolecules, see \citet{Ponder2003}.
 
 Functional forms used to describe specific terms in a potential energy function may be vastly different in mathematical character even though they seek to describe the same physics.
-%DLM: Not sure I follow what you're getting at here in this sentence beginning "Functional forms..."; is this comparing different force field families? Maybe an example would help?
 For instance, the Lennard-Jones potential implements an $r^{-12}$ term to represent repulsions, while an exponential form is used in the Buckingham potential.
 This results in very different mathematical behavior at very short distances and as a result differences in numerical implementation as well as evaluation efficiencies via a computer.
 For this reason, one functional form may be preferred above another due to  enhanced numerical stability or simplicity of implementation, even though it is not as faithful to the underlying physics.
