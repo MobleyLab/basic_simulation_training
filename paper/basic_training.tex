@@ -28,6 +28,8 @@
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{enumitem} % better handling
 \usepackage{pifont} % some unicode-eqsue characters 
+\newcommand{\conf}{\mathbf{r}^N}
+\newcommand{\peq}{p^{\mathrm{eq}}}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,6 +43,7 @@
 \author[3]{Jacob I. Monroe}
 \author[4]{Samarjeet Prasad}
 \author[5]{Justin Gilmer}
+\author[6]{Daniel M. Zuckerman}
 %\author[2\authfn{1}\authfn{4}]{Firstname Initials Surname}
 %\author[2*]{Firstname Surname}
 \affil[1]{University of Michigan}
@@ -48,6 +51,7 @@
 \affil[3]{University of California, Santa Barbara}
 \affil[4]{National Institutes of Standard and Technology}
 \affil[5]{Vanderbilt University}
+\affil[6]{Oregon Health and Science University}
 
 %\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials.
 %\corr{email2@example.com}{FS}
@@ -239,6 +243,59 @@ Depending on the background, the practitioner can choose one or more of the foll
 \item David Kofke's notes: \url{http://www.eng.buffalo.edu/~kofke/ce530/Lectures/lectures.html}
 \item Scott Shell's notes: \url{https://engineering.ucsb.edu/~shell/che210d/assignments.html}
 \end{itemize}
+
+Traditional discussions of classical statistical mechanics, especially concise ones, tend to focus first or primarily on macroscopic thermodynamics and microscopic \emph{equilibrium} behavior based on the Boltzmann factor, which tells us that configurations $\conf$ occur with (relative) probability $\exp[-U(\conf)/k_B T]$, based on potential energy function $U$ and temperature $T$ in Kelvin units.  
+Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.  
+But in both fundamental and practical ways, this ordering is wrong.  
+Think Arrhenius first, then Boltzmann.
+
+MD simulation, like nature itself, runs dynamics.  
+Any equilibrium phenomena may (or may not) occur as a consequence and equilibrium behavior is hardly automatic~\cite{Zuckerman:2010:}.  
+In fact, based on current and foreseeable computational technology, it is much safer to assume that your simulation will not exhibit equilibrium behavior.  
+However, an MD simulation is guaranteed to exhibit dynamical behavior.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{simplelandscapes.pdf}
+\caption{Energy landscapes.  (a) A highly simplified landscape used to illustrate rate concepts and (b) a schematic of a complex landscape with numerous minima and ambiguous state boundaries.}
+\label{landscapes}
+\end{figure}
+
+The key dynamical concept to understand is embodied in the twin characteristics of timescales and rates.  
+The two are literally reciprocals of one another.  
+In Fig.\ \ref{landscapes}(a), assume you have started an MD simulation in basin A.  
+The trajectory is likely to remain in that basin for a period of time -- the “dwell” timescale -- which increases exponentially with the barrier height according to the (reciprocal) Arrhenius factor as $\exp[(U^\ddagger - U_A)/k_B T]$; barriers many times the thermal energy $k_BT$ imply long dwells.  
+The rate $k_{AB}$, which is the transition probability per unit time, exhibits reciprocal behavior -- i.e., $k_{AB} \sim \exp[-(U^\ddagger - U_A)/k_B T]$ according to the traditional Arrhenius factor.  
+Note that all transitions occur in a random, \emph{stochastic} fashion and are not predictable except in terms of average behavior.  
+More detailed discussions of rate constants can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
+
+Once you have understood that MD behavior reflects system timescales, you must set this behavior in the context of an \emph{extremely} complex energy landscape consisting of almost innumerable minima and barriers, as schematized in Fig.\ \ref{landscapes}(b).  
+Each small basin represents something like a different rotameric state of a protein side chain or perhaps a tiny part of the Ramachandran spaces (backbone phi-psi angles) for one or a few residues.  
+Observing the large-scale function motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
+Because functional biomolecular timescales tend to be on $\mu$s - ms scales, it is challenging if not impossible to observe them in traditional MD simulations.  
+There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:Annu.Rev.Biophys., Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+
+What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
+\emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
+In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
+Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
+Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
+It is sometimes suggested that multiple MD trajectories starting structures can aid sampling, but unless the equilibrium distribution is known in advance, the bias from the set of starting structures is simply unknown and harder to diagnose.
+
+A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
+The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
+Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''
+There is a closely related connection for on- and off-rates with the binding equilibrium constant.  
+For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the “potential of mean force” (PMF): the Boltzmann factor of the PMF gives the relative probability of a given coordinate.  
+Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$ for constant $T$ and $G$ for both constant $T$ and pressure -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
+
+A final essential topic is the difference between equilibrium and non-equilibrium systems.  
+We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.  
+However, in a living cell where there is no shortage of time, biomolecules may exhibit non-equilibrium behavior for a quite different reason -- because they are \emph{driven} by the continual addition and removal of (possibly energy-carrying) substrate and product molecules.  
+In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann factor distribution.  
+Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:Annu.Rev.Biophys.} but they are not beginner-friendly.  
+Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level (e.g. \url{http://www.physicallensonthecell.org/}).
 
 \subsection{Classical electrostatics}
 \label{sec:classical_electrostatics}
@@ -546,23 +603,23 @@ As mentioned throughout the article above, molecular dynamics simulations are us
 study.
 However, these properties traditionally are not measurable from the initial configuration of the system, nor is that usually physically meaningful.
 This generally requires transitioning the system to some other state point to collect the proper data once the system has equilibrated.
-In many cases, to emulate experiment, sampling from the canonical (constant-temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
-Generally, if the temperature of the system must be changed during the simulation, some thermostat algorithm will be employed. 
-This section will review the background information about thermostats and how they work, some popular thermostats, and common issues to understand and avoid when using thermostats in MD simulations.
+In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant-temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
+Generally, if the temperature of the system must be maintained during the simulation, some thermostat algorithm will be employed. 
+This section will review the background information about thermostats and how they work, introduce some popular thermostats, and highlight common issues to understand and avoid when using thermostats in MD simulations.
 
 % relevant background information needed to understand thermostats
 \subsubsection{Background and How They Work}
 The difference between the types of temperatures that are measured in a simulation is important to know.
-There is the target temperature, a temperature value that the system attempts to average about.
-When specifying a temperature to thermostat to, this is the target temperature.
-However, due to the fluctuations, it is not guaranteed that the temperature measured at singular point in time will be the target temperature.
-Called the kinetic temperature, or instantaneous temperature, this value is derived from the equipartition theorem usually.
-It should be noted that this value can be greater than, less than, or equal to the average kinetic energy.
+There is the target temperature --- a temperature value that we attempt to maintain the system near.
+In other words, the target temperature is the specified temperature which a thermostat is used to maintain.
+However, due to the fluctuations, it is not guaranteed that the temperature measured at single point in time will be the target temperature; in reality, the instantaneous temperature should undergo fluctuations around the target temperature.
+The instantaneous temperature is also known as the kinetic temperature and is typically computed via the equipartition theorem.
+It should be noted that this value can be greater than, less than, or equal to the temperature corresponding to the average kinetic energy.
 The kinetic temperature should also be paid special attention to when describing the system.
 The kinetic temperature does \textbf{not} state ``the temperature is at some value $T$'', it merely states: ``the energy of the system is similar to that
 of a system at temperature $T$''.
 
-Finally there are generally three types of thermostats: deterministic, stochastic, and extended system.
+Finally, there are generally three types of thermostats: deterministic, stochastic, and extended system.
 Deterministic thermostats are usually known to scale the momenta or forces on the particles in the system based on their fitness to the target temperature.
 Stochastic thermostats behave similarly to the deterministic thermostats, however, there is a random force or momenta sampled out of a probability distribution that can scale or modify these properties of selected particles.
 Extended system thermostats are similar to what their name suggests, the system has an added variable that has a degree of freedom.
@@ -608,6 +665,11 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 \end{enumerate}
 
+Overall, \emph{none} of these deterministic thermostats are suitable for production-level simulations, except perhaps during an initial equilibration phase, because they do not sample from the canonical ensemble and lead to incorrect estimates of various computed properties [refs].
+\todo[inline, color={yellow!20}]{DLM: Add refs.}
+Such thermostats can also lead to unexpected problems in systems with weak or poor coupling between degrees of freedom, such as the ``flying ice cube''~\cite{Harvey:1998:JCompChem} problem in some systems, and problems in alchemical free energy calculations where portions of the system are decoupled from the rest of the system (e.g. very rapid movement of atoms in the decoupled portion of the system).
+
+
 \subparagraph{Stochastic Thermostats}
 \begin{enumerate}[listparindent=\parindent]
     \item \textbf{Andersen}
@@ -617,14 +679,16 @@ This is by no means an exhaustive study of available thermostats, just some of t
         In this case, the Andersen thermostat attempts to model a system that is coupled to some random
         degree of freedom\cite{andersen1980molecular, thermostatAlgorithms2005}.
         In this case, this random element will be a new set of velocities that are chosen from a probability distribution and then if the reassignment probability passes, the velocities of the particle will be replaced.
-        The number of particles affected, time between "collisions", and how often this is applied to the system are possible variations of this thermostat.
+        The number of particles affected, time between ``collisions'', and how often this is applied to the system are possible variations of this thermostat.
         Like the previous thermostats, this is not reversible, but the Andersen thermostat does reproduce the canonical ensemble.
+        There are two versions of this thermostat, one which applies massive collisions (reassignment of all velocities) sporadically, and another which applies more gradual buffeting of selected particles.
     
     \item \textbf{Langevin}
 
         The Langevin\cite{schneider1978molecular} thermostat applies the idea of an implicit solvent as a way to randomly impart or remove some force acting on the particles. 
         With a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation, $F_{friction}$ is the damping parameter used to tune the  ``viscosity'' of the implicit bath, and $F_{random}$ is a random force perturbing the forces on the particles. 
         Careful consideration must be taken when choosing the friction damping parameter.
+        However, in many cases this thermostat is an excellent option for molecular simulations.
 
 
 \end{enumerate}
@@ -652,10 +716,12 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 
 \subsubsection{Summary}
-To summarize, observe (\ref{tstat_summary}), as a general summary and guide for exploring the usage of various thermostats. Make sure to pay special attention to the reversibility when measuring time dependent properties, the ensemble sampled for all cases, and if a proper distribution of momenta and kinetic energy fluctuations are supported.
+To summarize, observe (\ref{tstat_summary}), as a general summary and guide for exploring the usage of various thermostats.
+Make sure to pay special attention to the reversibility when measuring time dependent properties, the ensemble sampled for all cases, and if a proper distribution of momenta and kinetic energy fluctuations are supported.
 Do note that depending on the system of interest, it might not be necessary to worry about some of this information when initializing the system for a production run.
-For example, if the thermal history of the system is not necessary during equilibration, a faster algorithm like Andersen or Berendsen could possibly be implemented, then switch to Nos\'{e}-Hoover when at the production run.
+For example, if the thermal history of the system is not necessary during equilibration, a faster algorithm like Andersen or Berendsen could possibly be employed, with a switch to Nos\'{e}-Hoover for the production run.
 Knowing the system you are simulating and the benefits and weaknesses to each thermostat is crucial to successfully and efficiently collect meaningful, physical data.
+In general, deterministic thermostats should never be employed for production use; Langevin, Andersen, and Nos\'{e}-Hoover chains can serve as reasonable general-purpose thermostats, and other choices should be employed only with considerable caution.
 
 \begin{figure}[h]
 \centering
