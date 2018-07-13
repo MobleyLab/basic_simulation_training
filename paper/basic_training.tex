@@ -314,25 +314,23 @@ This means that interactions in non-polar media such as non-polar solvents, or p
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a charge in proximity.
 
 It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant. 
-This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities [ref Amoeba, etc.] or via Drude oscillator-type approaches, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
-\todo[inline,
-color={yellow!20}]{DLM: Add references.}
+This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities~\cite{Ponder2003, Ponder:2010:J.Phys.Chem.B} or via Drude oscillator-type approaches~\cite{Lemkul:2016:Chem.Rev.}, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
 
 %\item why/when we need Ewald-type sums
 Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
 Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
-Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.  In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance [refs]. 
-Thus, we prefer to include \emph{all} electrostatic interactions, even out to very
-long range. 
-Once this is decided, it  leaves simulators with two main options, only one of which is really viable.  First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
-But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).  The remaining option, then, is to apply periodic boundary conditions (see ~\ref{sec:periodic}) to tile all of space with repeating copies of the system. 
-Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
+Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
+In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{Leachbook, York:1993:J.Chem.Phys., Darden:1993:J.Chem.Phys., Piana:2012:PLOSONE, Sagui:1999:Annu.Rev.Biophys.Biomol.Struct.}. 
+Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range. 
+Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
+First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
+But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
+The remaining option, then, is to apply periodic boundary conditions (see~\ref{sec:periodic}) to tile all of space with repeating copies of the system. 
+Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics~\cite{Sagui:1999:Annu.Rev.Biophys.Biomol.Struct., Cisneros:2014:Chem.Rev.} where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
 
 In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
-A variety of different efficient lattice-sum schemes are available [refs].  In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard. 
-\todo[inline,
-color={yellow!20}]{DLM: Add reference to LR electrostatics section below (4.7)
-which should also reference this..}
+A variety of different efficient lattice-sum schemes are available~\cite{Cisneros:2014:Chem.Rev.}.
+In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard (see also Section~\ref{sec:lr_electrostatics}, below). 
 
 
 
@@ -465,7 +463,10 @@ For instance, a force field may have been developed to very accurately describe 
 Even with force fields developed to be general and transferable, it is essential to ensure that the desired level of realism is achieved, especially if applying such a model to a new system (even more caution is advised when mixing force fields!).
 Either way, it is always a good idea to check results against previous literature when possible.
 This helps ensure that the force field is being implemented properly and, though it may seem laborious on a short-time horizon, can pay substantial dividends in the long-run.
-\todo[inline, color={yellow!20}]{DLM: Should we mention ``bespoke'' versus general force fields, e.g. the idea that some people will parameterize each molecule like a unique snowflake, whereas others strive for generality and basically the ability to look up parameters? JIM: Does that cover it?  I essentially just talked a little about being wary of transferability, but maybe you're getting at something else?}.
+
+Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space.
+\todo[inline, color={yellow!20}]{ Reference RESP ESP charge Derive (REDD) stuff, other examples)}.
+Such approaches offer the opportunity to assign all molecules with parameters assigned in a consistent way; however, they are unsuitable for applications where speed needs to exceed that of the parameter assignment process -- so, for example, for docking of a large library of potential ligands to a target receptor, if compounds must be screened at seconds or less per molecule, such approaches may not be suitable.
 
 \subsection{Periodic boundary conditions}
 \label{sec:periodic}
@@ -659,9 +660,9 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 \end{enumerate}
 
-Overall, \emph{none} of these deterministic thermostats are suitable for production-level simulations, except perhaps during an initial equilibration phase, because they do not sample from the canonical ensemble and lead to incorrect estimates of various computed properties [refs].
-\todo[inline, color={yellow!20}]{DLM: Add refs.}
+Overall, \emph{none} of these deterministic thermostats are suitable for most production-level simulations, except perhaps during an initial equilibration phase, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
 Such thermostats can also lead to unexpected problems in systems with weak or poor coupling between degrees of freedom, such as the ``flying ice cube''~\cite{Harvey:1998:JCompChem} problem in some systems, and problems in alchemical free energy calculations where portions of the system are decoupled from the rest of the system (e.g. very rapid movement of atoms in the decoupled portion of the system).
+To some extent, however, the choice of thermostat may depend on the property being calculated; e.g. for transport properties and kinetics, rather different issues may need consideration~\cite{Basconi:2013:J.Chem.TheoryComput.}.
 
 
 \subparagraph{Stochastic Thermostats}
