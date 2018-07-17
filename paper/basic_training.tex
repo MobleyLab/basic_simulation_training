@@ -439,10 +439,9 @@ For those forms that are supported, the user manuals of these software packages 
 \todo[inline, color={green!20}]{JIM: I just referenced the manuals that I'm familiar with... additional citations would be appreciated and seem appropriate. Right?}
 
 Many examples of force fields abound in the literature, in fact too many to provide even a representative sample or list of citations, as most force fields are specifically developed for particular systems under study.
-However, reviews are available describing and comparing force fields for biomolecular simulations~\citep{Ponder2003, Riniker2018}, solid, covalently-bonded materials~\citep{Mishra2017}, polarizable potentials~\citep{Lopes2009}, and models of water, to name just a few. 
+However, reviews are available describing and comparing force fields for biomolecular simulations~\citep{Ponder2003, Riniker2018}, solid, covalently-bonded materials~\citep{Mishra2017}, polarizable potentials~\citep{Lopes2009}, and models of water~\citep{Onufriev2018, Vega2011}, to name just a few. 
 Many force fields are open-source and parameter file libraries may be found through the citations in the resources above or are often provided within a distributed molecular dynamics package. 
 Limited databases of force fields also exist, most notably for simulations of solid materials where interatomic potentials display a much wider array of mathematical forms~\citep{openKIM, IPRnist}.
-\todo[inline, color={green!20}]{JIM: Still working on finding a really good single/set of citations covering both implicit and explicit water models - hopefully will have this soon}
 
 For almost all force fields, many versions, variants, and modifications exist.
 Each force field version not only includes specific functional forms to describe intermolecular potentials, but also specifies the parameters governing such interactions.
@@ -452,7 +451,7 @@ To exactly replicate a described parametrization of a force field, constraints s
 The choice of how to apply a cutoff, such as through direct truncation, shifting of the potential energy function, or through the use of switching functions, should be maintained if identical matches to properties of interest are desired.
 This is especially important for the purposes of free energy calculations, where the potential energy itself is recorded.
 
-As clearly described in \citet{Becker2013}, it is of paramount importance to understand the capabilities and limitations of various force field models that may seem appropriate for ones work. 
+As clearly described in \citet{Becker2013}, it is of paramount importance to understand the capabilities and limitations of various force field models that may seem appropriate for one's work. 
 Depending on the physics being simulated and the computational resources at hand, no force field in the literature may provide results that accurately reproduce experiment.
 But with so many force fields to pick from, how is this possible?
 The issue lies in what is termed ``transferability.'' 
@@ -467,6 +466,7 @@ This helps ensure that the force field is being implemented properly and, though
 Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space.
 \todo[inline, color={yellow!20}]{ Reference RESP ESP charge Derive (REDD) stuff, other examples)}.
 Such approaches offer the opportunity to assign all molecules with parameters assigned in a consistent way; however, they are unsuitable for applications where speed needs to exceed that of the parameter assignment process -- so, for example, for docking of a large library of potential ligands to a target receptor, if compounds must be screened at seconds or less per molecule, such approaches may not be suitable.
+
 
 \subsection{Periodic boundary conditions}
 \label{sec:periodic}
