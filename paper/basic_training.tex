@@ -744,6 +744,54 @@ In general, deterministic thermostats should never be employed for production us
 \item How to choose an appropriate timestep?
 \end{itemize}
 
+For more than three bodies and no constraints, there is no analytical solution to the equations of motion.
+Instead, we must approximate the dynamics in a discrete manner.
+This is usually termed numerical integration of the equations of motion. 
+Algorithms to perform this integration take many forms and are what we call integrators.
+Obviously, this discretization process introduces errors, as quickly becomes apparent if solutions from integrators are compared to dynamics for systems for which analytical solutions do exist (like a simple harmonic oscillator).
+These errors are termed discretization errors, whereas additional errors called truncation errors are also accumulated through loss of precision during computer calculations.
+As will be discussed shortly, there are many strategies for avoiding discritization errors.
+For truncation errors, the only solution is to utilize a higher precision data type during calculations (i.e. use doubles instead of floats).
+
+Integrators that minimize discretization error should exhibit preservation of both phase space volume, as well as energy.
+If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
+This means that the collected data will not in fact reflect the ensemble of interest.
+Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible.
+The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Add citation to Frenkel and Smit book, and maybe Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
+By definition of a unitary operator, the application of the operator to negative times is equal to applying the inverse of the operator to an equivalent positive time interval.
+This is in fact also the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
+
+Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
+This is a much trickier property to examine, and varies with different integrators.
+For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
+The later is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
+\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this.}
+
+Additionally, it is also desirable that an integrator be efficient, costing little computationally.
+Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
+As a general rule of thumb, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system (often this is bond vibration).
+However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
+If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
+Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
+This has the added benefit of also reducing truncation error, which is proportional to the number of timesteps taken.
+
+The most commonly used integrators are variants of the Verlet algorithm. 
+Detailed discussion and derivation of such integrators may be found in Leach and Frenkel and Smit.
+\todo[inline, color={green!20}]{JIM: Insert citations and correct sections in these books}
+Such integrators are not applicable, however, for simulations involving stochastic dynamics.
+These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
+A detailed description of such stochastic dynamics may be found in McQuarrie, Chapter ??.
+\todo[inline, color={green!20}]{JIM: Need to cite the right chapter in McQuarrie, and others?}
+As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
+As a brief aside, this highlights the fact that integrators are tightly coupled to the chosen thermostat or barostat.
+Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
+For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
+However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved).
+\todo[inline, color={green!20}]{JIM: Need to cite Fass, Chodera, Crooks, etc.}
+Again, this may be remedied through a shorter timestep, but thus is more computationally expensive and increases truncation error.
+
+\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
+
 \subsection{Long range electrostatics}
 \label{sec:lr_electrostatics}
 \begin{itemize}
