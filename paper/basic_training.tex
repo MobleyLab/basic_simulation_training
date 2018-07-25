@@ -804,6 +804,75 @@ associated with them as well. This is not an exhaustive list of
 barostats and barostat algorithms, just a sampling of popular and
 historic ones used in MD.
 
+\subparagraph{Volume Rescaling}
+\begin{enumerate}[listparindent=\parindent]
+    \item \textbf{Volume Rescaling}
+
+Volume rescaling barostats are the simplest example of pressure
+control in molecular simulations. Every time this barostat is
+executed, the volume of the system is modified to produce the exact
+pressure desired. This does \textbf{not} sample the proper
+ensemble, this cannot be used for production
+sampling \cite{ShellNotes}. This also does not smoothly approach the
+target pressure either, which might cause very unphysical issues
+with the system during time integration and force calculation.
+
+\end{enumerate}
+
+\subparagraph{Weakly Coupled Barostats}
+\begin{enumerate}[listparindent=\parindent]
+\item \textbf{Berendsen}
+
+The Berendesen \cite{berendsen1984molecular} barostat is very
+similar to the Berendsen thermostat discussed earlier. With the
+goal of improving upon the volume rescaling methods mentioned above.
+This was to be achieved by coupling the system to a weakly
+interacting pressure bath \cite{berendsen1984molecular}. This bath
+would scale the volume periodically by a scaling factor, but would
+also produce more realisitc fluctuations in the pressure as it
+slowly approached the target pressure. In contrast to volume
+rescaling, Berendsen will approach the target pressure more
+realistically, but the ensemble it is sampling from is not well
+defined and cannot be guaranteed to be NPT or NPH. Berendsen can
+be useful for the beginning stages of equilibration, but should
+\textbf{not} be used for production sampling.
+
+\end{enumerate}
+
+\subparagraph{Extended System Barostats}
+\begin{enumerate}[listparindent=\parindent]
+\item \textbf{Andersen Barostat}
+
+First described by Andersen \cite{andersen1980molecular} in 1980, the
+system is coupled to a ficticious pressure bath, by adding an additional
+degree of freedom to the equations of motion. This behaves as if the
+system is being acted upon by an isotropic piston. This is similar to
+the Nos\'{e}-Hoover thermostat, which is also an extended system
+algorithm. This barostat does sample the correct ensemble, however,
+it is isotropic in nature and applying anisotropic pressures to
+parts of the system is not possible.
+
+\item \textbf{Parrinello-Rahman Barostat}
+
+The Parrinello-Rahman \cite{Parrinello1981} barostat was an extension
+to the Andersen barostat. Due to the issue of isotropy with the
+Andersen barostat, this added additional support for not only
+changing the size of the simulation box, but also the shape. This can be
+quite useful in solid simulations, where phase changes can be shape
+changes in a crystal lattice, compared to a liquid or gas, which has no
+well defined shape. This barostat has essentially the same properties as
+the Andersen one, with the additional support anisotropy.
+
+\item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK) Barostat}
+
+Generally the same that holds true for the Parrinello-Rahman barostat
+and the Andersen barostat are still true for the MTTK barostat. MTTK
+\cite{martyna1994constant, martyna1996explicit} is usually seen as a
+slight improvement over Parrinello-Rahman \cite{Parrinello1981} in the
+regime of small systems.
+
+\end{enumerate}
+
 \subsubsection{Summary}
 
 \subsection{Integrators}
