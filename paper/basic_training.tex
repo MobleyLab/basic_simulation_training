@@ -753,6 +753,49 @@ barostats, a general overview of how they work, and introduce some
 popular barostats.
 
 \subsubsection{Background and How They Work}
+Recall that in experimental studies, to control the pressure,
+some device must be used to control the volume of the system. By
+controlling the volume of the system, a constant pressure can be
+achieved\cite{tuckermanBook}. By allowing the system to
+exchange volume with the surroundings, the system is at
+a constant pressure\cite{ShellNotes}.
+
+
+For the purpose of molecular
+modeling, consider a system with a ficticious piston of some ficticious
+mass. The mass of the piston can be tuned to change the
+compression of the system, which will change how often the particles in
+the system will interact with the system enclosure. These impacts from
+the particles on the "enclosure" will impart a stress on the system box
+which can be related to the stress the surroundings are imparting on
+the system. With this relationship, we can use the virial theorem to
+calculate the pressure that the system is experiencing\cite{ShellNotes}.
+However, this is much more challenging when considering pairwise
+interactions and periodic boundary
+conditions\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
+A different approach to the virial theorem is necessary at that point.
+The math is a bit more complex, which is out of the scope of this
+article. We encourage the readers to read the articles referenced
+here for more information.
+
+Finally, this treatment described above only covers holding the pressure
+constant (the NP of NPT). When a barostat is applied without an
+additional thermostating algorithm, only the amount of particles (N),
+the pressure (P), and the enthalpy (H) of the system is held constant.
+This is known as the isoenthalpic-isobaric ensemble (NPH).
+To sample from the isothermal-isobaric ensemble (NPT), a
+thermostating algorithm like the ones dicussed earlier must also
+be applied.
+
+If the thermostat section was any indication, there have been a
+multitude of various barostat algorithms that have been developed
+during the lifetime of molecular dynamics. However, they usually can
+be classified into three main categories: volume rescaling, weakly
+coupled, and extended ensemble barostats \cite{ShellNotes,
+tuckermanBook}. The next section will describe the main differences
+between these barostats, and give some recommendations for proper
+use.
+
 
 \subsubsection{Popular and Notable Barostats}
 
