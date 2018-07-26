@@ -91,11 +91,6 @@ We also provide a checklist of key issues to consider before and while setting u
 \section{Introduction}
 \label{sec:intro}
 
-\todo[inline, color={yellow!20}]{DLM: We should go through and break all the
-material so that each sentence is on a separate line. This plays much nicer with
-GitHub's version control, otherwise anytime anyone changes a word in a paragraph
-it will look like the paragraph was completely rewritten...}
-
 Molecular simulation techniques play a very important role in our quest for understanding the properties, structure, and function of molecular systems from a microscopic point of view.
 Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications.
 
@@ -126,7 +121,7 @@ There are several excellent textbooks on classical simulation methods; some of t
 
 \begin{itemize}
 \item Allen and Tildesley
-\item Frenkel, Smit and Geissler
+\item Frenkel and Smit~\cite{Frenkel:2001:} and Geissler
 \item Tuckermann
 \end{itemize}
 
@@ -463,8 +458,7 @@ Even with force fields developed to be general and transferable, it is essential
 Either way, it is always a good idea to check results against previous literature when possible.
 This helps ensure that the force field is being implemented properly and, though it may seem laborious on a short-time horizon, can pay substantial dividends in the long-run.
 
-Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space.
-\todo[inline, color={yellow!20}]{ Reference RESP ESP charge Derive (REDD) stuff, other examples)}.
+Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space (e.g. ~\cite{Dupradeau:2010:Phys.Chem.Chem.Phys.}).
 Such approaches offer the opportunity to assign all molecules with parameters assigned in a consistent way; however, they are unsuitable for applications where speed needs to exceed that of the parameter assignment process -- so, for example, for docking of a large library of potential ligands to a target receptor, if compounds must be screened at seconds or less per molecule, such approaches may not be suitable.
 
 
@@ -576,11 +570,9 @@ As mentioned above, the equilibration procedure should be selected that is appro
 It should be noted that ``equilibration'' within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing properties).
 %DLM: See comments above about migrating to GitHub/citing.
 This falls under the category of correctly obtaining unbiased statistics and
-convergence, which is covered in another best-practices document. %How to cite?
-Do we even cite this?
-%SHould cite; we can ask Zuckerman as I think he's in charge of that. Or Zuckerman and SHirts, as Shirts should have the overall list.
+convergence, which is covered in a separate Best Practices document (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 Otherwise, if a brief simulation in the same ensemble is not performed during the equilibration step immediately prior to production, any period of the production simulation should be ignored where drift is observed in the energies, temperatures, pressures, densities, or other defining state-variables of the ensemble.
-This of course preceeds estimation of convergence in property calculation.
+This of course precedes estimation of convergence in property calculation.
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
 \subsection{Thermostats}
@@ -756,8 +748,8 @@ For truncation errors, the only solution is to utilize a higher precision data t
 Integrators that minimize discretization error should preserve phase space volume and conserve energy.
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
-Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible.
-The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Add citation to Frenkel and Smit book, and maybe Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
+Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
+The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
 By definition of a unitary operator, the application of the operator to negative times is equal to applying the inverse of the operator to an equivalent positive time interval.
 This is in fact also the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
 
@@ -778,7 +770,7 @@ This has the added benefit of also reducing truncation error, which is proportio
 It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
 
 The most commonly used integrators are variants of the Verlet algorithm. 
-Detailed discussion and derivation of such integrators may be found in Leach and Frenkel and Smit.
+Detailed discussion and derivation of such integrators may be found in Leach~\cite{LeachBook} and Frenkel and Smit~\cite{Frenkel:2001:}.
 \todo[inline, color={green!20}]{JIM: Insert citations and correct sections in these books}
 Such integrators are not applicable, however, for simulations involving stochastic dynamics.
 These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
