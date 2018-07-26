@@ -633,11 +633,11 @@ This is by no means an exhaustive study of available thermostats, just some of t
          same configurational phase space as the canonical ensemble, so
          position-dependent equilibrium properties can be obtained
          equivalently with either
-         ensemble\cite{Minary:2002:JChemPhys}.  However, the
+         ensemble\cite{Minary:2003:JChemPhys:Algorithms}.  However, the
          isokinetic ensemble is not properly sampled by the simple
          velocity rescaling thermostat, and its usage can lead to
          simulation artifacts, so it is not
-         recommended\cite{Braun:2018:arXiv}.
+         recommended\cite{Braun:2018:arXiv:Anomalous}.
 
     \item \textbf{Hoover (Gaussian)}
         \todo[inline, color={green!20}]{EB: I recommend referring to
@@ -682,7 +682,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 Overall, \emph{none} of these deterministic thermostats are suitable for
 most production-level simulations. though the Gaussian thermostat has
-uses in some advanced applications\cite{Minary:2002:JChemPhys}, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
+uses in some advanced applications\cite{Minary:2002:JChemPhysAlgorithms}, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
 The simple velocity rescaling and Berendsen thermostats can also lead to
 unexpected problems in systems with weak or poor coupling between
 degrees of freedom, such as the ``flying ice
@@ -716,7 +716,7 @@ To some extent, however, the choice of thermostat may depend on the property bei
         However, in many cases this thermostat is an excellent option for molecular simulations.
 
     \item \textbf{Bussi-Donadio-Parrinello (Canonical Sampling through Velocity Rescaling)}
-        The Bussi\cite{Bussi:2007:JChemPhys} thermostat is a velocity
+        The Bussi\cite{Bussi:2007:JChemPhys:Canonical} thermostat is a velocity
         rescaling thermostat similar to the simple velocity rescaling
         and Berendsen thermostats, but instead of rescaling to a single
         kinetic energy that corresponds to the target temperature, the
