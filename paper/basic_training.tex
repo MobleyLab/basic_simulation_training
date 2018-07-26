@@ -127,7 +127,7 @@ There are several excellent textbooks on classical simulation methods; some of t
 \begin{itemize}
 \item Allen and Tildesley
 \item Frenkel, Smit and Geissler
-\item Tuckermann
+\item Tuckerman
 \end{itemize}
 
 In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations.
@@ -237,6 +237,7 @@ Depending on the background, the practitioner can choose one or more of the foll
 \item Shell
 \item Zuckerman
 \item Kaznessis
+\item Chandler
 \end{itemize}
 \subsubsection{Online resources}
 \begin{itemize}
@@ -534,7 +535,10 @@ System preparation is the most variable of these steps, and often requires uniqu
 It is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
 If such documents do not exist, it may be that a freely-available tool for constructing such a system does in fact exist.
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes.
-\todo[inline, color={green!20}]{JIM: Include some tools to cite here}
+\todo[inline, color={green!20}]{JIM: Include some tools to cite here.
+EB: Many tools are listed at
+\url{https://lammps.sandia.gov/prepost.html#builders}. My favorites include
+Moltemplate, Packmol, and Atomsk.}
 The goal of all of these tools, and system preparation in general, is to create a representation of the system of interest that can be interpreted by the desired simulation package.
 It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
@@ -544,7 +548,7 @@ The purpose of minimization, or relaxation, is to find a local energy minimum of
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time-step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired timestep will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
 Such a configuration is a suitable starting point for molecular dynamics techniques.
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
@@ -626,28 +630,52 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 \subparagraph{Deterministic Thermostats}
 \begin{enumerate}[listparindent=\parindent]
-    \item \textbf{Velocity Rescaling}
+    \item \textbf{Simple Velocity Rescaling}
 
-        The velocity rescaling thermostat is one of the simplest thermostats to implement, however, this thermostat is also one of the most non-physical thermostats as well.
+        The simple velocity rescaling thermostat is one of the easiest thermostats to implement, however, this thermostat is also one of the most non-physical thermostats as well.
 
          This thermostat relies on rescaling the momenta of the particles every $N$ timesteps based on their ratio of the instantaneous temperature to the target temperature\cite{thermostatAlgorithms2005}. 
          This leads to multiple issues when trying to sample data using this thermostat.
          First, this method is not reversible, there lacks a way for the particles to have knowledge of their previous thermal history.
          This makes any dynamical value impossible to measure (diffusion for example). 
          There is also no distribution of momenta; this thermostat does not sample the canonical distribution and cannot be used for sampling at thermal equilibrium.
+         The isokinetic (constant kinetic energy) ensemble samples the
+         same configurational phase space as the canonical ensemble, so
+         position-dependent equilibrium properties can be obtained
+         equivalently with either
+         ensemble\cite{Minary:2002:JChemPhys}.  However, the
+         isokinetic ensemble is not properly sampled by the simple
+         velocity rescaling thermostat, and its usage can lead to
+         simulation artifacts, so it is not
+         recommended\cite{Braun:2018:arXiv}.
 
     \item \textbf{Hoover (Gaussian)}
+        \todo[inline, color={green!20}]{EB: I recommend referring to
+        this thermostat as the Gaussian Thermostat. I've seen it
+        referred to as the Hoover-Evans thermostat as well (I
+        haven't seen it called the Hoover thermostat, but I'm sure
+        somebody has called it that), but simply calling it the
+        Gaussian thermostat avoids
+        wading into the argument about who came up with it
+        first.}
         
-        This thermostat is also an example of a velocity rescaling thermostat; however, the goal of the Gaussian thermostat is to ensure the change in
-        temperature $\Delta T$ is always 0 ($\Delta T \equiv 0$).
+        The goal of the Gaussian thermostat is to ensure the change in
+        instantaneous temperature $\Delta T$ is always 0 ($\Delta T \equiv 0$), which
+        is accomplished by modifying the force calculation with the form
+        $F = F_{interaction} + F_{Lagrange multiplier}$, where
+        $F_{interaction}$ is the standard interactions calculated during
+        the course of the simulation and $F_{Lagrange multiplier}$ keeps
+        the kinetic energy constant.
         The reasoning for the naming of this thermostat is due to the method to solve for the smallest perturbative forces needed to keep the change in temperature equal to 0.
         Using the Gaussian principle of least constraint, forces are calculated to maintain a net 0 change in temperature, while minimally perturbing the system\cite{thermostatAlgorithms2005}.
 
-        Important information to know about this thermostat is that it is reversible and canonical; however, there are no temperature
-        fluctuations.
-        This once again will lead to issues when trying to sample any properties from the canonical ensemble.
-        Also, due to the nature of the thermostat preventing a change in temperature, whatever temperature
-        the system is at when the thermostat is applied, it will stay there. 
+        This thermostat is reversible and it samples the isokinetic
+        ensemble. Position-dependent equilibrium properties will
+        therefore be in agreement with the canonical ensemble (as
+        explained above), but dynamical properties will not.  due
+        to the nature of the thermostat preventing a change in
+        temperature, whatever instanteous temperature the system is at when the
+        thermostat is applied, it will stay there. 
 
     \item \textbf{Berendsen}
 
@@ -657,11 +685,22 @@ This is by no means an exhaustive study of available thermostats, just some of t
         With the introduction of a coupling parameter $\tau$, the strength of this parameter will determine
         how fast the system will approach the target temperature.
         However, it should be noted that while allowing for temperature fluctuations, the Berendsen thermostat is not canonical nor is it reversible.
+        Its usage can lead to simulation artifacts, so it is not
+        recommended\cite{Braun:2018:arXiv}.
 
 \end{enumerate}
 
-Overall, \emph{none} of these deterministic thermostats are suitable for most production-level simulations, except perhaps during an initial equilibration phase, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
-Such thermostats can also lead to unexpected problems in systems with weak or poor coupling between degrees of freedom, such as the ``flying ice cube''~\cite{Harvey:1998:JCompChem} problem in some systems, and problems in alchemical free energy calculations where portions of the system are decoupled from the rest of the system (e.g. very rapid movement of atoms in the decoupled portion of the system).
+Overall, \emph{none} of these deterministic thermostats are suitable for
+most production-level simulations. though the Gaussian thermostat has
+uses in some advanced applications\cite{Minary:2002:JChemPhys}, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
+The simple velocity rescaling and Berendsen thermostats can also lead to
+unexpected problems in systems with weak or poor coupling between
+degrees of freedom, such as the ``flying ice
+cube''~\cite{Harvey:1998:JCompChem} problem in some systems, and
+problems in alchemical free energy calculations where portions of the
+system are decoupled from the rest of the system (e.g. very rapid
+movement of atoms in the decoupled portion of the system); they should
+not be used.
 To some extent, however, the choice of thermostat may depend on the property being calculated; e.g. for transport properties and kinetics, rather different issues may need consideration~\cite{Basconi:2013:J.Chem.TheoryComput.}.
 
 
@@ -669,7 +708,8 @@ To some extent, however, the choice of thermostat may depend on the property bei
 \begin{enumerate}[listparindent=\parindent]
     \item \textbf{Andersen}
 
-        The Andersen\cite{andersen1980molecular} thermostat is the first of two stochastic thermostats that will be explored.
+        The Andersen\cite{andersen1980molecular} thermostat is the first
+        of three stochastic thermostats that will be explored.
         This thermostat has vestiges of the rescaling thermostats mentioned earlier, but with a randomization element also included.
         In this case, the Andersen thermostat attempts to model a system that is coupled to some random
         degree of freedom\cite{andersen1980molecular, thermostatAlgorithms2005}.
@@ -685,6 +725,19 @@ To some extent, however, the choice of thermostat may depend on the property bei
         Careful consideration must be taken when choosing the friction damping parameter.
         However, in many cases this thermostat is an excellent option for molecular simulations.
 
+    \item \textbf{Bussi-Donadio-Parrinello (Canonical Sampling through Velocity Rescaling)}
+        The Bussi\cite{Bussi:2007:JChemPhys} thermostat is a velocity
+        rescaling thermostat similar to the simple velocity rescaling
+        and Berendsen thermostats, but instead of rescaling to a single
+        kinetic energy that corresponds to the target temperature, the
+        rescaling is done to a kinetic energy that is stochastically
+        chosen from the kinetic energy distribution dictated by the
+        canonical ensemble.  Similarly to the Berendsen thermostat, a
+        user-specified time coupling parameter can be chosen to vary how
+        abruptly the velocity rescaling takes place; the choice of time
+        coupling constant does not affect structural properties, and
+        most dynamic properties are fairly independent from the choice
+        within a broad range.
 
 \end{enumerate}
 
@@ -726,6 +779,9 @@ In general, deterministic thermostats should never be employed for production us
     (\ding{51}) does under certain circumstances.}
 \label{tstat_summary}
 \end{figure}
+\todo[inline, color={green!20}]{EB: The CSVR/Bussi
+thermostat to this graphic under the stochastic grouping, with the
+canonical and fluctuations boxes checked. I might also suggest that }
 
 \subsection{Barostats}
 \label{sec:barostats}
@@ -741,8 +797,28 @@ In general, deterministic thermostats should never be employed for production us
 \item Numerical solution of dynamical equations of motions
 \item Importance of energy conservation
 \item Commonly used integrators
-\item How to choose an appropriate timestep?
 \end{itemize}
+\subsubsection{How to choose an appropriate timestep?} The maximum
+timestep for a molecular dynamics simulation is dependent on the choice
+of integrator and the assumptions used in the integrator's derivation.
+For the commonly-used second order integrators such as the Verlet and
+Leapfrog algorithms, the velocities and accelerations should be
+approximately constant over the timestep. Thus, the timestep is limited
+by the highest frequency motion present in the system, which for
+all-atom simulations is usually bond vibrations. It is commonly found
+that using a timestep that is one tenth of this vibration's
+characteristic period is sufficient to conserve energy in the
+microcanonical ensemble. For example, if hydrogen molecules are present
+in the simulation box and the H-H bond vibration is the
+highest-frequency motion in the system, one can determine that with a
+force field harmonic force constant of approximately 500 N/m, the
+oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
+For all-atom simulations with constraints on the high-frequency bonds,
+timesteps can be commonly increased to 2 fs; coarse-grained simulations
+with particles of higher mass and smaller force constants can have much
+larger timesteps.  After choosing a timestep, a test simulation should
+be run in the microcanonical ensemble to ensure that the choice of
+timestep yields dynamics that conserve energy.
 
 \subsection{Long range electrostatics}
 \label{sec:lr_electrostatics}
