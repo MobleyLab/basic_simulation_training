@@ -44,6 +44,7 @@
 \author[4]{Samarjeet Prasad}
 \author[5]{Justin Gilmer}
 \author[6]{Daniel M. Zuckerman}
+\author[7]{Efrem Braun}
 %\author[2\authfn{1}\authfn{4}]{Firstname Initials Surname}
 %\author[2*]{Firstname Surname}
 \affil[1]{University of Michigan}
@@ -52,6 +53,7 @@
 \affil[4]{National Institutes of Health}
 \affil[5]{Vanderbilt University}
 \affil[6]{Oregon Health and Science University}
+\affil[7]{University of California, Berkeley}
 
 %\corr{email1@example.com}{FMS}  % Correspondence emails.  FMS and FS are the appropriate authors initials.
 %\corr{email2@example.com}{FS}
@@ -533,8 +535,7 @@ Additionally, it is assumed that prior to performing any of these steps, an appr
 System preparation is the most variable of these steps, and often requires unique tools for every system of interest.
 It is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
 If such documents do not exist, it may be that a freely-available tool for constructing such a system does in fact exist.
-Examples include tools for constructing specific crystal structures, proteins, and lipid membranes.
-\todo[inline, color={green!20}]{JIM: Include some tools to cite here. EB: Many tools are listed at \url{https://lammps.sandia.gov/prepost.html#builders}. My favorites include Moltemplate, Packmol, and Atomsk.}
+Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
 The goal of all of these tools, and system preparation in general, is to create a representation of the system of interest that can be interpreted by the desired simulation package.
 It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
@@ -631,7 +632,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
     \item \textbf{Hoover (Gaussian)}
         \todo[inline, color={green!20}]{EB: I recommend referring to this thermostat as the Gaussian Thermostat. I've seen it referred to as the Hoover-Evans thermostat as well (I haven't seen it called the Hoover thermostat, but I'm sure somebody has called it that), but simply calling it the Gaussian thermostat avoids wading into the argument about who came up with it first.}
         
-        The goal of the Gaussian thermostat is to ensure the change in instantaneous temperature $\Delta T$ is always 0 ($\Delta T \equiv 0$), which is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{Lagrange multiplier}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation and $F_{Lagrange multiplier}$ keeps the kinetic energy constant.
+        The goal of the Gaussian thermostat is to ensure the change in instantaneous temperature $\Delta T$ is always 0 ($\Delta T \equiv 0$); this is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{constraint}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation and $F_{constraint}$ is a Lagrange multiplier that keeps the kinetic energy constant.
         The reasoning for the naming of this thermostat is due to the method to solve for the smallest perturbative forces needed to keep the change in temperature equal to 0.
         Using the Gaussian principle of least constraint, forces are calculated to maintain a net 0 change in temperature, while minimally perturbing the system\cite{thermostatAlgorithms2005}.
         This thermostat is reversible and it samples the isokinetic ensemble.
@@ -740,6 +741,8 @@ It is commonly found that using a timestep that is one tenth of this vibration's
 For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
+Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
