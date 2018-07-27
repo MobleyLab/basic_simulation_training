@@ -175,7 +175,7 @@ Here, we will assume you are already familiar with Newtonian mechanics.
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
 Due to the high frequency of the O-H vibrations, accurately treating water classically would require a very small time step, so for computational efficiency water is often instead treated as a rigid body.
-Implementation of rigid bodies in a simulation protocol involves holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion.
+Implementation of rigid bodies in a simulation protocol involves holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
 It is important to understand the concept of point particle, rigid bodies and constraints.
 
 Classical mechanics has several mathematical formulations --- namely the Newtonian, Hamiltonian and Lagrangian formulations.
@@ -752,16 +752,6 @@ In general, deterministic thermostats should never be employed for production us
 
 \todo[inline, color={yellow!20}]{DLM: Need to switch consistently to ``time step'' or ``timestep''; ran out of time to do this on the plane}
 
-The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
-Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
-It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
-For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
-For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
-After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
-Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
-
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
 This is usually termed numerical integration of the equations of motion. 
@@ -778,6 +768,16 @@ Luckily, this issue may be avoided simply by guaranteeing that the integrator is
 The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
 By definition of a unitary operator, the application of the operator to negative times is equal to applying the inverse of the operator to an equivalent positive time interval.
 This is in fact also the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
+
+The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
+It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
+For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
+For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
+After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
+Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
 This is a much trickier property to examine, and varies with different integrators.
