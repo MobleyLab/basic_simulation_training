@@ -143,6 +143,7 @@ In principle, anyone with adequate prior knowledge should be able to pick up one
 In practice, due to the interdisciplinary and somewhat technical nature of this field, many newcomers may find it difficult and time consuming to understand all the methodological issues involved in a simulation study.  
 The goal of this document is to introduce a new practitioner to some key basic concepts and bare minimum scientific knowledge required for correct execution of these methods. 
 We also provide a basic set of ``best practices'' that can be used to avoid common errors, missteps and confusion in elementary molecular simulations work.
+This document is not meant as a full introduction to the area; rather, it is intended to help guide further study, and to provide a foundation for other more specialized best-practices documents focusing on particular simulation areas.
 
 Modern implementations of classical simulations also rely on a large body of knowledge from the fields of computer science and numerical methods, which will
 not be covered in detail here.
@@ -152,8 +153,8 @@ not be covered in detail here.
 \label{sec:science}
 A variety of fields provide the foundation for our simulation methods and analysis of the data produced by these methods.
 A new practitioner does not have to be an expert of all these fields but needs to understand some key concepts from each of these disciplines.
-Here, we survey some topics that we believe even basic users of molecular simulations need to grasp, with suggestions for further reading on these subjects, as a preface for Section~\ref{sec:basics}.
-In each, subsection, here, we begin with a list highlighting some of the critical topics from each area, then describe what these are and why they are important to molecular simulations.
+In this section, we survey some topics that we believe even basic users of molecular simulations need to grasp, with suggestions for further reading on these subjects, as a preface for Section~\ref{sec:basics}.
+In each subsection, we begin by highlighting some of the critical topics from the corresponding area, then describe what these are and why they are important to molecular simulations.
 
 \subsection{Classical mechanics}
 \label{sec:classical_mechanics}
@@ -169,6 +170,7 @@ Critical concepts from classical mechanics include:
 
 Molecular simulation methods work on many particles systems following the rules of classical mechanics. 
 Basic knowledge of key concepts of classical mechanics is important for understanding simulation methods.
+Here, we will assume you are already familiar with Newtonian mechanics.
 
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
@@ -180,7 +182,7 @@ Classical mechanics has several mathematical formulations --- namely the Newtoni
 These formulations are equivalent, but for certain applications one formulation can be more appropriate than the other. 
 Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is essential.
 Classical mechanics has several conserved quantities, for example, the total energy of the system is a constant of motion.
-These concepts play very important role ib development and proper implementation of simulation methods.
+These concepts play very important role in development and proper implementation of simulation methods.
 For example, a particularly straightforward check of the correctness of an MD code is to test the quality of the energy conservation.
 
 Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts.
@@ -559,7 +561,7 @@ The purpose of minimization, or relaxation, is to find a local energy minimum of
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired timestep will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
 Such a configuration is a suitable starting point for molecular dynamics techniques.
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
@@ -635,7 +637,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
     \item \textbf{Simple Velocity Rescaling}
 
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement, however, this thermostat is also one of the most non-physical thermostats as well.
-        This thermostat relies on rescaling the momenta of the particles every $N$ timesteps based on their ratio of the instantaneous temperature to the target temperature\cite{thermostatAlgorithms2005}.
+        This thermostat relies on rescaling the momenta of the particles every $N$ time steps based on their ratio of the instantaneous temperature to the target temperature\cite{thermostatAlgorithms2005}.
         This leads to multiple issues when trying to sample data using this thermostat.
         First, this method is not reversible, there lacks a way for the particles to have knowledge of their previous thermal history.
         This makes any dynamical value impossible to measure (diffusion for example).
@@ -746,9 +748,11 @@ In general, deterministic thermostats should never be employed for production us
 \item Importance of energy conservation
 \item Commonly used integrators
 \end{itemize}
-\subsubsection{How to choose an appropriate timestep?}
+\subsubsection{How to choose an appropriate time step?}
 
-The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+\todo[inline, color={yellow!20}]{DLM: Need to switch consistently to ``time step'' or ``timestep''; ran out of time to do this on the plane}
+
+The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
