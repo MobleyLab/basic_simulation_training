@@ -731,17 +731,6 @@ In general, deterministic thermostats should never be employed for production us
 \item Importance of energy conservation
 \item Commonly used integrators
 \end{itemize}
-\subsubsection{How to choose an appropriate timestep?}
-
-The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
-Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
-It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
-For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
-For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
-After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
-Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
@@ -756,13 +745,26 @@ Integrators that minimize discretization error should preserve phase space volum
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
 Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
-The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
-By definition of a unitary operator, the application of the operator to negative times is equal to applying the inverse of the operator to an equivalent positive time interval.
-This is in fact also the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
+The reason for this is outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
+If we define a unitary operator $\mathcal{L}$ that propagates coordinates $r(t)$ and velocities $v(t)$ (or any function depending on these quantities) over a time interval $\Delta t$
+
+$$\mathcal{L} ( \Delta t, ( \bm{r}(t), \bm{v}(t) ) ) = ( \bm{r}(t + \Delta t), \bm{v}(t + \Delta t) )$$
+
+then we may observe the following effect of also applying its inverse
+
+$$\mathcal{L} ^ {-1} (\Delta t, \mathcal{L} (\Delta t, ( \bm{r}(t), \bm{v}(t) ) ) ) = ( \bm{r}(t), \bm{v}(t) )$$
+
+In the case of a unitary operator, the adjoint and inverse are equivalent. 
+In this case, the adjoint, or conjugate, of an operator represents a negation of the time over which dynamics are propagated, and so the following is also true
+
+$$\mathcal{L} ^ {-1} ( \Delta t, \cdot ) = \mathcal{L} ^ {\dagger} ( \Delta t, \cdot ) = \mathcal{L} ( - \Delta t, \cdot )$$
+
+This is in fact the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
 
 Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
 This is a much trickier property to examine, and varies with different integrators.
 For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
+\todo[inline, color={green!20}]{JIM: Need citation!}
 The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
 \todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this.}
 \todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
@@ -789,11 +791,26 @@ Different combinations may demonstrate better performance and for expanded ensem
 For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
 However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved).
 \todo[inline, color={green!20}]{JIM: Need to cite Fass, Chodera, Crooks, etc.}
-Again, this may be remedied through a shorter timestep, but thus is more computationally expensive and increases truncation error.
+Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
+When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
+If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
+If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed.
+\todo[inline, color={green!20}]{JIM: Need to cite Basconi and Shirts here}
 
 \todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
 \todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
+\subsubsection{How to choose an appropriate timestep?}
+
+The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
+It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
+For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
+For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
+After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
+Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 \subsection{Long range electrostatics}
 \label{sec:lr_electrostatics}
