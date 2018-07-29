@@ -204,9 +204,9 @@ One of the main objectives of molecular simulations is to estimate/predict therm
 This includes not only macroscopic, bulk thermodynamic properties, such as density or heat capacity,
 but also microscopic properties like specific free energy differences associated with, say, changes in the conformation of a molecule.
 For this reason, it is important to understand key concepts in thermodynamics, such as temperature, pressure, entropy, internal energy, various forms of free energy, and the relationships between them.
-Paramount, however, is an understanding of the connection between thermodynamics and statistical mechanics, which allows us to relate macroscopic, experimental measurements to the results of the much smaller system that is simulated.
-Involving many subtleties, this can be a confusing and difficult topic, and is presented in full within a number of excellent books.
-\todo[inline, color={green!20}]{JIM: Citation for books by Shell, Dill, and maybe Hill?}
+Paramount, however, is an understanding of the connection between thermodynamics and statistical mechanics, which allows us to relate macroscopic, experimental measurements to the behavior of the much smaller system that is simulated.
+Involving many subtleties, this can be a confusing and difficult topic, and is presented in full within a number of excellent books~\cite{ShellBook, DillBook}.
+\todo[inline, color={green!20}]{JIM: I have not read Dill's book, so I'm guessing that this is an appropriate citation based on what I've heard about it. If someone can check me and add other thermodynamics texts that take a microscopic perspective, that would be wonderful.}
 
 As an example, consider temperature.
 In a macroscopic sense, we understand this quantity very intuitively as how hot or cold something is.
@@ -226,9 +226,11 @@ Basic thermodynamic principles thus also dictate proper simulation protocols and
 Although we usually think of thermodynamics applying macroscopically and statistical mechanics applying on the microsopic level, it is important to remember that the laws of thermodynamics still hold \textit{on average} regardless of the length scale.
 That is, a molecule in contact with a thermal bath will exchange energy with the bath, but its average energy is a well-defined constant.
 This allows us to define thermodynamic quantities associated with microscopic events, such as the binding of a ligand to a protein.
-This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic process that can only be indirectly probed by experiment.
-Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to easily calculate many properties of interest simultaneously.
-\todo[inline, color={green!20}]{JIM: I should think of a good example here. Also, I should mention that some thermodynamic properties are only well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
+This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic processes that can only be indirectly probed by experiment.
+Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
+For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~cite{Kofke1993, GonzalezSalgado2010}.
+
+\todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
 
 \todo[inline, color={yellow!20}]{DLM: The discussion we have here of thermodynamics key concepts is way shorter than the stat mech key concepts below. Perhaps need to address; perhaps in an update?}
 
