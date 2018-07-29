@@ -785,7 +785,7 @@ Integrators that minimize discretization error should preserve phase space volum
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
 Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
-The reason for this is outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
+The reason for this is outlined in greater detail in ~\citep{Tuckerman:1992:}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
 If we define a unitary operator $\mathcal{L}$ that propagates coordinates $\vec{r}(t)$ and velocities $\vec{v}(t)$ (or any function depending on these quantities) over a time interval $\Delta t$
 
 $$\mathcal{L} ( \Delta t, ( \vec{r}(t), \vec{v}(t) ) ) = ( \vec{r}(t + \Delta t), \vec{v}(t + \Delta t) )$$
@@ -801,59 +801,7 @@ $$\mathcal{L} ^ {-1} ( \Delta t, \cdot ) = \mathcal{L} ^ {\dagger} ( \Delta t, \
 
 This is in fact the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
 
-%The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-%For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
-%Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
-%It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
-%For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
-%For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
-%After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
-%Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-%Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
-
-Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
-This is a much trickier property to examine, and varies with different integrators.
-For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
-\todo[inline, color={green!20}]{JIM: Need citation!}
-The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
-\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this.}
-
-\todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
-
-Additionally, it is also desirable that an integrator be computationally efficient.
-Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
-As a general rule of thumb, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system (often this is bond vibration).
-However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
-If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
-Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
-This has the added benefit of also reducing truncation error, which is proportional to the number of timesteps taken.
-It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
-
-The most commonly used integrators are variants of the Verlet algorithm. 
-Detailed discussion and derivation of such integrators may be found in Leach~\cite{LeachBook} and Frenkel and Smit~\cite{Frenkel:2001:}.
-\todo[inline, color={green!20}]{JIM: Insert citations and correct sections in these books}
-Such integrators are not applicable, however, for simulations involving stochastic dynamics.
-These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
-A detailed description of such stochastic dynamics may be found in McQuarrie, Chapter ??.
-\todo[inline, color={green!20}]{JIM: Need to cite the right chapter in McQuarrie, and others?}
-As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
-As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
-Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
-For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
-However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved).
-\todo[inline, color={green!20}]{JIM: Need to cite Fass, Chodera, Crooks, etc.}
-Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
-When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
-If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
-If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed.
-\todo[inline, color={green!20}]{JIM: Need to cite Basconi and Shirts here}
-
-\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
-\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
-
-\subsubsection{How to choose an appropriate timestep?}
-
-The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
@@ -862,6 +810,61 @@ For all-atom simulations with constraints on the high-frequency bonds, timesteps
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
 Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
+
+Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
+This is a much trickier property to examine, and varies with different integrators.
+For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
+The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
+\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated.}
+When the energy does change over the course of a simulation, it is said to ``drift.''
+The most common reason for energy drift is due to a timestep that is overly long.
+If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
+More subtly, the timestep may be long enough that the system is still stable over long times, but too long for the chosen integrator to conserve energy.
+Other simulation parameters may also impact energy drift, such as the method of truncating forces and energies, as well as the choice of numerical precision.
+The latter effect, due to truncation errors, will become obvious if two simulations with different timesteps are compared.
+Shorter timesteps, and hence more steps to achieve a simulation of the same length, will result in \textit{more} drift, since errors get larger with the number of calculations performed by the computer.
+This is exactly opposite to the behavior that is expected for poor energy conservation associated with discretization error, where a shorter timestep will reduce energy drift.
+\todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
+\todo[inline, color={green!20}]{JIM: I addressed some of this above. I'm not sure exactly about the scalings, though. Can you say for sure how energy drift scales with timestep or number of timesteps?  Isn't this highly algorithm-specific (and maybe even system-specific)?}
+
+Additionally, it is also desirable that an integrator be computationally efficient.
+Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
+To re-iterate what was discussed above, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system.
+However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
+If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
+Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
+This has the added benefit of also reducing truncation error, which is proportional to the number of timesteps taken.
+It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
+
+The most commonly used integrators are variants of the Verlet algorithm (e.g. Velocity Verlet or Leapfrog). 
+Detailed discussion and derivation of such integrators may be found in section 7.3 of \citet{LeachBook} and 4.3 of \citet{Frenkel:2001:}.
+Such integrators are not applicable, however, for simulations involving stochastic dynamics.
+These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
+A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
+As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
+As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
+Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
+For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
+However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018}.
+Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
+When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
+If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
+If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:J.Chem.TheoryComput.}.
+
+\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
+\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
+
+%\subsubsection{How to choose an appropriate timestep?}
+%
+%The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+%For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+%Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
+%It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
+%For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
+%For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
+%After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+%Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
+%Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 
 \subsection{Long range electrostatics}
