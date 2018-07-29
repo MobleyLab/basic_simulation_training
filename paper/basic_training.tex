@@ -862,22 +862,45 @@ Ewald method is based on replacing the point charge distributions by smooth char
 
 Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge of the same magnitude. 
 \[
-V^{sr} = \frac{1}{2} \frac{1}{4 \pi \epsilon_0} \sum_{n \in Z^3} \sum_{i=1}^{N}\sum_{j=1; i\neq j for n = 0}^{N} q_i q_j \frac{erfc(Gr_{ij}^{n})}{r_{ij}^{n}}
+E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
 \]
 
-Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fact. Infact, it decays even faster than the vanderwaals term $r^{-6}$ and hence the cutoff used for vanderwaals can be used for direct space coulombic potential calculation as well. 
+Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well. 
 
 Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space! 
 
-\subsubsection{Smooth Particle Mesh Ewald}
+\[
+E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
+\]
 
-SPME
+The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. If we used only the original point charges, we would not have had this dampening factor. 
+
+Self term is not a physical quantity and comes up due to the way the Ewald summation is set up. 
+
+\[
+E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
+\]
+ 
+\subsubsection{Grid based Ewald summation}
+
+Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach. 
+
+There are five general steps involved in these methods :
+\begin{enumerate}
+\item Charge assignment : In this step, charges are interpolated onto the grid of dimension K*K*K. 
+\item Transformation of the grid to reciprocal space :  
+\item Energy calculation : 
+\item Transformation of the grid back to real space : Inverse FFT is used to 
+\item Force calculation : 
+\end{enumerate}
+
+
 
 Optimizing 
 \begin{itemize}
-\item Screening function : Some variants of Ewald summation have used screening function other than just gaussian. In SPME implementations, one uses just the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
-\item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van-der waals cutoff. Decreasing the cutoff improves the direct space performance and increased the complexity of the reciprocal space calculations. 
-\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number o points. However its accuracy will be higher than a coarse grid.
+\item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
+\item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
+\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
 \end{itemize}
 
 \subsubsection{Other methods}
