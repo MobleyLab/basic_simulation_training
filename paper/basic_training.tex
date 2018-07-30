@@ -138,7 +138,7 @@ Our goal is not to cover all topics, but to provide some guidance as to the crit
 \section{Scope of this document}
 \label{sec:scope}
 
-There are several excellent textbooks on classical simulation methods; some we have found particularly helpful are Allen and Tildesley's ``Computer Simulations of Liquids''~\cite{allen_computer_2017}, and Frenkel and Smit's ``Understanding Molecular Simulations''~\cite{Frenkel:2001:}, though there are many other sources.
+There are several excellent textbooks on classical simulation methods; some we have found particularly helpful are Allen and Tildesley's ``Computer Simulations of Liquids''~\cite{allen_computer_2017}, Leach's ``Molecular Modelling''~\cite{LeachBook}, and Frenkel and Smit's ``Understanding Molecular Simulations''~\cite{Frenkel:2001:}, though there are many other sources.
 Tuckerman's ``Statistical Mechanics: Theory and Molecular Simulation''~\cite{Tuckerman:2010:} may be helpful to a more advanced audience.
 
 In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations, perhaps with help from a good statistical mechanics and thermodynamics book or two.
@@ -170,20 +170,21 @@ Critical concepts from classical mechanics include:
 \item Holonomic constraints
 \end{itemize}
 
-Molecular simulation methods work on many particles systems following the rules of classical mechanics. 
+Molecular simulation methods work on many particle systems following the rules of classical mechanics. 
 Basic knowledge of key concepts of classical mechanics is important for understanding simulation methods.
 Here, we will assume you are already familiar with Newtonian mechanics.
 
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
 Due to the high frequency of the O-H vibrations, accurately treating water classically would require a very small time step, so for computational efficiency water is often instead treated as a rigid body.
-Implementation of rigid bodies in a simulation protocol involves holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
-It is important to understand the concept of point particle, rigid bodies and constraints.
+Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
+It is important to understand the concept of point particles, rigid bodies and constraints.
 
 Classical mechanics has several mathematical formulations --- namely the Newtonian, Hamiltonian and Lagrangian formulations.
 These formulations are equivalent, but for certain applications one formulation can be more appropriate than the other. 
-Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is essential.
-Classical mechanics has several conserved quantities, for example, the total energy of the system is a constant of motion.
+Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is essential if you wish to understand the details of simulation methods.
+
+Classical mechanics has several conserved quantities and simulators should be familiar with these, for example, the total energy of a system is a constant of motion.
 These concepts play very important role in development and proper implementation of simulation methods.
 For example, a particularly straightforward check of the correctness of an MD code is to test the quality of the energy conservation.
 
@@ -194,7 +195,7 @@ A variety of good books on classical mechanics are also available and give furth
 \label{sec:thermodynamics}
 
 \subsubsection{Key concepts}
-A variety of thermodynamics concepts are particularly important for molecular simulations:
+A variety of thermodynamic concepts are particularly important for molecular simulations:
 \begin{itemize}
 \item Temperature, pressure, stress
 \item Internal energy, enthalpy
@@ -202,21 +203,20 @@ A variety of thermodynamics concepts are particularly important for molecular si
 \item Entropy
 \end{itemize}
 
-One of the main objectives of molecular simulations is to estimate/predict thermodynamic behavior of real systems. 
-This includes not only macroscopic, bulk thermodynamic properties, such as density or heat capacity,
+One of the main objectives of molecular simulations is to estimate/predict thermodynamic behavior of real systems as observed in the laboratory.
+Typically this means we are interested in macroscopic systems, consisting of $10^23$ particles or more (i.e. at least several moles of particles). 
+But properties of interest include not only macroscopic, bulk thermodynamic properties, such as density or heat capacity,
 but also microscopic properties like specific free energy differences associated with, say, changes in the conformation of a molecule.
 For this reason, it is important to understand key concepts in thermodynamics, such as temperature, pressure, entropy, internal energy, various forms of free energy, and the relationships between them.
 Paramount, however, is an understanding of the connection between thermodynamics and statistical mechanics, which allows us to relate macroscopic, experimental measurements to the behavior of the much smaller system that is simulated.
-Involving many subtleties, this can be a confusing and difficult topic, and is presented in full within a number of excellent books~\cite{ShellBook, DillBook}.
-\todo[inline, color={green!20}]{JIM: I have not read Dill's book, so I'm guessing that this is an appropriate citation based on what I've heard about it. If someone can check me and add other thermodynamics texts that take a microscopic perspective, that would be wonderful.}
+This topic involves a variety of subtleties and thus can be a confusing and difficult, so we refer the reader to a more extensive discussion in one of several books~\cite{ShellBook, DillBook}.
 
 As an example, consider temperature.
 In a macroscopic sense, we understand this quantity very intuitively as how hot or cold something is.
 The laws of thermodynamics provide us with a further abstraction, telling us that this is in fact the derivative of the internal energy with respect to the entropy.
-However, this is mainly a mathematical definition lacking intuition.
-It is mostly useful in that it helps us to derive other mathematical relationships.
-If we want to understand temperature from the point of view of a molecule and how it behaves, we finally must turn to statistical mechanics.
-Since molecular dynamics is mostly used to simulate molecularly-detailed behavior, it is necessary to utilize statistical-mechanical expressions in computing what would be observed as the macroscopic, thermodynamic temperature.
+This mathematical definition itself is not particularly helpful, but provides a starting point for other derivations.
+If we want to understand temperature from the point of view of understanding molecular behavior, we finally must turn to statistical mechanics.
+Since molecular dynamics is mostly used to simulate behavior at the molecular or atomistic level, it is necessary to utilize statistical-mechanical expressions in computing what would be observed as the macroscopic, thermodynamic temperature.
 
 This discussion should not provide the impression that statistical mechanics is more important than thermodynamics.
 The two are intimately connected and we must rely on both to successfully conduct and obtain information from MD simulations.
@@ -225,12 +225,16 @@ For instance, if energy is not conserved, the first law is not satisfied and we 
 In this sense, the laws of thermodynamics provide us rigorous sanity checks in addition to many useful mathematical relations for computing properties.
 Basic thermodynamic principles thus also dictate proper simulation protocols and associated best practices.
 
+The concept of the thermodynamic limit is particularly important.
+Specifically, as the size of a finite system is increased, keeping the particle number density roughly constant, at some point it is said to reach the thermodynamic limit where its behavior is bulk-like and no longer depends on the extent of the system.
+Thus, small systems will exhibit unique behaviors that reflect their microscopic size, but sufficient large systems are said to have reached the thermodynamic limit and macroscopic thermodynamics applied.
+
 Although we usually think of thermodynamics applying macroscopically and statistical mechanics applying on the microsopic level, it is important to remember that the laws of thermodynamics still hold \textit{on average} regardless of the length scale.
 That is, a molecule in contact with a thermal bath will exchange energy with the bath, but its average energy is a well-defined constant.
 This allows us to define thermodynamic quantities associated with microscopic events, such as the binding of a ligand to a protein.
 This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic processes that can only be indirectly probed by experiment.
 Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
-For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~cite{Kofke1993, GonzalezSalgado2010}.
+For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~\cite{Kofke1993, GonzalezSalgado2010}.
 
 \todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
 
