@@ -121,14 +121,15 @@ Speed is a particular concern when describing condensed phase systems, as we are
 While system size alone does not require a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include substantial entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not just sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
 Furthermore, many systems of interest, such as polymers (biological and otherwise) have slow motions that must be captured for accurate calculation of properties.
 For example, for proteins, relevant timescales span from nanoseconds to seconds or more, and even rearrangements of buried amino acid sidechains can in some cases take microseconds or more, with larger conformational changes and protein folding taking even longer~\cite{Schlick:2010:, Mobley:2012:JComputAidedMolDes}. 
-Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range, but the field would like to reach even longer timescales, meaning that switching to a more detailed energy model is only done with some trepidation slower energy evaluations mean less time available for sampling. 
+Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range.
+However, the field would like to reach even longer timescales, meaning that switching to a more detailed energy model is only done with some trepidation because slower energy evaluations mean less time available for sampling. 
 Thus the need for speed limits the use of quantum mechanical descriptions.
 
 Thus, for the rest of this document we will restrict ourselves to classical MD.
 
 One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the overall topology or chemistry of a system will remain constant as a function of time.
-That is, the particles comprising the system move around, but its chemical identity is a constant over the course of the simulation.
-\todo[inline, color={yellow!20}]{DLM: Refs?}
+That is, the particles comprising the system move around, but the chemical identity of each molecule in the system is a constant over the course of the simulation (with only partial exceptions, such as the case of constant pH simulations).
+\todo[inline, color={yellow!20}]{DLM: Refs needed here}
 
 Here, we first discuss the scope of this document, then go over some of the fundamental concepts or science topics which provide the underpinnings of molecular simulations, giving references for further reading.
 Then, we introduce a variety of basic simulation concepts and terminology, with additional links to further reading.
@@ -231,8 +232,6 @@ Importantly, as long as we have carefully defined our ensemble and thermodynamic
 For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~cite{Kofke1993, GonzalezSalgado2010}.
 
 \todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
-
-\todo[inline, color={yellow!20}]{DLM: The discussion we have here of thermodynamics key concepts is way shorter than the stat mech key concepts below. Perhaps need to address; perhaps in an update?}
 
 \subsubsection{Books}
 Equilibrium thermodynamics is taught in most undergraduate programs in physics, chemistry, biochemistry and various engineering disciplines.
@@ -787,31 +786,7 @@ Integrators that minimize discretization error should preserve phase space volum
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
 Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
-The reason for this is outlined in greater detail in ~\citep{Tuckerman:1992:}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
-If we define a unitary operator $\mathcal{L}$ that propagates coordinates $\vec{r}(t)$ and velocities $\vec{v}(t)$ (or any function depending on these quantities) over a time interval $\Delta t$
-
-$$\mathcal{L} ( \Delta t, ( \vec{r}(t), \vec{v}(t) ) ) = ( \vec{r}(t + \Delta t), \vec{v}(t + \Delta t) )$$
-
-then we may observe the following effect of also applying its inverse
-
-$$\mathcal{L} ^ {-1} (\Delta t, \mathcal{L} (\Delta t, ( \vec{r}(t), \vec{v}(t) ) ) ) = ( \vec{r}(t), \vec{v}(t) )$$
-
-In the case of a unitary operator, the adjoint and inverse are equivalent. 
-In this case, the adjoint, or conjugate, of an operator represents a negation of the time over which dynamics are propagated, and so the following is also true
-
-$$\mathcal{L} ^ {-1} ( \Delta t, \cdot ) = \mathcal{L} ^ {\dagger} ( \Delta t, \cdot ) = \mathcal{L} ( - \Delta t, \cdot )$$
-
-This is in fact the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
-
-The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
-Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
-It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
-For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
-For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
-After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
-Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
+More details may be found in ~\citet{Tuckerman:1992:}, but basically if the mathematical operator representing the integrator preserves phase space volume, it also satisfies the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
 
 Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
 This is a much trickier property to examine, and varies with different integrators.
@@ -831,7 +806,7 @@ This is exactly opposite to the behavior that is expected for poor energy conser
 
 Additionally, it is also desirable that an integrator be computationally efficient.
 Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
-To re-iterate what was discussed above, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system.
+To summarize what is presented below, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system.
 However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
 If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
 Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
@@ -856,17 +831,17 @@ If dynamics are of interest, the dependence of these properties on the integrato
 \todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
 \todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
-%\subsubsection{How to choose an appropriate timestep?}
-%
-%The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-%For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
-%Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
-%It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
-%For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
-%For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
-%After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
-%Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-%Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
+\subsubsection{How to choose an appropriate timestep?}
+
+The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
+It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
+For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
+For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
+After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
+Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 
 \subsection{Long range electrostatics}
@@ -878,6 +853,148 @@ If dynamics are of interest, the dependence of these properties on the integrato
 \item PPPM
 \item How to choose parameters
 \end{itemize}
+
+
+\subsubsection{Motivation}
+
+Calculation of non-bonded interaction is generally the most time-consuming step of classical energy calculation. While the elements(?) for bonded interaction remain unchanged during the course of MD simulation, the ones for non-bonded interactions have to be updated frequently. Furthermore, $r^{-1} $ dependence  of coulombic interaction in a 3D space complicates the calculation in the following two ways :
+\begin{itemize}
+\item Coulombic potential is conditionally convergent. What do we mean by this? Consider for example the alternating harmonic series : \\
+\[
+\sum_{k=1}^{\infty} \frac{-1^{k+1}}{k} = 1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ... = ln 2 
+\]
+
+But if we now change the order of the summation to, lets say :
+\[
+( 1 - \frac{1}{2})  - \frac{1}{4} + (\frac{1}{3} - \frac{1}{6}) - \frac{1}{8} + (\frac{1}{5} - \frac{1}{10}) - \frac{1}{12} + (\frac{1}{7} - \frac{1}{14}) - \frac{1}{16} + .. 
+\]
+\[
+= \frac{1}{2} - \frac{1}{4} + \frac{1}{6} - \frac{1}{8} + \frac{1}{10} - ... 
+\]
+\[
+= \frac{1}{2} (1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ...) = \frac{1}{2} ln 2
+\]
+
+Using a different order might give us a different result. Thus the order of summation matters !
+
+\item Coulombic potential is a slow-decaying, long range potential. This means that we need to account for non-bonded pairs over larger pairwise distances in order to minimize the errors. As enlisting atom-pairs is fundamentally an $O(n^2) $ operation, the time taken to compute non-bonded pairs increases quadratically with respect to an increase in the number of atoms.   
+\end{itemize} 
+
+As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).  
+
+\subsubsection{ Ewald Summation}
+
+One way of handling the aforementioned issues in an efficient manner is to use the Ewald summation technique (ref, Ewald 1921). To understand this technique, lets represent the relation between the charge distriution and the coulombic potential  in the differntial form (Poisson equation) :
+
+\[
+\Delta \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x}) 
+\] 
+
+where,  $ \boldsymbol{x} \epsilon R^3 $ ,  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge at point $\boldsymbol{x}$ and $\epsilon$ is the permissivity of the medium. This equation is an elliptical partial differential equation(pde) of the second order. The standard way to determine the potential from this equation is a two step method - discretization of the equation followed by solution. These techniques however depend on the smoothness of the functions - $\rho$ and $\phi$ - involved. However, in the case of charge distribution in our simulation system, $\rho$ is a set of delta functions which are clearly not smooth! As $\rho$ is not smooth, $\phi$ is not smooth either. \\
+
+   
+Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solvation techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
+
+\[ \rho = \rho^{sr} + \rho^{lr} \]
+
+\[ \rho^{sr} = q\delta(\boldsymbol{x}-\boldsymbol{x_i}) - qG\] 
+
+\[ \rho^{lr} = qG \]      
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{charges_ewald.pdf}
+    \caption{Point charges can be split into Direct space and reciprocal space charges. Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge.}
+\label{charges_ewald}
+\end{figure}
+
+Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge of the same magnitude. 
+\[
+E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
+\]
+
+Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well. 
+
+Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space! 
+
+\[
+E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
+\]
+
+The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. If we used only the original point charges, we would not have had this dampening factor. 
+
+Self term is not a physical quantity and comes up due to the way the Ewald summation is set up. 
+
+\[
+E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
+\]
+ 
+\subsubsection{Grid based Ewald summation}
+
+Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach. 
+
+There are five general steps involved in these methods :
+\begin{enumerate}
+\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).  
+
+\[
+Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 M_n(u_i^d - k_d - p_dK_d)
+\]
+\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.    
+\[
+S(m) = \sum_j q_j \exp(mr_j)
+\]
+\[
+=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
+\]
+where
+\[
+b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
+\]
+\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
+\] 
+\item Energy calculation : Reciprocal space energy is calculated by
+\[
+E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}*Q)(m_1,m_2,m_3)
+\]
+where
+\[
+\theta_{rec} = F(BXC)
+\]
+
+\[
+B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
+\]
+and
+\[
+C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
+\]
+Here * is the convolution operation which is simply a product in the reciprocal space. 
+\item Transformation of the grid back to real space : Inverse FFT is used to convert $\theta{rec}*Q$ back to the real space. 
+\item Force calculation : Force is given by the gradient of the energy. It can be calculated in the reciprocal space by multiplication by (ik) (as implemented in the original PME) or by analytic differentiation in the real space as in SPME : 
+\[
+\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
+\]
+\end{enumerate}
+
+
+
+Optimizing the performance of grid based methods is tricky as many of the choices would already have been made in the implementation of the method. As a user, there are a few ways to tweak the performance of the SPME : 
+ 
+\begin{itemize}
+\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
+\item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
+\item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
+\end{itemize}
+
+%\subsubsection{Other methods}
+
+%There are methods other than the Ewald which we can use as well 
+%\begin{itemize}
+%\item Isotropic periodic sum It doesn't use the Ewald
+%\item Multigrid method It doesn't use Fourier 
+%\end{itemize}
 
 \begin{Checklists*}[p!]
 
