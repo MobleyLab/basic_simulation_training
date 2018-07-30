@@ -188,7 +188,7 @@ Classical mechanics has several conserved quantities and simulators should be fa
 These concepts play very important role in development and proper implementation of simulation methods.
 For example, a particularly straightforward check of the correctness of an MD code is to test the quality of the energy conservation.
 
-Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts.
+Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts; Shell's book also has a chapter on simulation methods which covers some of these details~\cite{ShellBook}.
 A variety of good books on classical mechanics are also available and give further details on these concepts.
 
 \subsection{Thermodynamics}
@@ -236,7 +236,7 @@ This is of course useful because it allows us to assign molecular meaning to a w
 Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
 For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~\cite{Kofke1993, GonzalezSalgado2010}.
 
-\todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
+\todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though. DLM: What did you have in mind? } 
 
 \subsubsection{Books}
 Equilibrium thermodynamics is taught in most undergraduate programs in physics, chemistry, biochemistry and various engineering disciplines.
@@ -244,7 +244,7 @@ Depending on the background, the practitioner can choose one or more of the foll
 Here are some works we find particularly helpful:
 \begin{itemize}
 \item Atkins and De Paula's ``Physical Chemistry'' \cite{AtkinsBook}, chapters 1 to 4.
-\item McQuarrie and Simon's extensive work, ``Physical Chemistry': A Molecular Approach''~\cite{McQuarrie:1997:}
+\item McQuarrie and Simon's extensive work, ``Physical Chemistry: A Molecular Approach''~\cite{McQuarrie:1997:}
 \item Dill's ``Molecular Driving Forces''~\cite{DillBook}
 \item Kittel and Kroemer's ``Thermal Physics''~\cite{Kittel:1980:}
 \item Shell \cite{ShellBook}: Chapters 1-15.
@@ -268,6 +268,7 @@ Key concepts from statistical mechanics are particularly important and prevalent
 \item Fluctuations
 \item Correlation functions
 \end{itemize}
+\todo[inline, color={yellow!20}]{DLM: This list is bothering me because it is longer than the others, has more statements in it, and doesn't totally connect with what's in this section. Not sure what to do with it.}
 
 Traditional discussions of classical statistical mechanics, especially concise ones, tend to focus first or primarily on macroscopic thermodynamics and microscopic \emph{equilibrium} behavior based on the Boltzmann factor, which tells us that configurations $\conf$ occur with (relative) probability $\exp[-U(\conf)/k_B T]$, based on potential energy function $U$ and temperature $T$ in Kelvin units.  
 Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.  
@@ -309,11 +310,11 @@ It is sometimes suggested that multiple MD trajectories starting structures can 
 
 A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
-Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''
+Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''.
 There is a closely related connection for on- and off-rates with the binding equilibrium constant.  
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the “potential of mean force” (PMF): the Boltzmann factor of the PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
-These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$ for constant $T$ and $G$ for both constant $T$ and pressure -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$ , the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.  
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.  
@@ -363,7 +364,7 @@ This means atoms or molecules separated by considerable distances can still have
 The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$. 
 Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
-The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a charge in proximity.
+The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a nearby charge.
 
 It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant. 
 This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities~\cite{Ponder2003, Ponder:2010:J.Phys.Chem.B} or via Drude oscillator-type approaches~\cite{Lemkul:2016:Chem.Rev.}, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
@@ -377,7 +378,7 @@ Thus, we prefer to include \emph{all} electrostatic interactions, even out to ve
 Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
 First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
 But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
-The remaining option, then, is to apply periodic boundary conditions (see~\ref{sec:periodic}) to tile all of space with repeating copies of the system. 
+The remaining option, then, is to apply periodic boundary conditions (see Section~\ref{sec:periodic}) to tile all of space with repeating copies of the system. 
 Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics~\cite{Sagui:1999:Annu.Rev.Biophys.Biomol.Struct., Cisneros:2014:Chem.Rev.} where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
 
 In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
@@ -391,18 +392,7 @@ In general these should be used whenever long range electrostatic interactions a
 On classical electrostatics, we have found the undergraduate-level work by David J. Griffiths, ``Introduction to Electrodynamics''~\cite{Griffiths:2017:}, to be quite helpful.
 The graduate-level work of Jackson, ``Classical Electrodynamics''~\cite{Jackson:1998:}, is also considered a classic/standard work, but may prove challenging for those without a background relatively heavy in mathematics.
 
-%\subsection{Stochastic dynamics}
-%\subsubsection{Key concepts}
-%\begin{itemize}
-%\item Mention Brownian and Langevin dynamics. Concept of friction and random noise in these dynamical models. Connect to thermostat discussion
-%\item Integration of stochastic differential equations, what it means, without any technical details
-%\end{itemize}
-%\subsubsection{Books}
-%\begin{itemize}
-%\item McQuarrie
-%\end{itemize}
-%\subsubsection{Online resources}
-\todo[inline, color={yellow!20}]{DLM: I removed the unwritten ``stochastic dynamics'' sub-section for now; I am not sure it is critical, and we could add later if we decide it is. (We address Langevin elsewhere.}
+%\todo[inline, color={yellow!20}]{DLM: I removed the unwritten ``stochastic dynamics'' sub-section for now; I am not sure it is critical, and we could add later if we decide it is. (We address Langevin elsewhere.}
 
 \subsection{Molecular interactions}
 \label{sec:mol_interactions}
@@ -438,19 +428,18 @@ Often, the energy functions used by molecular simulations explicitly neglect non
 another, and atoms which are separated by only one intervening atom, partly to make it easier to ensure that these atoms have preferred geometries dictated by their defined equilibrium lengths/angles regardless of the nonbonded interactions which would otherwise be present.
 This neglect of especially short range nonbonded interactions between near neighbors is called ``exclusion'', and energy functions typically specify which interactions are excluded.
 
-The transition to torsions, especially proper torsions, is where exclusions
-typically end.
+The transition to torsions, especially proper torsions, is where exclusions typically end.
 However, many all-atom energy functions commonly used in biomolecular simulations retain only \emph{partial} nonbonded interactions between terminal atoms involved in a torsion. 
 The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3, and 4, so the terminal atoms could be called atoms 1 and 4, and nonbonded interactions between such atoms are called ``1-4 interactions''. 
 These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
 For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
+1-4 interactions are essentially considered the borderline between the bonded and non-bonded regions.
 
 
 %\end{itemize}
 \subsubsection{Books}
-\begin{itemize}
-\item ``Intermolecular and surface forces'' by Jacob N. Israelachvili
-\end{itemize}
+For a discussion of molecular interactions, we recommend ``Intermolecular and surface forces'' by Jacob N. Israelachvili.
+A variety of other books discuss these from a simulation perspective, e.g. Leach~\cite{LeachBook} and Allen and Tildesley~\cite{allen_computer_2017}.
 
 
 \section{Basic simulation concepts and terminology}
