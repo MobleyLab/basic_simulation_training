@@ -203,14 +203,36 @@ A variety of thermodynamics concepts are particularly important for molecular si
 \end{itemize}
 
 One of the main objectives of molecular simulations is to estimate/predict thermodynamic behavior of real systems. 
-It is important to understand key concepts in thermodynamics, such as temperature, pressure, internal energy, various forms of free energy and relationship between them. 
-Basic properties of these quantities should be faithfully mimicked by simulation methods. 
-It is quite straightforward to calculate internal energy, temperature and pressure from simulations, and these calculations can serve as quick sanity checks for the simulation setup. 
-Clear understanding of these concepts is absolutely essential for grasping certain technical aspects of MD simulations, such as thermostats and barostats as discussed further below. 
-Basic thermodynamic principles also dictate proper simulation protocols and associated best practices.
+This includes not only macroscopic, bulk thermodynamic properties, such as density or heat capacity,
+but also microscopic properties like specific free energy differences associated with, say, changes in the conformation of a molecule.
+For this reason, it is important to understand key concepts in thermodynamics, such as temperature, pressure, entropy, internal energy, various forms of free energy, and the relationships between them.
+Paramount, however, is an understanding of the connection between thermodynamics and statistical mechanics, which allows us to relate macroscopic, experimental measurements to the behavior of the much smaller system that is simulated.
+Involving many subtleties, this can be a confusing and difficult topic, and is presented in full within a number of excellent books~\cite{ShellBook, DillBook}.
+\todo[inline, color={green!20}]{JIM: I have not read Dill's book, so I'm guessing that this is an appropriate citation based on what I've heard about it. If someone can check me and add other thermodynamics texts that take a microscopic perspective, that would be wonderful.}
 
+As an example, consider temperature.
+In a macroscopic sense, we understand this quantity very intuitively as how hot or cold something is.
+The laws of thermodynamics provide us with a further abstraction, telling us that this is in fact the derivative of the internal energy with respect to the entropy.
+However, this is mainly a mathematical definition lacking intuition.
+It is mostly useful in that it helps us to derive other mathematical relationships.
+If we want to understand temperature from the point of view of a molecule and how it behaves, we finally must turn to statistical mechanics.
+Since molecular dynamics is mostly used to simulate molecularly-detailed behavior, it is necessary to utilize statistical-mechanical expressions in computing what would be observed as the macroscopic, thermodynamic temperature.
 
-\todo[inline, color={yellow!20}]{DLM: The discussion we have here of thermodynamics key concepts is way shorter than the stat mech key concepts below. Perhaps need to address; perhaps in an update?}
+This discussion should not provide the impression that statistical mechanics is more important than thermodynamics.
+The two are intimately connected and we must rely on both to successfully conduct and obtain information from MD simulations.
+In particular, thermodynamics provides rigid rules that must be satisfied if we are to faithfully reproduce reality.
+For instance, if energy is not conserved, the first law is not satisfied and we are for sure simulating a system out of equilibrium (i.e. we are somehow adding or removing energy).
+In this sense, the laws of thermodynamics provide us rigorous sanity checks in addition to many useful mathematical relations for computing properties.
+Basic thermodynamic principles thus also dictate proper simulation protocols and associated best practices.
+
+Although we usually think of thermodynamics applying macroscopically and statistical mechanics applying on the microsopic level, it is important to remember that the laws of thermodynamics still hold \textit{on average} regardless of the length scale.
+That is, a molecule in contact with a thermal bath will exchange energy with the bath, but its average energy is a well-defined constant.
+This allows us to define thermodynamic quantities associated with microscopic events, such as the binding of a ligand to a protein.
+This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic processes that can only be indirectly probed by experiment.
+Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
+For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~cite{Kofke1993, GonzalezSalgado2010}.
+
+\todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though.} 
 
 \subsubsection{Books}
 Equilibrium thermodynamics is taught in most undergraduate programs in physics, chemistry, biochemistry and various engineering disciplines.
@@ -221,6 +243,7 @@ Here are some works we find particularly helpful:
 \item McQuarrie and Simon's extensive work, ``Physical Chemistry': A Molecular Approach''~\cite{McQuarrie:1997:}
 \item Dill's ``Molecular Driving Forces''~\cite{DillBook}
 \item Kittel and Kroemer's ``Thermal Physics''~\cite{Kittel:1980:}
+\item Shell \cite{ShellBook}: Chapters 1-15.
 \end{itemize}
 
 
@@ -750,9 +773,6 @@ In general, deterministic thermostats should never be employed for production us
 \item Importance of energy conservation
 \item Commonly used integrators
 \end{itemize}
-\subsubsection{How to choose an appropriate time step?}
-
-\todo[inline, color={yellow!20}]{DLM: Need to switch consistently to ``time step'' or ``timestep''; ran out of time to do this on the plane}
 
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
@@ -767,11 +787,54 @@ Integrators that minimize discretization error should preserve phase space volum
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
 Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
-The reason for this outlined in greater detail in \todo[inline, color={green!20}]{JIM: Maybe add citation to Tuckerman paper from 1992}, but the basic idea is that the mathematical operator associated with an integrator must be unitary in order for phase space volume to be preserved.
-By definition of a unitary operator, the application of the operator to negative times is equal to applying the inverse of the operator to an equivalent positive time interval.
-This is in fact also the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
+More details may be found in ~\citet{Tuckerman:1992:}, but basically if the mathematical operator representing the integrator preserves phase space volume, it also satisfies the definition of reversibility: if the operator is applied to propagate forward by $\Delta t$, the starting condition may be recovered by in turn applying the operator to the result using $- \Delta t$ as the timestep.
 
-The maximum time step for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
+Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
+This is a much trickier property to examine, and varies with different integrators.
+For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
+The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
+\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated.}
+When the energy does change over the course of a simulation, it is said to ``drift.''
+The most common reason for energy drift is due to a timestep that is overly long.
+If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
+More subtly, the timestep may be long enough that the system is still stable over long times, but too long for the chosen integrator to conserve energy.
+Other simulation parameters may also impact energy drift, such as the method of truncating forces and energies, as well as the choice of numerical precision.
+The latter effect, due to truncation errors, will become obvious if two simulations with different timesteps are compared.
+Shorter timesteps, and hence more steps to achieve a simulation of the same length, will result in \textit{more} drift, since errors get larger with the number of calculations performed by the computer.
+This is exactly opposite to the behavior that is expected for poor energy conservation associated with discretization error, where a shorter timestep will reduce energy drift.
+\todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
+\todo[inline, color={green!20}]{JIM: I addressed some of this above. I'm not sure exactly about the scalings, though. Can you say for sure how energy drift scales with timestep or number of timesteps?  Isn't this highly algorithm-specific (and maybe even system-specific)?}
+
+Additionally, it is also desirable that an integrator be computationally efficient.
+Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
+To summarize what is presented below, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system.
+However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
+If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
+Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
+This has the added benefit of also reducing truncation error, which is proportional to the number of timesteps taken.
+It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
+
+The most commonly used integrators are variants of the Verlet algorithm (e.g. Velocity Verlet or Leapfrog). 
+Detailed discussion and derivation of such integrators may be found in section 7.3 of \citet{LeachBook} and 4.3 of \citet{Frenkel:2001:}.
+Such integrators are not applicable, however, for simulations involving stochastic dynamics.
+These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
+A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
+As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
+As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
+Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
+For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
+However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018}.
+Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
+When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
+If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
+If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:J.Chem.TheoryComput.}.
+
+\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
+\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
+
+\subsubsection{How to choose an appropriate timestep?}
+
+The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
@@ -780,40 +843,6 @@ For all-atom simulations with constraints on the high-frequency bonds, timesteps
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
 Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
-
-Energy conservation is imperative in simulating the microcanonical (NVE) ensemble.
-This is a much trickier property to examine, and varies with different integrators.
-For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
-The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
-\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this.}
-\todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
-
-Additionally, it is also desirable that an integrator be computationally efficient.
-Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
-As a general rule of thumb, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system (often this is bond vibration).
-However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
-If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
-Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
-This has the added benefit of also reducing truncation error, which is proportional to the number of timesteps taken.
-It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
-
-The most commonly used integrators are variants of the Verlet algorithm. 
-Detailed discussion and derivation of such integrators may be found in Leach~\cite{LeachBook} and Frenkel and Smit~\cite{Frenkel:2001:}.
-\todo[inline, color={green!20}]{JIM: Insert citations and correct sections in these books}
-Such integrators are not applicable, however, for simulations involving stochastic dynamics.
-These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
-A detailed description of such stochastic dynamics may be found in McQuarrie, Chapter ??.
-\todo[inline, color={green!20}]{JIM: Need to cite the right chapter in McQuarrie, and others?}
-As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
-As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
-Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
-For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
-However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved).
-\todo[inline, color={green!20}]{JIM: Need to cite Fass, Chodera, Crooks, etc.}
-Again, this may be remedied through a shorter timestep, but thus is more computationally expensive and increases truncation error.
-
-\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
-\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
 
 \subsection{Long range electrostatics}
