@@ -885,6 +885,15 @@ E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
 
 Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach. 
 
+
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{gridSolver_steps.pdf}
+    \caption{Steps involved in grid-based algorithms.}
+\label{charges_ewald}
+\end{figure}
+
 There are five general steps involved in these methods :
 \begin{enumerate}
 \item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).  
@@ -928,8 +937,6 @@ Here * is the convolution operation which is simply a product in the reciprocal 
 \frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
 \]
 \end{enumerate}
-
-
 
 Optimizing the performance of grid based methods is tricky as many of the choices would already have been made in the implementation of the method. As a user, there are a few ways to tweak the performance of the SPME : 
  
