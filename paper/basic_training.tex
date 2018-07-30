@@ -887,29 +887,65 @@ Ewald summation, through Fourier transform, as described in the previous section
 
 There are five general steps involved in these methods :
 \begin{enumerate}
-\item Charge assignment : In this step, charges are interpolated onto the grid of dimension K*K*K. 
-\item Transformation of the grid to reciprocal space :  
-\item Energy calculation : 
-\item Transformation of the grid back to real space : Inverse FFT is used to 
-\item Force calculation : 
+\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).  
+
+\[
+Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 M_n(u_i^d - k_d - p_dK_d)
+\]
+\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.    
+\[
+S(m) = \sum_j q_j \exp(mr_j)
+\]
+\[
+=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
+\]
+where
+\[
+b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
+\]
+\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
+\] 
+\item Energy calculation : Reciprocal space energy is calculated by
+\[
+E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}*Q)(m_1,m_2,m_3)
+\]
+where
+\[
+\theta_{rec} = F(BXC)
+\]
+
+\[
+B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
+\]
+and
+\[
+C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
+\]
+Here * is the convolution operation which is simply a product in the reciprocal space. 
+\item Transformation of the grid back to real space : Inverse FFT is used to convert $\theta{rec}*Q$ back to the real space. 
+\item Force calculation : Force is given by the gradient of the energy. It can be calculated in the reciprocal space by multiplication by (ik) (as implemented in the original PME) or by analytic differentiation in the real space as in SPME : 
+\[
+\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
+\]
 \end{enumerate}
 
 
 
-Optimizing 
+Optimizing the performance of grid based methods is tricky as many of the choices would already have been made in the implementation of the method. As a user, there are a few ways to tweak the performance of the SPME : 
+ 
 \begin{itemize}
+\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
 \item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
 \item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
-\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
 \end{itemize}
 
-\subsubsection{Other methods}
+%\subsubsection{Other methods}
 
-There are methods other than the Ewald which we can use as well 
-\begin{itemize}
-\item Isotropic periodic sum It doesn't use the Ewald
-\item Multigrid method It doesn't use Fourier 
-\end{itemize}
+%There are methods other than the Ewald which we can use as well 
+%\begin{itemize}
+%\item Isotropic periodic sum It doesn't use the Ewald
+%\item Multigrid method It doesn't use Fourier 
+%\end{itemize}
 
 \begin{Checklists*}[p!]
 
