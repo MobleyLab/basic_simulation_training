@@ -739,83 +739,49 @@ In general, deterministic thermostats should never be employed for production us
 \end{itemize}
 
 \subsubsection{Motivation}
-When browsing the literature for many physical properties of various
-materials, you will observe that a multitude of the thermodynamic
-properties of interest are measured under some contstant temperature
-and pressure. Whether it is standard temperature and pressure (STP), or
-a more extreme value, many experimental studies are performed under
-these conditions. Termed the isothermal-isobaric ensemble, this
-might be one of the most popular ensembles for simulationists in
-general. As is the case with thermostats, if the pressure must be
-maintained in a simulation, a barostat algorithm will be needed to
-sample this ensemble. This section will review the background of the
-barostats, a general overview of how they work, and introduce some
-popular barostats.
+When browsing the literature for many physical properties of various materials, you will observe that a multitude of the thermodynamic
+properties of interest are measured under some contstant temperature and pressure.
+Whether it is standard temperature and pressure (STP), or a more extreme value, many experimental studies are performed under these conditions.
+Termed the isothermal-isobaric ensemble, this might be one of the most popular ensembles for simulationists in general.
+As is the case with thermostats, if the pressure must be maintained in a simulation, a barostat algorithm will be needed to sample this ensemble.
+This section will review the background of the barostats, a general overview of how they work, and introduce some popular barostats.
 
 \subsubsection{Background and How They Work}
-Recall that in experimental studies, to control the pressure,
-some device must be used to control the volume of the system. By
-controlling the volume of the system, a constant pressure can be
-achieved\cite{tuckermanBook}. By allowing the system to
-exchange volume with the surroundings, the system is at
-a constant pressure\cite{ShellNotes}.
+Recall that in experimental studies, to control the pressure, some device must be used to control the volume of the system.
+By controlling the volume of the system, a constant pressure can be achieved~\cite{tuckermanBook}.
+By allowing the system to exchange volume with the surroundings, the system is at a constant pressure~\cite{ShellNotes}.
 
-
-For the purpose of molecular
-modeling, consider a system with a ficticious piston of some ficticious
-mass. The mass of the piston can be tuned to change the
-compression of the system, which will change how often the particles in
-the system will interact with the system enclosure. These impacts from
-the particles on the "enclosure" will impart a stress on the system box
-which can be related to the stress the surroundings are imparting on
-the system. With this relationship, we can use the virial theorem to
-calculate the pressure that the system is experiencing\cite{ShellNotes}.
-However, this is much more challenging when considering pairwise
-interactions and periodic boundary
-conditions\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
+For the purpose of molecular modeling, consider a system with a ficticious piston of some ficticious mass.
+The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
+These impacts from the particles on the "enclosure" will impart a stress on the system box which can be related to the stress the surroundings are imparting on the system.
+With this relationship, we can use the virial theorem to calculate the pressure that the system is experiencing~\cite{ShellNotes}.
+However, this is much more challenging when considering pairwise interactions and periodic boundary conditions~\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
 A different approach to the virial theorem is necessary at that point.
-The math is a bit more complex, which is out of the scope of this
-article. We encourage the readers to read the articles referenced
-here for more information.
+The math is a bit more complex, which is out of the scope of this article.
+We encourage the readers to read the articles referenced here for more information.
 
-Finally, this treatment described above only covers holding the pressure
-constant (the NP of NPT). When a barostat is applied without an
-additional thermostating algorithm, only the amount of particles (N),
-the pressure (P), and the enthalpy (H) of the system is held constant.
+Finally, this treatment described above only covers holding the pressure constant (the NP of NPT).
+When a barostat is applied without an additional thermostating algorithm, only the amount of particles (N), the pressure (P), and the enthalpy (H) of the system is held constant.
 This is known as the isoenthalpic-isobaric ensemble (NPH).
-To sample from the isothermal-isobaric ensemble (NPT), a
-thermostating algorithm like the ones dicussed earlier must also
-be applied.
+To sample from the isothermal-isobaric ensemble (NPT), a thermostating algorithm like the ones dicussed earlier must also be applied.
 
-If the thermostat section was any indication, there have been a
-multitude of various barostat algorithms that have been developed
-during the lifetime of molecular dynamics. However, they usually can
-be classified into three main categories: volume rescaling, weakly
-coupled, and extended ensemble barostats \cite{ShellNotes,
-tuckermanBook}. The next section will describe the main differences
-between these barostats, and give some recommendations for proper
-use.
+If the thermostat section was any indication, there have been a multitude of various barostat algorithms that have been developed during the lifetime of molecular dynamics.
+However, they usually can be classified into three main categories: volume rescaling, weakly coupled, and extended ensemble barostats~\cite{ShellNotes, tuckermanBook}. 
+The next section will describe the main differences between these barostats, and give some recommendations for proper use.
 
 
 \subsubsection{Popular and Notable Barostats}
-Within this section, a few notable barostats will be introduced to the
-reader, describing a high-level summary of each, with some of the issues
-associated with them as well. This is not an exhaustive list of
-barostats and barostat algorithms, just a sampling of popular and
-historic ones used in MD.
+Within this section, a few notable barostats will be introduced to the reader, describing a high-level summary of each, with some of the issues associated with them as well.
+This is not an exhaustive list of barostats and barostat algorithms, just a sampling of popular and historic ones used in MD.
 
 \subparagraph{Volume Rescaling}
 \begin{enumerate}[listparindent=\parindent]
     \item \textbf{Volume Rescaling}
 
-Volume rescaling barostats are the simplest example of pressure
-control in molecular simulations. Every time this barostat is
-executed, the volume of the system is modified to produce the exact
-pressure desired. This does \textbf{not} sample the proper
-ensemble, this cannot be used for production
-sampling \cite{ShellNotes}. This also does not smoothly approach the
-target pressure either, which might cause very unphysical issues
-with the system during time integration and force calculation.
+Volume rescaling barostats are the simplest example of pressure control in molecular simulations.
+Every time this barostat is executed, the volume of the system is modified to produce the exact pressure desired.
+This does \textbf{not} sample the proper ensemble, this cannot be used for production sampling~\cite{ShellNotes}.
+This also does not smoothly approach the target pressure either, which might cause very unphysical issues with the system during time integration and force calculation.
 
 \end{enumerate}
 
@@ -823,19 +789,12 @@ with the system during time integration and force calculation.
 \begin{enumerate}[listparindent=\parindent]
 \item \textbf{Berendsen}
 
-The Berendesen \cite{berendsen1984molecular} barostat is very
-similar to the Berendsen thermostat discussed earlier. With the
-goal of improving upon the volume rescaling methods mentioned above.
-This was to be achieved by coupling the system to a weakly
-interacting pressure bath \cite{berendsen1984molecular}. This bath
-would scale the volume periodically by a scaling factor, but would
-also produce more realisitc fluctuations in the pressure as it
-slowly approached the target pressure. In contrast to volume
-rescaling, Berendsen will approach the target pressure more
-realistically, but the ensemble it is sampling from is not well
-defined and cannot be guaranteed to be NPT or NPH. Berendsen can
-be useful for the beginning stages of equilibration, but should
-\textbf{not} be used for production sampling.
+The Berendesen~\cite{berendsen1984molecular} barostat is very similar to the Berendsen thermostat discussed earlier.
+With the goal of improving upon the volume rescaling methods mentioned above.
+This was to be achieved by coupling the system to a weakly interacting pressure bath~\cite{berendsen1984molecular}.
+This bath would scale the volume periodically by a scaling factor, but would also produce more realisitc fluctuations in the pressure as it slowly approached the target pressure.
+In contrast to volume rescaling, Berendsen will approach the target pressure more realistically, but the ensemble it is sampling from is not well defined and cannot be guaranteed to be NPT or NPH\@.
+Berendsen can be useful for the beginning stages of equilibration, but should \textbf{not} be used for production sampling.
 
 \end{enumerate}
 
@@ -843,57 +802,37 @@ be useful for the beginning stages of equilibration, but should
 \begin{enumerate}[listparindent=\parindent]
 \item \textbf{Andersen Barostat}
 
-First described by Andersen \cite{andersen1980molecular} in 1980, the
-system is coupled to a ficticious pressure bath, by adding an additional
-degree of freedom to the equations of motion. This behaves as if the
-system is being acted upon by an isotropic piston. This is similar to
-the Nos\'{e}-Hoover thermostat, which is also an extended system
-algorithm. This barostat does sample the correct ensemble, however,
-it is isotropic in nature and applying anisotropic pressures to
-parts of the system is not possible.
+First described by Andersen~\cite{andersen1980molecular} in 1980, the system is coupled to a ficticious pressure bath, by adding an additional degree of freedom to the equations of motion.
+This behaves as if the system is being acted upon by an isotropic piston.
+This is similar to the Nos\'{e}-Hoover thermostat, which is also an extended system algorithm.
+This barostat does sample the correct ensemble, however, it is isotropic in nature and applying anisotropic pressures to parts of the system is not possible.
 
 \item \textbf{Parrinello-Rahman Barostat}
 
-The Parrinello-Rahman \cite{Parrinello1981} barostat was an extension
-to the Andersen barostat. Due to the issue of isotropy with the
-Andersen barostat, this added additional support for not only
-changing the size of the simulation box, but also the shape. This can be
-quite useful in solid simulations, where phase changes can be shape
-changes in a crystal lattice, compared to a liquid or gas, which has no
-well defined shape. This barostat has essentially the same properties as
-the Andersen one, with the additional support anisotropy.
+The Parrinello-Rahman~\cite{Parrinello1981} barostat was an extension to the Andersen barostat.
+Due to the issue of isotropy with the Andersen barostat, this added additional support for not only changing the size of the simulation box, but also the shape.
+This can be quite useful in solid simulations, where phase changes can be shape changes in a crystal lattice, compared to a liquid or gas, which has no well defined shape.
+This barostat has essentially the same properties as the Andersen one, with the additional support anisotropy.
 
 \item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK) Barostat}
 
-Generally the same that holds true for the Parrinello-Rahman barostat
-and the Andersen barostat are still true for the MTTK barostat. MTTK
-\cite{martyna1994constant, martyna1996explicit} is usually seen as a
-slight improvement over Parrinello-Rahman \cite{Parrinello1981} in the
-regime of small systems.
+Generally the same that holds true for the Parrinello-Rahman barostat and the Andersen barostat are still true for the MTTK barostat.
+MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as a slight improvement over Parrinello-Rahman~\cite{Parrinello1981} in the regime of small systems.
 
 \end{enumerate}
 
 \subsubsection{Summary}
 
-In summary, there are three types of barostats usually implemented in
-molecular dynamics codes which can greatly affect the data you are
-collecting from the system. Volume rescaling is not recommended
-for any equlibration data sampling. This barostat does not sample from
-any correct ensemble, nor does it utilize any "realistic" approach to
-achieve the target pressure. Weak coupling barostats are a bit of an
-improvement compared to volume rescaling methods. However, these methods
-cannot be used to equlibrate the system. They can be used for
-approaching the target pressure in a more realistic fashion compared to
-the volume rescaling barostat. Finally, the barostats that can be used
-for the production runs of most systems are the extended ensemble
-barostats. It is usually not recommended to use these for the
-equilibration process, as these barostats do not behave as well when
-not near the target pressure. These can be affected by the starting
-configuration and pressure values much more than the Berendsen or
-volume rescaling barostats. MTTK and Parinello-Rahman allow for more
-flexibility in terms of the shape modulation of the simualtion box,
-but it usually boils down to using the extended-ensemble barostat
-that has been implemented in the simuation engine of choice.
+In summary, there are three types of barostats usually implemented in molecular dynamics codes which can greatly affect the data you are collecting from the system. 
+Volume rescaling is not recommended for any equlibration data sampling.
+This barostat does not sample from any correct ensemble, nor does it utilize any "realistic" approach to achieve the target pressure.
+Weak coupling barostats are a bit of an improvement compared to volume rescaling methods.
+However, these methods cannot be used to equlibrate the system.
+They can be used for approaching the target pressure in a more realistic fashion compared to the volume rescaling barostat.
+Finally, the barostats that can be used for the production runs of most systems are the extended ensemble barostats.
+It is usually not recommended to use these for the equilibration process, as these barostats do not behave as well when not near the target pressure.
+These can be affected by the starting configuration and pressure values much more than the Berendsen or volume rescaling barostats.
+MTTK and Parinello-Rahman allow for more flexibility in terms of the shape modulation of the simualtion box, but it usually boils down to using the extended-ensemble barostat that has been implemented in the simuation engine of choice.
 
 \subsection{Integrators}
 \label{sec:integrators}
