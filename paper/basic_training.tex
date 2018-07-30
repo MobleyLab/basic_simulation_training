@@ -121,14 +121,15 @@ Speed is a particular concern when describing condensed phase systems, as we are
 While system size alone does not require a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include substantial entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not just sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
 Furthermore, many systems of interest, such as polymers (biological and otherwise) have slow motions that must be captured for accurate calculation of properties.
 For example, for proteins, relevant timescales span from nanoseconds to seconds or more, and even rearrangements of buried amino acid sidechains can in some cases take microseconds or more, with larger conformational changes and protein folding taking even longer~\cite{Schlick:2010:, Mobley:2012:JComputAidedMolDes}. 
-Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range, but the field would like to reach even longer timescales, meaning that switching to a more detailed energy model is only done with some trepidation slower energy evaluations mean less time available for sampling. 
+Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range.
+However, the field would like to reach even longer timescales, meaning that switching to a more detailed energy model is only done with some trepidation because slower energy evaluations mean less time available for sampling. 
 Thus the need for speed limits the use of quantum mechanical descriptions.
 
 Thus, for the rest of this document we will restrict ourselves to classical MD.
 
 One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the overall topology or chemistry of a system will remain constant as a function of time.
-That is, the particles comprising the system move around, but its chemical identity is a constant over the course of the simulation.
-\todo[inline, color={yellow!20}]{DLM: Refs?}
+That is, the particles comprising the system move around, but the chemical identity of each molecule in the system is a constant over the course of the simulation (with only partial exceptions, such as the case of constant pH simulations).
+\todo[inline, color={yellow!20}]{DLM: Refs needed here}
 
 Here, we first discuss the scope of this document, then go over some of the fundamental concepts or science topics which provide the underpinnings of molecular simulations, giving references for further reading.
 Then, we introduce a variety of basic simulation concepts and terminology, with additional links to further reading.
@@ -204,7 +205,7 @@ One of the main objectives of molecular simulations is to estimate/predict therm
 It is important to understand key concepts in thermodynamics, such as temperature, pressure, internal energy, various forms of free energy and relationship between them. 
 Basic properties of these quantities should be faithfully mimicked by simulation methods. 
 It is quite straightforward to calculate internal energy, temperature and pressure from simulations, and these calculations can serve as quick sanity checks for the simulation setup. 
-Clear understanding of these concepts is absolutely essential for grasping certain technical aspects of MD simulations namely, thermostat and barostat, which will be discussed in later sections. 
+Clear understanding of these concepts is absolutely essential for grasping certain technical aspects of MD simulations, such as thermostats and barostats as discussed further below. 
 Basic thermodynamic principles also dictate proper simulation protocols and associated best practices.
 
 
