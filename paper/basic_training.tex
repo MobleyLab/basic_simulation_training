@@ -572,30 +572,39 @@ these steps:
 \item Production
 \end{enumerate}
 
-Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials \citep{LemkulTutorials} \citep{AmberBeginner}.
+Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials \citep{LemkulTutorials, AmberBeginner}.
 It should be noted that these steps may be difficult to unambiguously differentiate and define in some cases.
 Additionally, it is assumed that prior to performing any of these steps, an appropriate amount of deliberation has been devoted to clearly defining the system and determining the appropriate simulation techniques.
 
-System preparation is the most variable of these steps, and often requires unique tools for every system of interest.
+System preparation is typically the most variable of these steps, and often requires unique tools for every system of interest.
 It is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
-If such documents do not exist, it may be that a freely-available tool for constructing such a system does in fact exist.
+If such documents do not exist, considerable care should be exercised to determine best practices from the literature.
+In some cases, freely available tools are constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
-The goal of all of these tools, and system preparation in general, is to create a representation of the system of interest that can be interpreted by the desired simulation package.
+The goal of all of these tools, and system preparation in general, is to create an accurate representation of the system of interest that can be interpreted by the desired simulation package.
 It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
 However, for a force field that reliably reproduces the energetics of a system, a starting configuration that is close to equilibrium is only a time-saving convenience in that it greatly reduces the equilibration time and overall simulation length by preventing trapping in metastable states.
+
+System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention.
+Specifically, if your system preparation is flawed, such flaws may prove fatal. 
+Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is probably the most frequent outcome of problems in system preparation.
+It should not be assumed that if a system can proceed in a well-behaved manner through the other steps, it was necessarily prepared correctly; considerable care should be taken here.
 
 The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will allow numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4).
 Such a configuration is a suitable starting point for molecular dynamics techniques.
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
-Even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
+
+
+Following minimization, equilibration is typically needed.
+Specifically, even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
 For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble.
-Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
+Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed (if an NVE simulation is desired) and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
 This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired.
 This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see Section~\ref{sec:thermostats}), and the temperature fluctuates with the kinetic energy at each time step.
 Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired.
