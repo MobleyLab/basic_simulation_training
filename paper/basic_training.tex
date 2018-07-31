@@ -640,7 +640,8 @@ For more specific details on procedures and parameters used in production simula
 \subsection{Thermostats}
 \label{sec:thermostats}
 
-Here, we discuss why thermostats are (often) needed for molecular simulations, then discuss their background and how they work, and survey some popular thermostats, closing with some recommendations.
+Here, we discuss why thermostats, which seek to control the temperature of a simulation, are (often) needed for molecular simulations. 
+We review background information about thermostats and how they work, introduce some popular thermostats, and highlight common issues to understand and avoid when using thermostats in MD simulations.
 
 % Motivation for using thermostats
 \subsubsection{Thermostats seek to maintain a target temperature}
@@ -649,29 +650,28 @@ However, these properties traditionally are not measurable from the initial conf
 This generally requires transitioning the system to some other state point to collect the proper data once the system has equilibrated.
 In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant-temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
 Generally, if the temperature of the system must be maintained during the simulation, some thermostat algorithm will be employed. 
-This section will review the background information about thermostats and how they work, introduce some popular thermostats, and highlight common issues to understand and avoid when using thermostats in MD simulations.
+
 
 % relevant background information needed to understand thermostats
 \subsubsection{Background and How They Work}
-The difference between the types of temperatures that are measured in a simulation is important to know.
-There is the target temperature --- a temperature value that we attempt to maintain the system near.
-In other words, the target temperature is the specified temperature which a thermostat is used to maintain.
-However, due to the fluctuations, it is not guaranteed that the temperature measured at single point in time will be the target temperature; in reality, the instantaneous temperature should undergo fluctuations around the target temperature.
+MD simulations involve at least two kinds of temperature --- a target temperature the system should have or remain near, and an instantaneous or kinetic temperature, relating to the instantaneous properties of the system at a particular point in time.
+The target temperature is the specified temperature which a thermostat is used to maintain.
+However, due to the fluctuations, it is not guaranteed that the temperature measured at single point in time will be the target temperature; in reality, the instantaneous temperature \emph{should} undergo fluctuations around the target temperature.
 The instantaneous temperature is also known as the kinetic temperature and is typically computed via the equipartition theorem.
-It should be noted that this value can be greater than, less than, or equal to the temperature corresponding to the average kinetic energy.
+It should be noted that the instantaneous temperature can be greater than, less than, or equal to the temperature corresponding to the average kinetic energy.
 The kinetic temperature should also be paid special attention to when describing the system.
 The kinetic temperature does \textbf{not} state ``the temperature is at some value $T$'', it merely states: ``the energy of the system is similar to that
 of a system at temperature $T$''.
 
-Finally, there are generally three types of thermostats: deterministic, stochastic, and extended system.
-Deterministic thermostats are usually known to scale the momenta or forces on the particles in the system based on their fitness to the target temperature.
-Stochastic thermostats behave similarly to the deterministic thermostats, however, there is a random force or momenta sampled out of a probability distribution that can scale or modify these properties of selected particles.
-Extended system thermostats are similar to what their name suggests, the system has an added variable that has a degree of freedom.
-This emulates an external heat bath that can interact with the particles in the system affecting their momenta in a predictable fashion.
+Several different thermostats are used to bring systems to a desired target temperature, and can be loosely grouped into three categories: deterministic, stochastic, and extended system (though some fall into multiple categories).
+Deterministic thermostats are usually known to scale the momenta or forces on the particles in the system based on how consistent these are with the target temperature.
+Stochastic thermostats behave similarly to the deterministic thermostats; however, they also involve a random force or momenta sampled out of a probability distribution that can that modifies the behavior of individual particles in a stochastic manner.
+Extended system thermostats are similar to what their name suggests --- the system has added variable(s) and an additional degree(s) of freedom relating to the thermostat.
+This emulates an external heat bath that can interact with the particles in the system, affecting their momenta in a predictable fashion.
 
 \subsubsection{Popular Thermostats}
 Within this section, various thermostats will be briefly explored, with a small description of their uses and possible issues that are associated with each.
-This is by no means an exhaustive study of available thermostats, just some of the more popular and historic thermostats used in MD.
+This is by no means an exhaustive study of available thermostats; instead, we survey some of the more popular and historic thermostats used in MD.
 
 \subparagraph{Deterministic Thermostats}
 \begin{enumerate}[listparindent=\parindent]
@@ -686,8 +686,8 @@ This is by no means an exhaustive study of available thermostats, just some of t
         The isokinetic (constant kinetic energy) ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent equilibrium properties can be obtained equivalently with either ensemble\cite{Minary:2003:JChemPhys:Algorithms}.
         However, the isokinetic ensemble is not properly sampled by the simple velocity rescaling thermostat, and its usage can lead to simulation artifacts, so it is not recommended\cite{Braun:2018:arXiv:Anomalous}.
 
-    \item \textbf{Hoover (Gaussian)}
-        \todo[inline, color={green!20}]{EB: I recommend referring to this thermostat as the Gaussian Thermostat. I've seen it referred to as the Hoover-Evans thermostat as well (I haven't seen it called the Hoover thermostat, but I'm sure somebody has called it that), but simply calling it the Gaussian thermostat avoids wading into the argument about who came up with it first.}
+    \item \textbf{Gaussian}
+       % \todo[inline, color={green!20}]{EB: I recommend referring to this thermostat as the Gaussian Thermostat. I've seen it referred to as the Hoover-Evans thermostat as well (I haven't seen it called the Hoover thermostat, but I'm sure somebody has called it that), but simply calling it the Gaussian thermostat avoids wading into the argument about who came up with it first.}
         
         The goal of the Gaussian thermostat is to ensure the change in instantaneous temperature $\Delta T$ is always 0 ($\Delta T \equiv 0$); this is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{constraint}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation and $F_{constraint}$ is a Lagrange multiplier that keeps the kinetic energy constant.
         The reasoning for the naming of this thermostat is due to the method to solve for the smallest perturbative forces needed to keep the change in temperature equal to 0.
@@ -705,7 +705,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
 
 \end{enumerate}
 
-Overall, \emph{none} of these deterministic thermostats are suitable for most production-level simulations, though the Gaussian thermostat has uses in some advanced applications\cite{Minary:2002:JChemPhysAlgorithms}, because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}.
+Overall, \emph{none} of these deterministic thermostats are suitable for most production-level simulations because they do not sample from the canonical ensemble~\cite{Shirts:2013:J.Chem.TheoryComput.}, though the Gaussian thermostat has uses in some advanced applications\cite{Minary:2002:JChemPhysAlgorithms}.
 The simple velocity rescaling and Berendsen thermostats can also lead to unexpected problems in systems with weak or poor coupling between degrees of freedom, such as the ``flying ice cube''~\cite{Harvey:1998:JCompChem} problem in some systems, and problems in alchemical free energy calculations where portions of the system are decoupled from the rest of the system (e.g. very rapid movement of atoms in the decoupled portion of the system); they should not be used.
 To some extent, however, the choice of thermostat may depend on the property being calculated; e.g. for transport properties and kinetics, rather different issues may need consideration~\cite{Basconi:2013:J.Chem.TheoryComput.}.
 
@@ -757,7 +757,7 @@ To some extent, however, the choice of thermostat may depend on the property bei
 
 
 \subsubsection{Summary}
-To summarize, observe (\ref{tstat_summary}), as a general summary and guide for exploring the usage of various thermostats.
+To summarize, observe (Figure \ref{tstat_summary}), as a general summary and guide for exploring the usage of various thermostats.
 Make sure to pay special attention to the reversibility when measuring time dependent properties, the ensemble sampled for all cases, and if a proper distribution of momenta and kinetic energy fluctuations are supported.
 Do note that depending on the system of interest, it might not be necessary to worry about some of this information when initializing the system for a production run.
 For example, if the thermal history of the system is not necessary during equilibration, a faster algorithm like Andersen or Berendsen could possibly be employed, with a switch to Nos\'{e}-Hoover for the production run.
@@ -771,7 +771,6 @@ In general, deterministic thermostats should never be employed for production us
     that the thermostat does not fulfill that statement, \ding{51} does, and
     (\ding{51}) does under certain circumstances.}\label{tstat_summary}
 \end{figure}
-\todo[inline, color={green!20}]{EB: The Bussi thermostat should be added to this graphic under the stochastic grouping, with the canonical and fluctuations boxes checked.}
 
 \subsection{Barostats}\label{sec:barostats}
 \begin{itemize}
