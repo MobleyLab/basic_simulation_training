@@ -48,7 +48,7 @@
 %\author[2*]{Firstname Surname}
 \affil[1]{University of California, Berkeley}
 \affil[2]{Vanderbilt University}
-\affil[3]{University of Michigan}
+\affil[3]{University of Michigan, Ann Arbor}
 \affil[4]{University of California, Irvine}
 \affil[5]{University of California, Santa Barbara}
 \affil[6]{National Institutes of Health}
@@ -98,22 +98,23 @@ We also provide a checklist of key issues to consider before and while setting u
 \label{sec:intro}
 
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
-Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications.
+Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications \cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017}.
 
-The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation. 
+The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation \cite{Frenkel:2001:,LeachBook}. 
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
 
 Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC).
-With MD methods, the equation of motion is numerically integrated and a dynamical trajectory of the system is generated. 
+With MD methods, the equations of motion are numerically integrated to generate a dynamical trajectory of the system. 
 MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system.
 With MC methods, probabilistic rules are used to generate a new configuration from the present configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time. 
-Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system. 
+Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, but the ensemble of configurations that reflect those dynamically sampled. 
 This foundational document will focus on the concepts needed to carry out correct MD simulations that utilize good practices. 
-Many, but not all, of the concepts here are also useful for MC simulations and apply there as well, but MC as a whole needs its own document.
+Many, but not all, of the concepts here are also useful for MC simulations and apply there as well. However, there are a sufficient number of key differences, which are outside the scope of this current document.
 
 Either method can be carried out with different underlying physical theories to describe the particle-based model of the system under investigation.
 If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability. 
-In a classical description, the molecules are represented by particles representing atoms or groups of atoms.  Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions.
+In a classical description, the molecules are represented by particles representing atoms or groups of atoms.  Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data) used to calculate non-bonded and bonded interactions between particles. 
+In MD simulations, these interactions generate the forces that determine the system dynamics.
 Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase.
 %\todo[inline, color={red!20}]{Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good. Also add in general, that the topology does not change--most FF do not allow chemical reactions}
 
