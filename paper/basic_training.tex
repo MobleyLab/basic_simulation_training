@@ -176,7 +176,7 @@ Here, we will assume you are already familiar with Newtonian mechanics.
 
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
-Due to the high frequency of the O-H vibrations, accurately treating water classically would require a very small time step, so for computational efficiency water is often instead treated as a rigid body.
+Due to the high frequency of the O-H vibrations, accurately treating water classically would require a solving the equations of motion with a very small timestep, so for computational efficiency water is often instead treated as a rigid body.
 Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
 It is important to understand the concept of point particles, rigid bodies and constraints.
 
@@ -591,11 +591,11 @@ Specifically, if your system preparation is flawed, such flaws may prove fatal.
 Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is a  frequent outcome of problems in system preparation.
 It should not be assumed that if a system can proceed in a well-behaved manner through the other steps, it was necessarily prepared correctly; considerable care should be taken here.
 
-The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
+The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single timestep).
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will allow numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4).
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired timestep will allow numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4).
 Such a configuration is a suitable starting point for molecular dynamics techniques.
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
@@ -605,7 +605,7 @@ Specifically, even though velocities are assigned according to the correct distr
 For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble.
 Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed (if an NVE simulation is desired) and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
 This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired.
-This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see Section~\ref{sec:thermostats}), and the temperature fluctuates with the kinetic energy at each time step.
+This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see Section~\ref{sec:thermostats}), and the temperature fluctuates with the kinetic energy at each timestep.
 Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired.
 In this case, the system may be scaled to the desired average volume before the production simulation.
 In the above example, the NPT simulation is said to have equilibrated to a specific volume when the dimensions of the simulation box fluctuate around constant values with minimal drift. 
@@ -678,7 +678,7 @@ This is by no means an exhaustive study of available thermostats; instead, we su
     \item \textbf{Simple Velocity Rescaling}
 
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement, however, this thermostat is also one of the most non-physical thermostats as well.
-        This thermostat relies on rescaling the momenta of the particles every $N$ time steps based on their ratio of the instantaneous temperature to the target temperature\cite{thermostatAlgorithms2005}.
+        This thermostat relies on rescaling the momenta of the particles every $N$ timesteps based on their ratio of the instantaneous temperature to the target temperature\cite{thermostatAlgorithms2005}.
         This leads to multiple issues when trying to sample data using this thermostat.
         First, this method is not reversible, there lacks a way for the particles to have knowledge of their previous thermal history.
         This makes any dynamical value impossible to measure (diffusion for example).
@@ -889,8 +889,6 @@ It is recommended to begin with a volume rescaling or weakly coupled barostat to
 
 \subsection{Integrators}
 \label{sec:integrators}
-
-\todo[inline, color={yellow!20}]{DLM: Need to decide on ``time step'' versus ``timestep'' and change everywhere in whole paper; right now we use both.}
 
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
