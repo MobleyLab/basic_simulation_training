@@ -857,6 +857,20 @@ Thus, MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as an
 
 \end{enumerate}
 
+\subparagraph{Monte Carlo Barostats}
+\begin{enumerate}[listparindent=\parindent]
+\item \textbf{MC Barostat}
+
+Constant pressure may also be achieved by periodically performing Monte Carlo moves that adjust the system volume.
+For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in ~\citet{ShellNotes}.
+These MC barostats are computationally advantageous in that the Virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
+However, they rigorously only explore the correct distribution of volumes in the NPT ensemble without any attempt at preserving the dynamic fluctuations involved in this sampling.
+Unlike for extended system barostats, there is no sense of relaxation time over which the volume of the system responds.
+Instead, the rate at which the volume may respond is limited by the frequency with which MC moves are performed and the maximum allowed change in volume.
+Thus, long-time dynamics are not accurately reproduced in any sense for MC barostats.
+
+\end{enumerate}
+
 \subsubsection{Summary}
 
 In summary, there are three types of barostats usually implemented in molecular dynamics codes which can greatly affect the data you are collecting from the system. 
