@@ -537,7 +537,7 @@ They DO NOT effectively simulate an infinitely sized simulation box, though they
 This is most easily seen by imagining the placement of a solute in a periodic simulation box.
 The solute will be replicated in all of the surrounding periodic images.
 The concentration of solute is thus exactly one per the volume of the box.
-Although proper selection of non-bonded cutoffs will guarantee that these solutes do not directly interact, they may indirectly interact through their perturbation of nearby solvent.
+Although proper selection of non-bonded cutoffs will guarantee that these solutes do not directly interact (hence the common claim that such systems are at infinite dilution), they may indirectly interact through their perturbation of nearby solvent.
 If the solvent does not reach a bulk-like state between solutes, the simulation will still suffer from obvious finite-size effects.
 
 Macroscopic, lab-scale systems, or bulk systems, typically consist of multiple moles of atoms/molecules and thus from a simulation perspective are effectively infinite systems.
@@ -547,7 +547,7 @@ Finite-size effects are particularly apparent in the electrostatic components of
 One should always check that unexpected long-range correlations (i.e. on the length-scale of the simulation box) do not exist in molecular structure, spatial position, or orientation.
 It should also be recognized that periodic boundary conditions innately change the definition of the system and the properties calculated from it.
 Many derivations, especially those involving transport properties, such as diffusivity \citep{Yeh2004}, assume infinite and not periodic boundary conditions. 
-\todo[inline, color={green!20}]{JIM: Other examples to cite? I think there's some examples also involving calculations of entropy, but I'll have to check this}
+%\todo[inline, color={green!20}]{JIM: Other examples to cite? I think there's some examples also involving calculations of entropy, but I'll have to check this. Let this go for current version, maybe update later.}
 The resulting differences in seemingly well-known expressions for computing properties of interest are often subtle, yet may have a large impact on results.
 Such considerations should be kept in mind when comparing results between simulations and with experiment.
 
