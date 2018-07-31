@@ -922,8 +922,10 @@ Other simulation parameters may also impact energy drift, such as the method of 
 The latter effect, due to truncation errors, will become obvious if two simulations with different timesteps are compared.
 Shorter timesteps, and hence more steps to achieve a simulation of the same length, will result in \textit{more} drift, since errors get larger with the number of calculations performed by the computer.
 This is exactly opposite to the behavior that is expected for poor energy conservation associated with discretization error, where a shorter timestep will reduce energy drift.
-\todo[inline, color={yellow!20}]{DLM: Probably need to address energy drift, as well as how energy changes should scale with timestep.}
-\todo[inline, color={green!20}]{JIM: I addressed some of this above. I'm not sure exactly about the scalings, though. Can you say for sure how energy drift scales with timestep or number of timesteps?  Isn't this highly algorithm-specific (and maybe even system-specific)?}
+
+Overall, then, integrators do exhibit energy fluctuations that are timestep-dependent.
+All Verlet-equivalent integrators exhibit energy fluctuations which decrease with the square of the timestep~\cite{allen_computer_2017}, which is often an important check when assessing the correctness of an implementation.
+Thus, both energy drift and energy fluctuations are important criteria to understand when assessing integrators, and can be useful measures of simulation quality in the NVE ensemble.
 
 Additionally, it is also desirable that an integrator be computationally efficient.
 Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
