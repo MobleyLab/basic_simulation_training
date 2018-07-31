@@ -100,7 +100,7 @@ We also provide a checklist of key issues to consider before and while setting u
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
 Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications \cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
-The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation \cite{Frenkel:2001:,LeachBook}. 
+The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation \cite{Frenkel:2001:,2001Leach}. 
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
 
 Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC).
@@ -117,7 +117,7 @@ In a classical description, the molecules are represented by particles represent
 In MD simulations, these interactions generate the forces that determine the system dynamics.
 MD simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase. 
 However, typically, they are of lower-accuracy than QM simulations and cannot simulate bond rearrangements. 
-QM simulations may be too computationally expensive to allow simulations of the time and length scales required to describe the system of interest \cite{Bottaro}. 
+QM simulations may be too computationally expensive to allow simulations of the time and length scales required to describe the system of interest \cite{Bottaro2018}. 
 The size of the system amenable for to QM simulation also depends on what type of method is chosen, from high-level ab initio methods to semi-empirical methods; discussion of these methods are outside the scope of this article, and useful references are separately available \cite{Jensen2007}. 
 Computational resources available are also an important consideration in deciding whether QM simulations are tractable. Roughly, QM simulations might be tractable with hundreds of atoms or fewer, while MD simulations routinely have tens or hundreds of thousands of atoms in the system. Much above that level, coarse-graining methods are used. 
 They reduce resolution and computational cost. Although many of the approaches for atomistic simulations discussed here can apply to coarse-grained simulations, such simulations are not the focus of this paper and we will not discuss how coarse-grained simulations are initially built.
@@ -133,7 +133,7 @@ Thus, for the rest of this document we will restrict ourselves to classical MD.
 
 One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the overall topology or chemistry of a system will remain constant as a function of time.
 That is, the particles comprising the system move around, but its chemical identity is a constant over the course of the simulation.
-\todo[inline, color={yellow!20}]{DLM: Refs?}
+\todo[inline, color={yellow!20}]{DLM: Refs? HM: the previous refs I added (mainly intro books) do cover there}
 
 Here, we first discuss the scope of this document, then go over some of the fundamental concepts or science topics which provide the underpinnings of molecular simulations, giving references for further reading.
 Then, we introduce a variety of basic simulation concepts and terminology, with additional links to further reading.
@@ -346,7 +346,7 @@ This polarization can be modeled in a variety of ways, such as (in fixed charge 
 Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
 Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
 Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
-In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{Leachbook, York:1993:J.Chem.Phys., Darden:1993:J.Chem.Phys., Piana:2012:PLOSONE, Sagui:1999:Annu.Rev.Biophys.Biomol.Struct.}. 
+In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{2001Leach, York:1993:J.Chem.Phys., Darden:1993:J.Chem.Phys., Piana:2012:PLOSONE, Sagui:1999:Annu.Rev.Biophys.Biomol.Struct.}. 
 Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range. 
 Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
 First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
@@ -448,7 +448,7 @@ For our purposes here, the distinction between a force field library and a param
 Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
-Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}). 
+Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{2001Leach}). 
 Coulombic interactions, including both short and long-range components, are described in detail elsewhere in this document.
 To represent bonded interactions, harmonic potentials are often employed. 
 The same is true for angles between three bonded atoms, but the harmonic potential  is applied with respect to the angle formed and not the distance between atoms. 
@@ -456,7 +456,7 @@ Torsional terms are also commonly employed, usually consisting as sums of  cosin
 More exotic potentials based on three-body intermolecular  orientations, or terms directly coupling bond lengths and bending angles are also possible. 
 Additionally, other choices of potential function are of course  acceptable, including Buckingham or Morse potentials, or the use of ``improper'' dihedral terms to enforce planarity of cyclic portions of molecules. 
 This may even include empirical corrections based on discrete binning along a particular set of degrees of freedom~\citep{mackerell2004CMAP, perez2015}, as well as applied external fields (i.e. electric fields) and force field terms describing the effect of degrees of freedom, such as solvent, that have been removed from the system via ``coarse-graining.''~\citep{sanyal2016}
-For a more in-depth discussion of common (as well as less common) force field terms, see Ch. 4 of \citet{LeachBook}, or for an in-depth review of those specific to simulating biomolecules, see \citet{Ponder2003}.
+For a more in-depth discussion of common (as well as less common) force field terms, see Ch. 4 of \citet{2001Leach}, or for an in-depth review of those specific to simulating biomolecules, see \citet{Ponder2003}.
 
 Functional forms used to describe specific terms in a potential energy function may be vastly different in mathematical character even though they seek to describe the same physics.
 For instance, the Lennard-Jones potential implements an $r^{-12}$ term to represent repulsions, while an exponential form is used in the Buckingham potential.
@@ -514,7 +514,7 @@ To prevent this, a cut-off of many non-bonded interactions should be chosen that
 (However, as noted in Section~\ref{sec:classical_electrostatics} these cut-offs are not normally applied to electrostatic interactions because truncating these interactions induces worse artifacts than does including interactions with multiple copies of the same particle. 
 Instead, what are often termed ``cut-offs'' that are applied to electrostatics are instead a shift from short-range to long-range treatments.)
 Such cut-offs impose a natural lower limit to the size of a periodic simulation box, as the box must be large enough to capture all of the most significant non-bonded interactions.
-Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{LeachBook}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
+Further information on periodic boundary conditions and discussion of appropriate cut-offs may be found in \citet{2001Leach}, sections 6.5 and 6.7 and \citet{ShellNotes}, lecture on Simulations of bulk phases.
 %DLM: I have permission to migrate Shell's notes to GitHub, specifically to https://github.com/kofkeLab/Mol-Sim-Intro, so I should go ahead and prioritizing these particular notes there and then cite here.
 
 It is very important to note that periodic boundary conditions are simply an approximation to bulk behavior.
@@ -564,9 +564,9 @@ However, for a force field that reliably reproduces the energetics of a system, 
 
 The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
 This involves standard minimization algorithms such as steepest descent.
-For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
+For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{2001Leach}, sections 5.1-5.7.
 
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will well-approximate the dynamics (see \citet{LeachBook}, section 7.3.4).
+At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired time step will well-approximate the dynamics (see \citet{2001Leach}, section 7.3.4).
 Such a configuration is a suitable starting point for molecular dynamics techniques.
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
@@ -581,7 +581,7 @@ In the above example, the NPT simulation is said to have equilibrated to a speci
 This definition, though not perfectly rigorous, is usually suitable for assessing the equilibration of energies, temperature, pressure, and box dimensions during equilibration simulations.
 The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibriation work-flow for common production ensembles.
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
-For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
+For more information on equilibration procedures, see \citet{2001Leach}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
 %DLM: Should we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
 %JIM: I tried this out above.
 
@@ -648,7 +648,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
         This makes any dynamical value impossible to measure (diffusion for example).
         There is also no distribution of momenta; this thermostat does not sample the canonical distribution and cannot be used for sampling at thermal equilibrium.
         The isokinetic (constant kinetic energy) ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent equilibrium properties can be obtained equivalently with either ensemble\cite{Minary:2003:JChemPhys:Algorithms}.
-        However, the isokinetic ensemble is not properly sampled by the simple velocity rescaling thermostat, and its usage can lead to simulation artifacts, so it is not recommended\cite{Braun:2018:arXiv:Anomalous}.
+        However, the isokinetic ensemble is not properly sampled by the simple velocity rescaling thermostat, and its usage can lead to simulation artifacts, so it is not recommended\cite{2018Braun}.
 
     \item \textbf{Hoover (Gaussian)}
         \todo[inline, color={green!20}]{EB: I recommend referring to this thermostat as the Gaussian Thermostat. I've seen it referred to as the Hoover-Evans thermostat as well (I haven't seen it called the Hoover thermostat, but I'm sure somebody has called it that), but simply calling it the Gaussian thermostat avoids wading into the argument about who came up with it first.}
@@ -665,7 +665,7 @@ This is by no means an exhaustive study of available thermostats, just some of t
         The Berendsen thermostat is another type of velocity rescaling thermostat, but instead of the rescaling happening very abruptly each force adjustment time, we include a relaxation term to allow the system to more slowly approach the target temperature\cite{berendsen1984molecular}.
         With the introduction of a coupling parameter $\tau$, the strength of this parameter will determine how fast the system will approach the target temperature.
         However, it should be noted that while allowing for temperature fluctuations, the Berendsen thermostat is not canonical nor is it reversible.
-        Its usage can lead to simulation artifacts, so it is not recommended\cite{Braun:2018:arXiv}.
+        Its usage can lead to simulation artifacts, so it is not recommended\cite{2018Braun}.
 
 \end{enumerate}
 
@@ -801,7 +801,7 @@ This has the added benefit of also reducing truncation error, which is proportio
 It is worth noting that the issue of integrator choice versus timestep is not always simple; in some cases, a ``better'' integrator might allow longer timesteps but also carry an additional computational cost that outweighs the benefits of an increased timestep.
 
 The most commonly used integrators are variants of the Verlet algorithm. 
-Detailed discussion and derivation of such integrators may be found in Leach~\cite{LeachBook} and Frenkel and Smit~\cite{Frenkel:2001:}.
+Detailed discussion and derivation of such integrators may be found in Leach~\cite{2001Leach} and Frenkel and Smit~\cite{Frenkel:2001:}.
 \todo[inline, color={green!20}]{JIM: Insert citations and correct sections in these books}
 Such integrators are not applicable, however, for simulations involving stochastic dynamics.
 These simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
