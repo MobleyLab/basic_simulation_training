@@ -1131,7 +1131,9 @@ periodicity is needed
 
 \begin{checklist}{Choose an appropriate timestep for stability and avoiding energy drift}
 \begin{itemize}
-\item This depends on factors such as the use of constraints in the system (e.g. for all-atom systems constraining hydrogen bonds can allow the use of a slightly longer timestep; 2 fs is relatively typical)
+\item Determine the highest-frequency motion in the system (typically bond vibrations unless bond lengths are constrained)
+\item As a first guess, set the timestep to approximately one tenth of the highest-frequency motion's characteristic period.
+\item Test this choice by running a simulation in the microcanonical ensemble, and ensure that energy is conserved.
 \end{itemize}
 \end{checklist}
 
