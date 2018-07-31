@@ -875,19 +875,18 @@ It is recommended to begin with a volume rescaling or weakly coupled barostat to
 
 \subsection{Integrators}
 \label{sec:integrators}
-\begin{itemize}
-\item Numerical solution of dynamical equations of motions
-\item Importance of energy conservation
-\item Commonly used integrators
-\end{itemize}
+
+\todo[inline, color={yellow!20}]{DLM: Need to decide on ``time step'' versus ``timestep'' and change everywhere in whole paper; right now we use both.}
 
 For systems consisting of more than three interacting bodies with no constrained degrees of freedom, there is no analytical solution to the equations of motion.
 Instead, we must approximate the dynamics in a discrete manner.
 This is usually termed numerical integration of the equations of motion. 
 Algorithms to perform this integration take many forms and are usually called integrators.
-Obviously, this discretization process introduces errors, as quickly becomes apparent if solutions from integrators are compared to dynamics for systems for which analytical solutions do exist (like a simple harmonic oscillator).
+Here, we explain the need for integrators, discuss key criteria like energy conservation, and highlight a number of commonly used integrators.
+
+Since integration is fundamentally about taking discrete steps to approximate continuous dynamics, this discretization process introduces errors (as can be observed by comparison to analytically soluble problems, like the harmonic oscillator).
 These errors are termed discretization errors, whereas additional errors called truncation errors are also accumulated through loss of precision during computer calculations.
-As will be discussed shortly, there are many strategies for avoiding discritization errors.
+As will be discussed shortly, there are many strategies for avoiding discretization errors.
 For truncation errors, the only solution is to utilize a higher precision data type during calculations (i.e. use doubles instead of floats).
 
 Integrators that minimize discretization error should preserve phase space volume and conserve energy.
@@ -914,7 +913,7 @@ This is exactly opposite to the behavior that is expected for poor energy conser
 
 Additionally, it is also desirable that an integrator be computationally efficient.
 Integrator cost mostly appears in the length of the timestep that may be taken while still avoiding discretization error. 
-To summarize what is presented below, the timestep must be at least as small as an order of magnitude less than the smallest timescale of motion present in the system.
+As discussed further below, the timestep must be at least an order of magnitude less than the smallest timescale of motion present in the system.
 However, depending on the accuracy of the integrator with respect to reproducing the true dynamics, a smaller timestep might be necessary.
 If the integrator requires a very small timestep to avoid discretization error, then the computational cost greatly increases.
 Hence, a truly ``good'' integrator allows for long timesteps while still achieving low discretization error.
@@ -935,11 +934,13 @@ Though this may sound dire, in practice this is easily remedied through an appro
 When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
 If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
 If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:J.Chem.TheoryComput.}.
+\todo[inline, color={yellow!20}]{DLM: I need to review the paragraphing here; some of these are rather long and cover a lot. }
 
 \todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
 \todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
 \subsubsection{How to choose an appropriate timestep?}
+\todo[inline, color={yellow!20}]{DLM: Above should be broken into subsubsections for consistency with thermostats/barostats and because a subsection with only one subsubsection doesn't make sense.}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
@@ -953,6 +954,7 @@ Many such enhanced timestepping algorithms exist such as multiple-timestep metho
 
 
 \subsection{Long range electrostatics}
+\todo[inline, color={yellow!20}]{DLM: I need to edit this section after we get Samarjeet's changes in; skipping for now.}
 \label{sec:lr_electrostatics}
 \begin{itemize}
 \item Cut-off is bad
@@ -1095,6 +1097,12 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
 \item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
 \end{itemize}
+
+
+\todo[inline, color={yellow!20}]{DLM: Need to write some kind of wrap-up/conclusion rather than just ending abruptly. Also probably should mention again data analysis and point to Zuckerman work. }
+\todo[inline, color={yellow!20}]{DLM: Perhaps also a brief ``what NOT to do with your MD data'' blurb, e.g., don't just make movies and look at them. Don't treat them as the answer. Don't overinterpret, etc.}
+\todo[inline, color={yellow!20}]{DLM: Also need to point out the checklist below and discuss it in the text somewhere.}
+\todo[inline, color={yellow!20}]{DLM: I also need to go over the checklist again and make sure it is what we want/addresses key issues (and everything there is addressed in the text.}
 
 %\subsubsection{Other methods}
 
