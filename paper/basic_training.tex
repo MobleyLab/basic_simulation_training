@@ -225,9 +225,10 @@ For instance, if energy is not conserved, the first law is not satisfied and we 
 In this sense, the laws of thermodynamics provide us rigorous sanity checks in addition to many useful mathematical relations for computing properties.
 Basic thermodynamic principles thus also dictate proper simulation protocols and associated best practices.
 
-The concept of the thermodynamic limit is particularly important.
+The concept of the thermodynamic limit is particularly important here.
 Specifically, as the size of a finite system is increased, keeping the particle number density roughly constant, at some point it is said to reach the thermodynamic limit where its behavior is bulk-like and no longer depends on the extent of the system.
-Thus, small systems will exhibit unique behaviors that reflect their microscopic size, but sufficient large systems are said to have reached the thermodynamic limit and macroscopic thermodynamics applied.
+Thus, small systems will exhibit unique behaviors that reflect their microscopic size, but sufficiently large systems are said to have reached the thermodynamic limit and macroscopic thermodynamics applied.
+This is due to the fact that the effect of interfaces or boundaries have largely been removed, and that averages of system properties are now over a sufficiently large number of molecules that any instantaneous snapshot of the system roughly corresponds to average behavior (i.e. fluctuations in system properties become negligible).
 
 Although we usually think of thermodynamics applying macroscopically and statistical mechanics applying on the microsopic level, it is important to remember that the laws of thermodynamics still hold \textit{on average} regardless of the length scale.
 That is, a molecule in contact with a thermal bath will exchange energy with the bath, but its average energy is a well-defined constant.
@@ -235,8 +236,6 @@ This allows us to define thermodynamic quantities associated with microscopic ev
 This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic processes that can only be indirectly probed by experiment.
 Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
 For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~\cite{Kofke1993, GonzalezSalgado2010}.
-
-\todo[inline, color={green!20}]{JIM: I also want to mention that some thermodynamic properties are only truly well-defined for many molecules, not for single molecules or isolated molecules. This is a tricky discussion, though. DLM: What did you have in mind? } 
 
 \subsubsection{Books}
 Equilibrium thermodynamics is taught in most undergraduate programs in physics, chemistry, biochemistry and various engineering disciplines.
