@@ -462,7 +462,7 @@ For our purposes here, the distinction between a force field library and a param
 Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
-Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6}$ 
+Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6$ 
 Coulombic interactions, including both short and long-range components, are described in detail elsewhere in this document.
 To represent bonded interactions, harmonic potentials are often employed. 
 The same is true for angles between three bonded atoms, but the harmonic potential is applied with respect to the angle formed and not the distance between atoms. 
@@ -582,13 +582,13 @@ If such documents do not exist, considerable care should be exercised to determi
 In some cases, freely available tools are constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
 The goal of all of these tools, and system preparation in general, is to create an accurate representation of the system of interest that can be interpreted by the desired simulation package.
-It is further desirable that this representation not vary too far from the known, equilibrium structure of the system at the thermodynamic state point of interest.
+It is further desirable that this starting structure resemble the equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
-However, for a force field that reliably reproduces the energetics of a system, a starting configuration that is close to equilibrium is only a time-saving convenience in that it greatly reduces the equilibration time and overall simulation length by preventing trapping in metastable states.
+In some sense, having a good starting structure is only a convenience to reduce equilibration times (if the force field is adequate); however, for some systems, equilibration times might otherwise be prohibitively long.
 
 System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention.
 Specifically, if your system preparation is flawed, such flaws may prove fatal. 
-Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is probably the most frequent outcome of problems in system preparation.
+Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is a  frequent outcome of problems in system preparation.
 It should not be assumed that if a system can proceed in a well-behaved manner through the other steps, it was necessarily prepared correctly; considerable care should be taken here.
 
 The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
@@ -600,8 +600,7 @@ Such a configuration is a suitable starting point for molecular dynamics techniq
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
 
-
-Following minimization, equilibration is typically needed.
+Following minimization, equilibration is typically needed to bring the system to the desired conditions (e.g. temperature and pressure, or energy).
 Specifically, even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
 For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble.
 Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed (if an NVE simulation is desired) and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
@@ -617,37 +616,35 @@ For more information on equilibration procedures, see \citet{LeachBook}, section
 %DLM: Should we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
 %JIM: I tried this out above.
 
+\todo[inline, color={yellow!20}]{DLM: Note to self, I should add a bit more discussion of what equilibration \emph{means} somewhere in this section, probably along with a discussion of equilibration vs convergence. For example, equilibration means not just that temperature and pressure stop changing but that the overall properties of teh system stop changing (e.g. if temperature and pressure is constant but your protein is unfolding you are not yet equilibrated...)}
+\todo[inline, color={yellow!20}]{DLM: There are a lot of long paragraphs here that are perhaps too long; the above is one example. I should police to make sure the one-point-per-paragraph rule is used and shorten some of these.}
+
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_Workflow.pdf}
 \caption{Common equilibration work-flows}
 \label{eqworkflow}
 \end{figure}
+\todo[inline, color={yellow!20}]{DLM: Caption needs updating to make clear why you would choose different options here, especially the two different NVT options.}
 
-Once equilibration is complete, the production simulation may be performed.
+Once equilibration is complete, production data may be collected.
 The production simulation is that from which specific properties of the system of interest will be calculated.
 As mentioned above, the equilibration procedure should be selected that is appropriate for the desired production ensemble.
-It should be noted that ``equilibration'' within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing properties).
-%DLM: See comments above about migrating to GitHub/citing.
-This falls under the category of correctly obtaining unbiased statistics and convergence, which is covered in a separate Best Practices document (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
+It should be noted that ``equilibration'' within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing Properties).
 Otherwise, if a brief simulation in the same ensemble is not performed during the equilibration step immediately prior to production, any period of the production simulation should be ignored where drift is observed in the energies, temperatures, pressures, densities, or other defining state-variables of the ensemble.
 This of course precedes estimation of convergence in property calculation.
+Data collection then falls under the category of correctly obtaining unbiased statistics and convergence, which is covered in a separate Best Practices document (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
+\todo[inline, color={yellow!20}]{DLM: Possibly clarify distinction between production and equilibration (just whether data is retained, in some cases)}
 
 \subsection{Thermostats}
 \label{sec:thermostats}
-\begin{itemize}
-\item Motivation
-\item Background
-\item Brief description of how it works
-\item Popular thermostats
-\item Summary
-\end{itemize}
+
+Here, we discuss why thermostats are (often) needed for molecular simulations, then discuss their background and how they work, and survey some popular thermostats, closing with some recommendations.
 
 % Motivation for using thermostats
 \subsubsection{Thermostats seek to maintain a target temperature}
-As mentioned throughout the article above, molecular dynamics simulations are used to observe and glean properties of interest from some system of
-study.
+As mentioned above, molecular dynamics simulations are used to observe and glean properties of interest from some system of study.
 However, these properties traditionally are not measurable from the initial configuration of the system, nor is that usually physically meaningful.
 This generally requires transitioning the system to some other state point to collect the proper data once the system has equilibrated.
 In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant-temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
