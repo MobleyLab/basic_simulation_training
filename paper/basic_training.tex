@@ -573,6 +573,7 @@ It is highly recommended that best practices documents specific to this issue an
 If such documents do not exist, considerable care should be exercised to determine best practices from the literature.
 In some cases, freely available tools are constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
+\todo[inline, color={green!20}]{JIM: Need to cite these packages!}
 The goal of all of these tools, and system preparation in general, is to create an accurate representation of the system of interest that can be interpreted by the desired simulation package.
 It is further desirable that this starting structure resemble the equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
@@ -598,6 +599,7 @@ For this reason, it is advised that a thermostatted simulation is performed prio
 Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed (if an NVE simulation is desired) and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
 This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired.
 This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see Section~\ref{sec:thermostats}), and the temperature fluctuates with the kinetic energy at each time step.
+
 Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired.
 In this case, the system may be scaled to the desired average volume before the production simulation.
 In the above example, the NPT simulation is said to have equilibrated to a specific volume when the dimensions of the simulation box fluctuate around constant values with minimal drift. 
@@ -614,7 +616,12 @@ For more information on equilibration procedures, see \citet{LeachBook}, section
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_Workflow.pdf}
-\caption{Common equilibration work-flows}
+\caption{Common equilibration work-flows are shown.
+Many times, the desired state variables of a simulation, such as energy or density, are defined by their averages in an ensemble in which they may fluctuate, such as at fixed temperature or pressure. 
+Such cases follow the first or third equilibration routes.
+When we wish to simulate at a known, fixed density, such a procedure is not necessary, as shown by the second route.
+The last route emphasizes that generally temperature and pressure should be equilibrated separately, even if the production ensemble is NPT.
+} 
 \label{eqworkflow}
 \end{figure}
 \todo[inline, color={yellow!20}]{DLM: Caption needs updating to make clear why you would choose different options here, especially the two different NVT options.}
