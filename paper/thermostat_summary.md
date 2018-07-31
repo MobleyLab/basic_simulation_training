@@ -2,7 +2,7 @@
 |:-------------------------------:|:---------:|:------------------:|:--------------------:|:----------------------------:|
 |          DETERMINISTIC          |           |                    |                      |                              |
 |         Velocity Scaling        |     X     |          X         |           X          |               X              |
-|              Gaussian             |     X     |          X         |           X          |               X              |
+|              Hoover             |     X     |          X         |           X          |               X              |
 |            Berendsen            |     X     |          X         |           X          |      :heavy_check_mark:      |
 |            STOCHASTIC           |           |                    |                      |                              |
 |             Andersen            |     X     |          X         |  :heavy_check_mark:  |      :heavy_check_mark:      |
