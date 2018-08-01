@@ -1174,7 +1174,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or
 periodicity is needed 
-\item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed
+\item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed (Section~\ref{sec:force_fields})
 \end{itemize}
 \end{checklist}
 
@@ -1199,6 +1199,31 @@ periodicity is needed
 \end{Checklists*}
 \todo[inline, color={yellow!20}]{DLM: Also need to point out the checklist above and discuss it in the text somewhere.}
 \todo[inline, color={yellow!20}]{DLM: I also need to go over the checklist again and make sure it is what we want/addresses key issues (and everything there is addressed in the text.}
+
+\section{Should you run MD?}
+
+A critical question \emph{before} preparing an MD simulation of your system is whether you even \emph{should} use MD for your system in view of the resources you have and what information you hope to obtain.
+MD is a tool, but it may not be the right tool for your problem.
+Before beginning any study, it is critical to sort out what questions you want to answer, what resources (computational and otherwise) you have at your disposal, and whether you have any information about your system(s) of interest that indicate you can realistically expect to answer those questions given a set of MD simulations.
+
+As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
+Thus, as noted in the Introduction, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
+This means that if your system is complex and answering your questions will require sampling critical events that have a timescale of seconds or longer, MD will not be the right tool for the job.
+You could invest a huge amount of effort running a MD simulations and find that these do nothing whatsoever to address your questions.
+
+Ideally, you should have some information before beginning that the relevant timescales for your system might be accessible given the amount of MD you can afford to run, or you could plan a set of exploratory MD simulations to assess feasibility. 
+But don't simply plunge in and attempt to run simulations until you find the answers to your questions, as the required timescales could end up being orders of magnitude longer than what you can afford to spend.
+Time is only one consideration out of many; disk storage and computer time availability can also prove limiting factors, and opportunity cost, as well, is not to be overlooked.
+
+Ultimately, we ought to be assessing whether MD is the best tool for the job.
+For our problem of interest, will it really be faster to answer your questions using an MD simulation, or are there experiments which could be done which would answer the question more quickly? 
+Maslow famously wrote, ``I suppose it is tempting, if the only tool you have is a hammer, to treat everything as if it were a nail.''
+We don't want to end up in a position where we are running MD simulations not because they are the best tool for the job, but because they are the only tool available to us.
+If an experiment could answer our key questions with far less cost and time, and the questions are indeed compelling, perhaps our time might be better spent finding a suitable experimental collaborator rather than running a set of simulations.
+To give a concrete example, one could imagine using molecular dynamics simulations to screen a library of commercially available compounds for binding to a potential protein target, but if the compounds are commercially available at an inexpensive rate and a suitable assay is available, it might be far faster and cheaper to simply screen the compounds.
+
+So, count the cost of your potential simulations, assess whether they realistically have a chance of answering the questions you seek to answer, and then carefully decide whether the likelihood of success is worth the cost. 
+If not, don't tackle that problem with MD.
 
 
 \todo[inline, color={yellow!20}]{DLM: Perhaps also a brief ``what NOT to do with your MD data'' blurb, e.g., don't just make movies and look at them. Don't treat them as the answer. Don't overinterpret, etc.}
