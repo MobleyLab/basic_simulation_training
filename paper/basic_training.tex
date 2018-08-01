@@ -1064,7 +1064,7 @@ However, in the case of charge distribution in our simulation system, $\rho$ is 
 As $\rho$ is not smooth, $\phi$ is not smooth either. \\
 
    
-Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solvation techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
+Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solution techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
 
 \[ \rho = \rho^{sr} + \rho^{lr} \]
 
@@ -1080,12 +1080,12 @@ Ewald method is based on replacing the point charge distributions by smooth char
 \label{charges_ewald}
 \end{figure}
 
-Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge of the same magnitude.
+Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge (G)of the same magnitude. 
 \[
 E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
 \]
 
-Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
+Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. In fact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
 
 \begin{figure}[h]
 \centering
@@ -1097,17 +1097,29 @@ Unlike the potential due to the original charge, the potential due to direct spa
 
 Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space!
 
-\[
-E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
-\]
-
-The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. If we used only the original point charges, we would not have had this dampening factor.
-
-Self term is not a physical quantity and comes up due to the way the Ewald summation is set up.
+%\[
+%E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
+%\]
 
 \[
-E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
+E^{lr} = (const) \sum_{k \neq 0} \frac{\exp(-k^2)}{k^2}  |\rho(k)|^2
 \]
+
+The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. This means that we need to calculate this term only for a small values of $|k|$ before the term dies down. If we used only the original point charges and not the gaussian-distributed charges as we are using in reciprocal space, we would not have this dampening factor. 
+
+The final term in Ewald summation is the so-called self term. 
+
+%\[
+%E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
+%\]
+\[
+E^{s} = (const)\sum_i q_i^2
+\]
+
+It is not a physical quantity and comes up due to the way the reciprocal space Ewald summation is set up. 
+It has to be subtracted out from the Ewald summation. 
+Interestingly, self term needs to be calculated only once at the beginning of the simulation as it depends only on the charges and does not change with a change in the positions of the charges. For the same reason, it does not contribute to the force either. 
+
 
 \subsubsection{Grid based Ewald summation}
 
@@ -1115,46 +1127,49 @@ Ewald summation, through Fourier transform, as described in the previous section
 
 There are five general steps involved in these methods :
 \begin{enumerate}
-\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).
+\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines(hence the name Smooth-PME). These interpolation functions make sure that the charge density is distributed over the neighboring grid points. 
 
-\[
-Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 M_n(u_i^d - k_d - p_dK_d)
-\]
+%\[
+%Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 %M_n(u_i^d - k_d - p_dK_d)
+%\]
 \item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.
-\[
-S(m) = \sum_j q_j \exp(mr_j)
-\]
-\[
-=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
-\]
-where
-\[
-b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
-\]
-\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
-\] 
-\item Energy calculation : Reciprocal space energy is calculated by
-\[
-E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}*Q)(m_1,m_2,m_3)
-\]
-where
-\[
-\theta_{rec} = F(BXC)
-\]
+%\[
+%S(m) = \sum_j q_j \exp(mr_j)
+%\]
+%\[
+%=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
+%\]
+%where
+%\[
+%b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
+%\]
+%\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
+%\] 
 
-\[
-B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
-\]
-and
-\[
-C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
-\]
-Here * is the convolution operation which is simply a product in the reciprocal space. 
-\item Transformation of the grid back to real space : Inverse FFT is used to convert $\theta{rec}*Q$ back to the real space. 
-\item Force calculation : Force is given by the gradient of the energy. It can be calculated in the reciprocal space by multiplication by (ik) (as implemented in the original PME) or by analytic differentiation in the real space as in SPME : 
-\[
-\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
-\]
+\item Energy calculation : Reciprocal space potential  is calculated by solving the Poisson equation in Fourier space. As noted earlier, solving the Poisson equation in Fourier space is simply a division by  $k^2$, where k is the reciprocal space frequency. At the same time, the grid is modified to store the reciprocal space potential.
+
+%\[
+%E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}%*Q)(m_1,m_2,m_3)
+%\]
+%where
+%\[
+%\theta_{rec} = F(BXC)
+%\]
+%
+%\[
+%B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
+%\]
+%and
+%\[
+%C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
+%\]
+%Here * is the convolution operation which is simply a product in the %reciprocal space. 
+
+\item Transformation of the grid back to real space : Inverse FFT is used to convert the reciprocal space potential back to the real space. 
+\item Force calculation : Force is given by the gradient of the energy. PME, SPME and P3M use different methods for calculating it. SPME specifically calculated it by analytic differentiation in the real space. 
+%\[
+%\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
+%\]
 \end{enumerate}
 
 
