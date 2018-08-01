@@ -921,7 +921,7 @@ This is usually termed numerical integration of the equations of motion.
 Algorithms to perform this integration take many forms and are usually called integrators.
 Here, we explain the need for integrators, discuss key criteria like energy conservation, and highlight a number of commonly used integrators.
 
-\subsubsection{Desireable integrator properties}
+\subsubsection{Desirable integrator properties}
 
 So-called ``good'' integrators contain certain features that are appealing for molecule simulations.
 We start with the most obvious feature, which is that the integrator induces little error in the dynamics.
@@ -1155,7 +1155,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{checklist}{Take stock of your plans}
 
 \begin{itemize}
-\item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation.
+\item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation. Would the questions you want to answer be better addressed a different way?
 \item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
 \item Determine reference states that you are trying to emulate/discover.
 \item What temperature, pressure, etc. are you interested in?
@@ -1163,25 +1163,26 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \end{itemize}
 \end{checklist}
 
-\begin{checklist}{Prepare to implement your plans and make critical decisions about system type}
+\begin{checklist}{Prepare to implement your plans and make critical decisions the system}
 
 \begin{itemize}
-\item Choose a simulation package suitable for simulating that ensemble (see best practices document) % link
-\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in [section] % reference section whatever
+\item Choose a simulation package suitable for simulating that ensemble with your target force field
+\item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in Section~\ref{sec:periodic}
+\item Prepare your system, paying particular attention to ensuring it contains the chemical components you want with the structures you want, and that force field parameters are assigned as intended
 \end{itemize}
 \end{checklist}
 
 \begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or
-periodicity is needed 
+periodicity is needed along with full treatment of long-range electrostatics (Section~\cite{lr_electrostatics})
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed (Section~\ref{sec:force_fields})
 \end{itemize}
 \end{checklist}
 
-\begin{checklist}{Choose appropriate settings for the desired ensemble:}
+\begin{checklist}{Choose appropriate settings for the desired ensemble}
 \begin{itemize}
-\item Pick a thermostat that gives the correct distribution of temperatures, not just the correct average temperature
+\item Pick a thermostat that gives the correct distribution of temperatures, not just the correct average temperature; if you have a small system or a system with weakly interacting component choose one which works well even in the small-system limit.
 \item Pick a barostat that gives the correct distribution of pressures
 \item Consider the known shortcomings and limitations of certain integrators and thermostats/barostats and whether your choices will impact the properties you are calculating
 \end{itemize}
@@ -1196,10 +1197,16 @@ periodicity is needed
 \end{itemize}
 \end{checklist}
 
+\begin{checklist}{Determine your run protocol}
+\begin{itemize}
+\item Plan how you will minimize and equilibrate your system and test that your equilibration protocol actually allows you to reach equilibrium in the target ensemble (Section~\ref{sec:main_steps})
+\item Determine production settings, how many steps to run, and how often to store data/what data to store
+\item Ensure you have sufficient storage, memory, and computer time to complete the planned calculations
+\end{itemize}
+\end{checklist}
+
 
 \end{Checklists*}
-\todo[inline, color={yellow!20}]{DLM: Also need to point out the checklist above and discuss it in the text somewhere.}
-\todo[inline, color={yellow!20}]{DLM: I also need to go over the checklist again and make sure it is what we want/addresses key issues (and everything there is addressed in the text.}
 
 \section{Should you run MD?}
 
@@ -1237,7 +1244,7 @@ This, then, leads us to one of the real dangers of molecular simulations: A simu
 For example, even a very short, unequilibrated MD simulation can produce movies which appear interesting and, by virtue of the fact that they result from MD, reveal the positions of all the atoms in a system as a function of time. 
 It's easy to run several short MD simulations where (for example) the composition of the system is varied, and conclude that any observed differences are a result of variations in composition.
 But as noted in Section~\ref{sec:velocities}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
-Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty})).
+Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
 In summary, then, do not use MD simulations simply to make movies and inspect these; MD simulations do not produce the answer, and considerable care must be exercised to avoid overinterpeting the full atomistic detail they always provide. 
 While movies in some cases can be useful, proper error analysis is always essential.
@@ -1252,6 +1259,8 @@ Advances in hardware, software, methods and force fields also make MD-based calc
 
 Still, MD simulations require considerable care, as conducting them requires choosing a variety of settings, and the optimal choice of settings typically depends on the problem being considered.
 Thus, it is our hope that this document provides a helpful overview of some of the fundamental considerations for preparing and conducting MD simulations and paves the way for more specialized documents which will focus on calculations of specific properties or for specific classes of systems, since the approach employed will often need to vary depending on such choices.
+
+This document also provides a checklist covering some of the key points raised in this work and highlighting particularly common sources of failure; we encourage readers to follow this when considering a simulation study.
 
 Our focus here has been on the basics --- focusing on things you need to understand before beginning to prepare simulations for yourself.
 Additionally, we have primarily focused on issues relating to how simulations are conducted, and leave data analysis for a separate treatment.
