@@ -308,7 +308,7 @@ A fundamental equilibrium concept that can only be sketched here is the represen
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
 Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''.
 There is a closely related connection for on- and off-rates with the binding equilibrium constant.  
-For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ‚Äúpotential of mean force‚Äù (PMF): the Boltzmann factor of the PMF gives the relative probability of a given coordinate.  
+For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``Äúpotential of mean force''Äù (PMF): the Boltzmann factor of the PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
 These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$ , the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
@@ -1197,25 +1197,26 @@ periodicity is needed
 
 
 \end{Checklists*}
-
-\todo[inline, color={yellow!20}]{DLM: Need to write some kind of wrap-up/conclusion rather than just ending abruptly. Also probably should mention again data analysis and point to Zuckerman work. }
-\todo[inline, color={yellow!20}]{DLM: Perhaps also a brief ``what NOT to do with your MD data'' blurb, e.g., don't just make movies and look at them. Don't treat them as the answer. Don't overinterpret, etc.}
-\todo[inline, color={yellow!20}]{DLM: Also need to point out the checklist below and discuss it in the text somewhere.}
+\todo[inline, color={yellow!20}]{DLM: Also need to point out the checklist above and discuss it in the text somewhere.}
 \todo[inline, color={yellow!20}]{DLM: I also need to go over the checklist again and make sure it is what we want/addresses key issues (and everything there is addressed in the text.}
 
-%\subsubsection{Other methods}
 
-%There are methods other than the Ewald which we can use as well 
-%\begin{itemize}
-%\item Isotropic periodic sum It doesn't use the Ewald
-%\item Multigrid method It doesn't use Fourier 
-%\end{itemize}
+\todo[inline, color={yellow!20}]{DLM: Perhaps also a brief ``what NOT to do with your MD data'' blurb, e.g., don't just make movies and look at them. Don't treat them as the answer. Don't overinterpret, etc.}
 
 
+\section{Conclusions}
+Molecular simulations are particularly exciting, because they provide a detailed view into the structure and function of systems at a molecular or atomistic level, and allow us to precisely compute thermodynamic and statistical properties and connect these to the underlying motions, structure, and function.
+Thus MD has played a significant role in our field in suggesting new experiments, generating ideas, and helping to provide mechanistic understanding.
+Advances in hardware, software, methods and force fields also make MD-based calculations particularly appealing for predictive molecular design, where simulations could be used to help guide experiments to develop materials or molecules with desired properties.
 
+Still, MD simulations require considerable care, as conducting them requires choosing a variety of settings, and the optimal choice of settings typically depends on the problem being considered.
+Thus, it is our hope that this document provides a helpful overview of some of the fundamental considerations for preparing and conducting MD simulations and paves the way for more specialized documents which will focus on calculations of specific properties or for specific classes of systems, since the approach employed will often need to vary depending on such choices.
 
+Our focus here has been on the basics --- focusing on things you need to understand before beginning to prepare simulations for yourself.
+Additionally, we have primarily focused on issues relating to how simulations are conducted, and leave data analysis for a separate treatment.
+As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty})).
 
-
+Please remember that this is an updatable work, so we welcome contributions and suggestions via our GitHub issue tracker so that we can make this a valuable resource for the field which clearly addresses the key fundamentals.
 
 
 
