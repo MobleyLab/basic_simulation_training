@@ -645,31 +645,31 @@ The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropr
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
 
-\todo[inline, color={yellow!20}]{DLM: Note to self, I should add a bit more discussion of what equilibration \emph{means} somewhere in this section, probably along with a discussion of equilibration vs convergence. For example, equilibration means not just that temperature and pressure stop changing but that the overall properties of teh system stop changing (e.g. if temperature and pressure is constant but your protein is unfolding you are not yet equilibrated...)}
-\todo[inline, color={yellow!20}]{DLM: There are a lot of long paragraphs here that are perhaps too long; the above is one example. I should police to make sure the one-point-per-paragraph rule is used and shorten some of these.}
-
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_Workflow.pdf}
-\caption{Common equilibration work-flows are shown.
-Many times, the desired state variables of a simulation, such as energy or density, are defined by their averages in an ensemble in which they may fluctuate, such as at fixed temperature or pressure. 
-Such cases follow the first or third equilibration routes.
-When we wish to simulate at a known, fixed density, such a procedure is not necessary, as shown by the second route.
-The last route emphasizes that generally temperature and pressure should be equilibrated separately, even if the production ensemble is NPT.
-} 
+\caption{Common equilibration work-flows are shown; these vary depending on the target ensemble for production simulations (right).
+Typically, an initial phase of equilibration at constant volume and temperature is needed to bring the system to the desired target temperature or energy.
+For stability reasons, this initial phase is usually needed even if the goal is to also bring the system to a target pressure.
+If the production ensemble is an NVE ensemble, an initial NVT simulation is usually followed by a short additional NVE equilibration before collection of production data.
+If the production ensemble is NVT, protocols may differ depending on whether it is necessary to allow the system to equilibrate to a particular density/volume or whether the volume is selected \emph{a priori} (second and third rows).
+And if production is to be NPT, it is usually equilibrated first at NVT before equilibrating to the target pressure (final row).} 
 \label{eqworkflow}
 \end{figure}
-\todo[inline, color={yellow!20}]{DLM: Caption needs updating to make clear why you would choose different options here, especially the two different NVT options. JIM: Better?}
 
-Once equilibration is complete, production data may be collected.
-The production simulation is that from which specific properties of the system of interest will be calculated.
-As mentioned above, the equilibration procedure should be selected that is appropriate for the desired production ensemble.
-It should be noted that ``equilibration'' within the production run may still be necessary before properties or metrics are computed from this simulation (see \citet{ShellNotes}, lecture on Computing Properties).
-Otherwise, if a brief simulation in the same ensemble is not performed during the equilibration step immediately prior to production, any period of the production simulation should be ignored where drift is observed in the energies, temperatures, pressures, densities, or other defining state-variables of the ensemble.
-This of course precedes estimation of convergence in property calculation.
-Data collection then falls under the category of correctly obtaining unbiased statistics and convergence, which is covered in a separate Best Practices document (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
+\subsubsection{Production}
+
+Once equilibration is complete, we may begin collecting data for analysis, and typically this phase is called ``production''.
+The main difference between equilibration and production is simply that in the production simulation, we plan to retain and analyze the collected data.
+Production must always be preceded by equilibration appropriate for the target production ensemble, and production data should never be collected immediately after a change in conditions (such as rescaling a box size, energy minimizing, or suddenly changing the temperature or pressure) except in very specific applications where this is the goal.
+
+For bookkeeping purposes, sometimes practitioners choose to discard some initial production data as additional equilibration; usually this is simply to allow additional equilibration time after a change in protocol (such as a switch from NVT to NPT), and the usual considerations for equilibration apply in such cases (see \citet{ShellNotes}, lecture on Computing Properties). 
+
+Analysis of production is largely outside the scope of this work, but requires considerable care in computing observables and assessing the uncertainty in any computed properties.
+Usually, analysis involves computing expectation values of particular observables, and a key consideration is to obtain \emph{converged} estimates of these properties --- that is, estimates that are based on adequate simulation data so that they no longer depend substantially on the length of the simulation which was run or on its initial conditions.
+
+A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
-\todo[inline, color={yellow!20}]{DLM: Possibly clarify distinction between production and equilibration (just whether data is retained, in some cases)}
 
 \subsection{Thermostats}
 \label{sec:thermostats}
