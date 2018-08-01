@@ -296,6 +296,7 @@ There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:Annu.Rev.Bi
 What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
 In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
+We refer to such a system, where the time and ensemble averages are equivialent, as ``ergodic.''
 Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
 Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
 It is sometimes suggested that multiple MD trajectories starting structures can aid sampling, but unless the equilibrium distribution is known in advance, the bias from the set of starting structures is simply unknown and harder to diagnose.
