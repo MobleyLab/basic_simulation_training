@@ -1225,8 +1225,22 @@ To give a concrete example, one could imagine using molecular dynamics simulatio
 So, count the cost of your potential simulations, assess whether they realistically have a chance of answering the questions you seek to answer, and then carefully decide whether the likelihood of success is worth the cost. 
 If not, don't tackle that problem with MD.
 
+\section{Use your MD simulations and interpret the results with care and caution}
 
-\todo[inline, color={yellow!20}]{DLM: Perhaps also a brief ``what NOT to do with your MD data'' blurb, e.g., don't just make movies and look at them. Don't treat them as the answer. Don't overinterpret, etc.}
+Analysis of molecular simulations is largely outside the scope of this work; however, some words of caution are worthwhile.
+It is tempting, especially for those new to or outside of the area, to view simulations as providing ``the answer'', giving full mechanistic insight in atomistic detail into what happens in a particular situation and why it happens.
+Instead, MD results are better thought of as the results of a computational experiment that results from a particular model (including force field), system composition, and protocol.
+The resulting simulation(s) might or might not be statistically meaningful, relevant to experiment, or useful, but results will be obtained regardless.
+
+This, then, leads us to one of the real dangers of molecular simulations: A simulation produces results, which tempt users to interpret or overinterpret them, whether the results are meaningful or not.
+For example, even a very short, unequilibrated MD simulation can produce movies which appear interesting and, by virtue of the fact that they result from MD, reveal the positions of all the atoms in a system as a function of time. 
+It's easy to run several short MD simulations where (for example) the composition of the system is varied, and conclude that any observed differences are a result of variations in composition.
+But as noted in Section~\ref{}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
+Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty})).
+
+In summary, then, do not use MD simulations simply to make movies and inspect these; MD simulations do not produce the answer, and considerable care must be exercised to avoid overinterpeting the full atomistic detail they always provide. 
+While movies in some cases can be useful, proper error analysis is always essential.
+
 
 
 \section{Conclusions}
