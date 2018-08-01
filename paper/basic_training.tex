@@ -568,21 +568,31 @@ Additional explanations of these steps along with procedural details specific to
 It should be noted that these steps may be difficult to unambiguously differentiate and define in some cases.
 Additionally, it is assumed that prior to performing any of these steps, an appropriate amount of deliberation has been devoted to clearly defining the system and determining the appropriate simulation techniques.
 
-System preparation is typically the most variable of these steps, and often requires unique tools for every system of interest.
-It is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
+\subsubsection{System preparation}
+
+System preparation focuses on preparing the starting state of the desired system for simulation with the desired simulation package, including building a starting structure, solvating (if necessary), applying a force field etc.
+Because this step differs so much depending on the composition of the system and what information is available about the starting structure, it is a step which varies a great deal depending on the type of system and each category may require unique tools.
+
+Given the variable nature of system preparation, it is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
 If such documents do not exist, considerable care should be exercised to determine best practices from the literature.
-In some cases, freely available tools are constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
+
+Loosely speaking, system preparation can be thought of as consisting of two \emph{logical} components which are not necessarily consecutive or separate.
+One comprises building the configuration of the system in the desired chemical state, and the other, applying force field parameters.
+
+For building systems, freely available tools for constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
-\todo[inline, color={green!20}]{JIM: Need to cite these packages!}
-The goal of all of these tools, and system preparation in general, is to create an accurate representation of the system of interest that can be interpreted by the desired simulation package.
-It is further desirable that this starting structure resemble the equilibrium structure of the system at the thermodynamic state point of interest.
+
+A key consideration when building a system is that the starting structure ideally ought to resemble the equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
 In some sense, having a good starting structure is only a convenience to reduce equilibration times (if the force field is adequate); however, for some systems, equilibration times might otherwise be prohibitively long.
 
 System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention.
-Specifically, if your system preparation is flawed, such flaws may prove fatal. 
+Specifically, if your system preparation is flawed, such flaws may prove fatal.
 Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is a  frequent outcome of problems in system preparation.
 It should not be assumed that if a system can proceed in a well-behaved manner through the other steps, it was necessarily prepared correctly; considerable care should be taken here.
+
+Assignment or development of force field parameters is also critical, but is outside the scope of this work.
+For our purposes here, we will assume you have already obtained or developed force field parameters suitable for your system of interest.
 
 The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single timestep).
 This involves standard minimization algorithms such as steepest descent.
@@ -593,22 +603,47 @@ Such a configuration is a suitable starting point for molecular dynamics techniq
 However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
 These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
 
-Following minimization, equilibration is typically needed to bring the system to the desired conditions (e.g. temperature and pressure, or energy).
-Specifically, even though velocities are assigned according to the correct distribution, the selected thermostat will still usually need to add heat to or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
-For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble.
-Once the kinetic and potential energies fluctuate around constant values, the thermostat may be removed (if an NVE simulation is desired) and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
+\subsubsection{Minimization}
+
+The purpose of minimization, or relaxation, is to find a local energy minimum from the starting structure so that the molecular dynamics simulation does not immediately ``blow up'' (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
+This involves standard minimization algorithms such as steepest descent, conjugate gradient, or others.
+For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
+Again, minimization is primarily about setting the stage for subsequent dynamics, in which the system will move away from the minimum, so reaching a minimum to a very high level of tolerance is usually not necessary except in very specific applications.
+
+\subsubsection{Assignment of velocities}
+Minimization ideally takes us to a state from which we can begin numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4); however, to begin a simulation, we need not just positions but also velocities.
+Minimization, however, provides only a final set of positions.
+Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
+
+\subsubsection{Equilibration}
+
+Ultimately, we usually seek to run a simulation in a particular thermodynamic ensemble (e.g. the NVE or NVT ensemble) at a particular state point (e.g. target energy, temperature, and pressure) and collect data for analysis which is appropriate for those conditions and not biased depending on our starting conditions/configuration.
+This means that usually we need to invest simulation time in bringing the system to the appropriate state point and allowing it to essentially forget about its history and reach equilibrium (or pseudo-equilibrium -- for some systems, such as biomolecular systems, reaching true equilibrium may be impractical) before we begin retaining data for analysis.
+
+The most straightforward portion of equilibrium is bringing the system to the target state point.
+Usually, even though velocities are assigned according to the correct distribution, a thermostat will still need to add or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
+For this reason, it is advised that a thermostatted simulation is performed prior to a desired production simulation, even if the production simulation will ultimately be done in the NVE ensemble. 
+This phase of equilibration can be monitored by assessing the temperature and pressure of the system, as well as the kinetic and potential energy, to ensure these reach a steady state on average.
+For example, an NPT simulation is said to have equilibrated to a specific volume when the dimensions of the simulation box fluctuate around constant values with minimal drift. 
+This definition, though not perfectly rigorous, is usually suitable for assessing the equilibration of energies, temperature, pressure, and box dimensions during equilibration simulations.
+
+A more difficult portion of equilibration is to ensure that other properties of the system which are likely to be important are also no longer changing systematically with simulation time.
+At equilibrium, a system may still undergo slow fluctuations with time, especially if it has slow internal degrees of freedom -- but key properties should no longer show systematic trends away from their starting structure.
+Thus, for example, for biomolecular simulations it is common to examine the root mean squared deviation (RMSD) of the molecules involved as a function of time, and potentially other properties like the number of hydrogen bonds between the biomolecules present and water, as these may be slower to equilibrate than system-wide properties like the temperature and pressure.
+
+Once the kinetic and potential energies fluctuate around constant values and other key properties are no longer changing with time, the equilibration period has reached its end.
+
+Depending on the target ensemble for production, the procedure for the end of equilibration is somewhat different.
+If an NVE simulation is desired, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
 This snapshot, containing both positions and velocities may be used to then start an NVE simulation that will correspond to a temperature close to that which is desired.
 This is necessary due to the fact that only the average temperature is obtained through coupling to a thermostat (see Section~\ref{sec:thermostats}), and the temperature fluctuates with the kinetic energy at each timestep.
 
-Similarly, equilibration in the NPT ensemble is necessary before production in the NVT if an average density consistent with a specific pressure is desired.
-In this case, the system may be scaled to the desired average volume before the production simulation.
-In the above example, the NPT simulation is said to have equilibrated to a specific volume when the dimensions of the simulation box fluctuate around constant values with minimal drift. 
-This definition, though not perfectly rigorous, is usually suitable for assessing the equilibration of energies, temperature, pressure, and box dimensions during equilibration simulations.
-The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibriation work-flow for common production ensembles.
+If the target is a simulation in the NVT ensemble at a particular density, equilibration should be done in the NPT ensemble.
+In this case, the system may be scaled to the desired average volume before starting a production simulation (and if rescaling is done, additional equilibration might be needed).
+
+The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibration work-flow for common production ensembles.
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
-%DLM: Should we be saying something here about how long to equilibrate? My short version is "until the properties of the system stop changing on average", but there could be a whole set of properties one might want to look at. Clearly you should look at anything which is important to you, but also perhaps things which tend to be relatively slow, such as water, etc.
-%JIM: I tried this out above.
 
 \todo[inline, color={yellow!20}]{DLM: Note to self, I should add a bit more discussion of what equilibration \emph{means} somewhere in this section, probably along with a discussion of equilibration vs convergence. For example, equilibration means not just that temperature and pressure stop changing but that the overall properties of teh system stop changing (e.g. if temperature and pressure is constant but your protein is unfolding you are not yet equilibrated...)}
 \todo[inline, color={yellow!20}]{DLM: There are a lot of long paragraphs here that are perhaps too long; the above is one example. I should police to make sure the one-point-per-paragraph rule is used and shorten some of these.}
