@@ -301,6 +301,7 @@ There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:AnnuRevBiop
 What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
 In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
+We refer to such a system, where the time and ensemble averages are equivialent, as ``ergodic.''
 Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
 Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
 It is sometimes suggested that multiple MD trajectories starting structures can aid sampling, but unless the equilibrium distribution is known in advance, the bias from the set of starting structures is simply unknown and harder to diagnose.
@@ -574,14 +575,14 @@ Additionally, it is assumed that prior to performing any of these steps, an appr
 
 \subsubsection{System preparation}
 
-System preparation focuses on preparing the starting state of the desired system for simulation with the desired simulation package, including building a starting structure, solvating (if necessary), applying a force field etc.
-Because this step differs so much depending on the composition of the system and what information is available about the starting structure, it is a step which varies a great deal depending on the type of system and each category may require unique tools.
+System preparation focuses on preparing the starting state of the desired system for input to an appropriate simulation package, including building a starting structure, solvating (if necessary), applying a force field, etc.
+Because this step differs so much depending on the composition of the system and what information is available about the starting structure, it is a step which varies a great deal depending on the nature of the system at hand and as a result may require unique tools.
 
 Given the variable nature of system preparation, it is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
 If such documents do not exist, considerable care should be exercised to determine best practices from the literature.
 
 Loosely speaking, system preparation can be thought of as consisting of two \emph{logical} components which are not necessarily consecutive or separate.
-One comprises building the configuration of the system in the desired chemical state, and the other, applying force field parameters.
+One comprises building the configuration of the system in the desired chemical state and the other applying force field parameters.
 
 For building systems, freely available tools for constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
 Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
@@ -593,10 +594,10 @@ In some sense, having a good starting structure is only a convenience to reduce 
 System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention.
 Specifically, if your system preparation is flawed, such flaws may prove fatal.
 Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is a  frequent outcome of problems in system preparation.
-It should not be assumed that if a system can proceed in a well-behaved manner through the other steps, it was necessarily prepared correctly; considerable care should be taken here.
+It should not be assumed that a system has been prepared correctly if it is well-behaved in subsequent equilibration steps; considerable care should be taken here.
 
 Assignment or development of force field parameters is also critical, but is outside the scope of this work.
-For our purposes here, we will assume you have already obtained or developed force field parameters suitable for your system of interest.
+For our purposes, we will assume you have already obtained or developed force field parameters suitable for your system of interest.
 
 \subsubsection{Minimization}
 
@@ -617,7 +618,9 @@ Still, an even better way to generate independent realizations is to begin with 
 \subsubsection{Equilibration}
 
 Ultimately, we usually seek to run a simulation in a particular thermodynamic ensemble (e.g. the NVE or NVT ensemble) at a particular state point (e.g. target energy, temperature, and pressure) and collect data for analysis which is appropriate for those conditions and not biased depending on our starting conditions/configuration.
-This means that usually we need to invest simulation time in bringing the system to the appropriate state point and allowing it to essentially forget about its history and reach equilibrium (or pseudo-equilibrium -- for some systems, such as biomolecular systems, reaching true equilibrium may be impractical) before we begin retaining data for analysis.
+This means that usually we need to invest simulation time in bringing the system to the appropriate state point as well as relaxing away from any artificially induced metastable starting states.
+In other words, we are usually interested in sampling the most relevant (or most probable) configurations in the equilibrium ensemble of interest.
+However, if we start in a less-stable configuration a large part of our equilibration may be the relaxation time (this may be very long for biomolecules or systems at phase equilibrium) necessary to reach the more relevant configuration space.
 
 The most straightforward portion of equilibrium is bringing the system to the target state point.
 Usually, even though velocities are assigned according to the correct distribution, a thermostat will still need to add or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
@@ -658,7 +661,8 @@ And if production is to be NPT, it is usually equilibrated first at NVT before e
 
 \subsubsection{Production}
 
-Once equilibration is complete, we may begin collecting data for analysis, and typically this phase is called ``production''.
+Once equilibration is complete, we may begin collecting data for analysis.
+Typically this phase is called ``production''.
 The main difference between equilibration and production is simply that in the production simulation, we plan to retain and analyze the collected data.
 Production must always be preceded by equilibration appropriate for the target production ensemble, and production data should never be collected immediately after a change in conditions (such as rescaling a box size, energy minimizing, or suddenly changing the temperature or pressure) except in very specific applications where this is the goal.
 
@@ -666,6 +670,8 @@ For bookkeeping purposes, sometimes practitioners choose to discard some initial
 
 Analysis of production is largely outside the scope of this work, but requires considerable care in computing observables and assessing the uncertainty in any computed properties.
 Usually, analysis involves computing expectation values of particular observables, and a key consideration is to obtain \emph{converged} estimates of these properties --- that is, estimates that are based on adequate simulation data so that they no longer depend substantially on the length of the simulation which was run or on its initial conditions.
+This is closely related to the above discussion of equilibration.
+Depending on the relaxation timescales involved, one may only realize after analysis of a ``production'' trajectory that the system was still equilibrating in some sense.
 
 A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
@@ -1045,13 +1051,17 @@ As discussed earlier, simulations are generally performed under periodic boundar
 
 \subsubsection{ Ewald Summation}
 
-One way of handling the aforementioned issues in an efficient manner is to use the Ewald summation technique (ref, Ewald 1921). To understand this technique, lets represent the relation between the charge distriution and the coulombic potential  in the differntial form (Poisson equation) :
+One way of handling the aforementioned issues in an efficient manner is to use the Ewald summation technique (ref, Ewald 1921). To understand this technique, lets represent the relation between the charge distribution and the coulombic potential  in the differential form (Poisson equation) :
 
 \[
 \Delta \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x}) 
 \] 
 
-where,  $ \boldsymbol{x} \epsilon R^3 $ ,  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge at point $\boldsymbol{x}$ and $\epsilon$ is the permissivity of the medium. This equation is an elliptical partial differential equation(pde) of the second order. The standard way to determine the potential from this equation is a two step method - discretization of the equation followed by solution. These techniques however depend on the smoothness of the functions - $\rho$ and $\phi$ - involved. However, in the case of charge distribution in our simulation system, $\rho$ is a set of delta functions which are clearly not smooth! As $\rho$ is not smooth, $\phi$ is not smooth either. \\
+where,   $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permissivity of the medium. 
+This equation is an elliptical partial differential equation(pde) of the second order. 
+The standard way to determine the potential from this equation is a two step method - discretization of the equation followed by solution. These techniques however depend on the smoothness of the functions - $\rho$ and $\phi$ - involved. 
+However, in the case of charge distribution in our simulation system, $\rho$ is a set of delta functions which are clearly not smooth! 
+As $\rho$ is not smooth, $\phi$ is not smooth either. \\
 
    
 Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solvation techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
@@ -1065,8 +1075,8 @@ Ewald method is based on replacing the point charge distributions by smooth char
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\linewidth]{charges_ewald.pdf}
-    \caption{Point charges can be split into Direct space and reciprocal space charges. Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge.}
+\includegraphics[width=\linewidth]{ewald.pdf}
+    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge. }
 \label{charges_ewald}
 \end{figure}
 
@@ -1076,6 +1086,14 @@ E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_
 \]
 
 Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{decay_comparison.pdf}
+    \caption{Comparison of decay of original $r^{-1}$ term(blue,*), erfc(r) in direct space(black,-) and $r^{-6}$ in van der waals term (red, -.).  }
+\label{charges_ewald}
+\end{figure}
+
 
 Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space!
 
