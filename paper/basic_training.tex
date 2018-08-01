@@ -605,6 +605,10 @@ Minimization ideally takes us to a state from which we can begin numerical integ
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
 
+In some cases, we seek to obtain multiple separate and independent simulations of different instances or realizations of a particular system to assess error, collect better statistics, or help gauge dependence of results on the starting structure.
+It is worth noting that even very small differences in initial configuration, such as even a difference in position of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
+Still, an even better way to generate independent realizations is to begin with different starting configurations, such as different conformations of the molecule(s) being simulated, as this leads to behavior which is immediately different.
+
 \subsubsection{Equilibration}
 
 Ultimately, we usually seek to run a simulation in a particular thermodynamic ensemble (e.g. the NVE or NVT ensemble) at a particular state point (e.g. target energy, temperature, and pressure) and collect data for analysis which is appropriate for those conditions and not biased depending on our starting conditions/configuration.
