@@ -646,7 +646,7 @@ We review background information about thermostats and how they work, introduce 
 % Motivation for using thermostats
 \subsubsection{Thermostats seek to maintain a target temperature}
 As mentioned above, molecular dynamics simulations are used to observe and glean properties of interest from some system of study.
-In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant-temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
+In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
 Generally, if the temperature of the system must be maintained during the simulation, some thermostat algorithm will be employed. 
 
 
@@ -658,12 +658,13 @@ The angled brackets indicate that the temperature is defined as a time-averaged 
 If we use the equipartition theorem to calculate the temperature for a single snapshot in time of a molecular dynamics simulation instead of time-averaging, this quantity is referred to as the instantaneous temperature.
 The instantaneous temperature will not always be equal to the target temperature; in fact, in the canonical ensemble, the instantaneous temperature should undergo fluctuations around the target temperature.
 
-Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical.
-Thus, it is preferable that a thermostat not be used if it is desired to sample dynamical properties such as diffusion coefficients; instead, the thermostat should be turned off after equilibrating the system to the desired temperature.
-However, some thermostats have been found to have little effect on dynamical properties, and they are commonly used during the production simulation as well\cite{Basconi:2013:J.Chem.TheoryComput.}.
+Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical (constant energy).
+Thus, it is preferable that a thermostat not be used if it is desired to calculate dynamical properties such as diffusion coefficients; instead, the thermostat should be turned off after equilibrating the system to the desired temperature.
+However, while all thermostats give non-physical dynamics, some have been found to have little effect on the calculation of particular dynamical properties, and they are commonly used during the production simulation as well\cite{Basconi:2013:J.Chem.TheoryComput.}.
 
 There are several ways to categorize the many thermostatting algorithms that have been developed.
 For example, thermostats can be either deterministic or stochastic depending on whether they use random numbers to guide the dynamics, and they can be either global or local depending on whether they are coupled to the dynamics of the full system or of a small subset.
+Many of the global thermostats can be made into local ``massive'' variants by coupling separate thermostats to each particle in the system rather than having a single thermostat for the whole system.
 There are also several methods employed by thermostat algorithms to control the temperature.
 Some thermostats operate by rescaling velocities outside of the molecular dynamics' equations of motion, e.g., velocity rescaling is conducted after particles' positions and momenta have been updated by the integrator.
 Others include stochastic collisions between the system and an implicit bath of particles, or they explicitly include additional degrees of freedom in the equations of motion that have the effect of an external heat bath.
@@ -688,7 +689,7 @@ This is by no means an exhaustive study of available thermostats, but is instead
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement; however, this thermostat is also one of the most non-physical thermostats.
         This thermostat relies on rescaling the momenta of the particles such that the simulation's instantaneous temperature exactly matches the target temperature\cite{thermostatAlgorithms2005}.
         Similarly to the Gaussian thermosat, simple velocity rescaling aims to sample the isokinetic ensemble rather than the canonical ensemble.
-        However, it has been shown that the sample velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremeley small timesteps\cite{Braun:2018:arXiv:Anomalous}.
+        However, it has been shown that the sample velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018:arXiv:Anomalous}.
         Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018:arXiv:Anomalous}.
 
     \item \textbf{Berendsen}
@@ -702,11 +703,11 @@ This is by no means an exhaustive study of available thermostats, but is instead
         The Bussi\cite{Bussi:2007:JChemPhys:Canonical} thermostat is similar to the simple velocity rescaling and Berendsen thermostats, but instead of rescaling to a single kinetic energy that corresponds to the target temperature, the rescaling is done to a kinetic energy that is stochastically chosen from the kinetic energy distribution dictated by the canonical ensemble.
         Thus, this thermostat properly samples the canonical ensemble.
         Similarly to the Berendsen thermostat, a user-specified time coupling parameter can be chosen to vary how abruptly the velocity rescaling takes place
-        The choice of time coupling constant does not affect structural properties, and most dynamical properties are fairly independent from the choice within a broad range\cite{Bussi:2007:JChemPhys:Canonical}.
+        The choice of time coupling constant does not affect structural properties, and most dynamical properties are fairly independent of the coupling constant within a broad range\cite{Bussi:2007:JChemPhys:Canonical}.
 
     \item \textbf{Andersen}
 
-        The Andersen\cite{andersen1980molecular} thermostat works by selecting particles at random and having them ``collide'' with a heat bath by selecting a new velocity for it sampled from the Maxwell-Boltzmann distribution.
+        The Andersen\cite{andersen1980molecular} thermostat works by selecting particles at random and having them ``collide'' with a heat bath by giving the particle a new velocity sampled from the Maxwell-Boltzmann distribution.
         The number of particles affected, the time between ``collisions'', and how often it is applied to the system are possible variations of this thermostat.
         The Andersen thermostat does reproduce the canonical ensemble.
         However, it should only be used to sample structural properties, as dynamical properties can be greatly affected by the abrupt collisions.
@@ -733,9 +734,31 @@ This is by no means an exhaustive study of available thermostats, but is instead
 \subsubsection{Summary}
 Knowing the system you are simulating and the benefits and weaknesses to each thermostat is crucial to successfully and efficiently collect meaningful, physical data.
 If you are only interested in sampling structural properties such as radial distribution functions, many of the given thermostats can be used, including the Gaussian, Bussi, Andersen, Langevin, and Nos\'{e}-Hoover thermostats.
-If dynamical properties will be sampled, it is preferable to turn off the thermostat before beginning production cycles, but the Bussi and Nos\'{e}-Hoover thermostats (and in cases with implicit solvent, the Langevin thermostat), can often be used without disturbing these dynamical properties.
+If dynamical properties will be sampled, it is preferable to turn off the thermostat before beginning production cycles, but the Bussi and Nos\'{e}-Hoover thermostats (and in cases with implicit solvent, the Langevin thermostat), can often be used without overly affecting the calculation of dynamical properties.
 Since dynamical properties are not important during equilibration, faster algorithms like the Andersen or Bussi thermostats can be used, with a switch to the Nos\'{e}-Hoover thermostat for production.
 Overall, the Bussi thermostat has been shown to work well for most purposes, and its use is recommended as a general-purpose thermostat.
+
+\begin{table*}
+    \label{tstat_summary}
+    \caption{Basic summary of popular thermostats. \ding{55} indicates that the thermostat does not fulfill the statement, \ding{51} indicates that the thermostat does fulfill the statement, and (\ding{51}) indicates that the thermostat fulfills the statement under certain circumstances.}
+    \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
+        \toprule
+        Thermostat                  & Ensemble       & Deterministic/ & Global/ & Physical? & Correct     & Correct     \\
+                                    &                & Stochastic     & Local   &           & Structural  & Dynamical   \\
+                                    &                &                &         &           & Properties? & Properties? \\
+        \midrule                                                                              
+        None                        & Microcanonical & Deterministic  &         & \ding{51} & \ding{51}   & \ding{51}   \\
+        Gaussian                    & Isokinetic     & Deterministic  & Global  & \ding{55} & \ding{51}   & \ding{55}   \\
+        Simple Velocity Rescaling   & Undefined      & Deterministic  & Global  & \ding{55} & \ding{55}   & \ding{55}   \\
+        Berendsen                   & Undefined      & Deterministic  & Global  & \ding{55} & \ding{55}   & \ding{55}   \\
+        Bussi                       & Canonical      & Stochastic     & Global  & \ding{55} & \ding{51}   & (\ding{51}) \\
+        Andersen                    & Canonical      & Stochastic     & Local   & \ding{55} & \ding{51}   & \ding{55}   \\
+        Langevin                    & Canonical      & Stochastic     & Local   & \ding{55} & \ding{51}   & (\ding{51}) \\
+        Nos\'{e}-Hoover             & Canonical      & Deterministic  & Global  & \ding{55} & \ding{51}   & (\ding{51}) \\
+        \bottomrule
+    \end{tabular*}
+\end{table*}
+
 
 \subsection{Barostats}\label{sec:barostats}
 
