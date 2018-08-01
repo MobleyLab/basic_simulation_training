@@ -605,6 +605,7 @@ This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
 \subsubsection{Assignment of velocities}
+\label{sec:velocities}
 Minimization ideally takes us to a state from which we can begin numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4); however, to begin a simulation, we need not just positions but also velocities.
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
@@ -1207,7 +1208,7 @@ MD is a tool, but it may not be the right tool for your problem.
 Before beginning any study, it is critical to sort out what questions you want to answer, what resources (computational and otherwise) you have at your disposal, and whether you have any information about your system(s) of interest that indicate you can realistically expect to answer those questions given a set of MD simulations.
 
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
-Thus, as noted in the Introduction, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
+Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
 This means that if your system is complex and answering your questions will require sampling critical events that have a timescale of seconds or longer, MD will not be the right tool for the job.
 You could invest a huge amount of effort running a MD simulations and find that these do nothing whatsoever to address your questions.
 
@@ -1235,7 +1236,7 @@ The resulting simulation(s) might or might not be statistically meaningful, rele
 This, then, leads us to one of the real dangers of molecular simulations: A simulation produces results, which tempt users to interpret or overinterpret them, whether the results are meaningful or not.
 For example, even a very short, unequilibrated MD simulation can produce movies which appear interesting and, by virtue of the fact that they result from MD, reveal the positions of all the atoms in a system as a function of time. 
 It's easy to run several short MD simulations where (for example) the composition of the system is varied, and conclude that any observed differences are a result of variations in composition.
-But as noted in Section~\ref{}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
+But as noted in Section~\ref{sec:velocities}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
 Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty})).
 
 In summary, then, do not use MD simulations simply to make movies and inspect these; MD simulations do not produce the answer, and considerable care must be exercised to avoid overinterpeting the full atomistic detail they always provide. 
