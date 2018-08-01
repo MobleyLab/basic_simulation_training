@@ -594,21 +594,11 @@ It should not be assumed that if a system can proceed in a well-behaved manner t
 Assignment or development of force field parameters is also critical, but is outside the scope of this work.
 For our purposes here, we will assume you have already obtained or developed force field parameters suitable for your system of interest.
 
+\subsubsection{Minimization}
+
 The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single timestep).
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
-
-At the end of energy minimization, it is important to achieve a system configuration with small enough forces that the desired timestep will allow numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4).
-Such a configuration is a suitable starting point for molecular dynamics techniques.
-However, this only represents a static set of positions, while the propagation of dynamics also requires a set of starting velocities.
-These may be assigned in a variety of ways, but are usually randomly assigned to atoms such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved.
-
-\subsubsection{Minimization}
-
-The purpose of minimization, or relaxation, is to find a local energy minimum from the starting structure so that the molecular dynamics simulation does not immediately ``blow up'' (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single time step).
-This involves standard minimization algorithms such as steepest descent, conjugate gradient, or others.
-For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
-Again, minimization is primarily about setting the stage for subsequent dynamics, in which the system will move away from the minimum, so reaching a minimum to a very high level of tolerance is usually not necessary except in very specific applications.
 
 \subsubsection{Assignment of velocities}
 Minimization ideally takes us to a state from which we can begin numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4); however, to begin a simulation, we need not just positions but also velocities.
@@ -670,6 +660,8 @@ Usually, analysis involves computing expectation values of particular observable
 
 A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
+
+\todo[inline, color={yellow!20}]{DLM: Probably need to add something here about how often to store data.}
 
 \subsection{Thermostats}
 \label{sec:thermostats}
