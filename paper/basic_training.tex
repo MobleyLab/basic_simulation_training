@@ -1087,6 +1087,14 @@ E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_
 
 Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{decay_comparison.pdf}
+    \caption{Comparison of decay of original $r^{-1}$ term(blue,*), erfc(r) in direct space(black,-) and $r^{-6}$ in van der waals term (red, -.).  }
+\label{charges_ewald}
+\end{figure}
+
+
 Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space!
 
 \[
