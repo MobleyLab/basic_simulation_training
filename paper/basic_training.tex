@@ -571,7 +571,7 @@ Additionally, it is assumed that prior to performing any of these steps, an appr
 
 \subsubsection{System preparation}
 
-System preparation focuses on preparing the starting state of the desired system with an appropriate simulation package, including building a starting structure, solvating (if necessary), applying a force field, etc.
+System preparation focuses on preparing the starting state of the desired system for input to an appropriate simulation package, including building a starting structure, solvating (if necessary), applying a force field, etc.
 Because this step differs so much depending on the composition of the system and what information is available about the starting structure, it is a step which varies a great deal depending on the nature of the system at hand and as a result may require unique tools.
 
 Given the variable nature of system preparation, it is highly recommended that best practices documents specific to this issue and to the type of system of interest be consulted.
@@ -613,11 +613,9 @@ Still, an even better way to generate independent realizations is to begin with 
 \subsubsection{Equilibration}
 
 Ultimately, we usually seek to run a simulation in a particular thermodynamic ensemble (e.g. the NVE or NVT ensemble) at a particular state point (e.g. target energy, temperature, and pressure) and collect data for analysis which is appropriate for those conditions and not biased depending on our starting conditions/configuration.
-This means that usually we need to invest simulation time in bringing the system to the appropriate state point and allowing it to essentially forget about its history and reach equilibrium before we begin retaining data for analysis.
-In most systems, we are interested in sampling the most relevant (or most probable) configurations in the equilibrium ensemble of interest.
-Thus, while the system may rigorously sample the desired equilibrium ensemble, large free energy barriers, such as configurational relaxations of biomolecules, may kinetically prevent the sampling of the most relevant configurations within the simulation timescale.
-While relevant to the current discussion, this topic in its entirety is outside the current scope and is addressed more fully in another best practices document (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
-%JIM: Is this the right idea?  Totally ok if it isn't - you can change it back.  I just don't want people to get the sense that you absolutely cannot equilibrate a biomolecule or other complicated system.  Under certain assumptions, you most certainly can, it just becomes a matter of how much you trust the assumptions, force field, etc.  We all don't have Anton, so we all take a bit of blind-faith leap at some point.  There's always another kinetic barrier we haven't crossed (i.e. always a longer timescale we can't probe).
+This means that usually we need to invest simulation time in bringing the system to the appropriate state point as well as relaxing away from any artificially induced metastable starting states.
+In other words, we are usually interested in sampling the most relevant (or most probable) configurations in the equilibrium ensemble of interest.
+However, if we start in a less-stable configuration a large part of our equilibration may be the relaxation time (this may be very long for biomolecules or systems at phase equilibrium) necessary to reach the more relevant configuration space.
 
 The most straightforward portion of equilibrium is bringing the system to the target state point.
 Usually, even though velocities are assigned according to the correct distribution, a thermostat will still need to add or remove heat from the system as it approaches the correct partitioning of kinetic and potential energies.
