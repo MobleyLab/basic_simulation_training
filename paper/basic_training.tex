@@ -39,7 +39,7 @@
 
 \author[1]{Efrem Braun}
 \author[2]{Justin Gilmer}
-\author[3]{Heather Mayes}
+\author[3]{Heather B. Mayes}
 \author[4]{David L. Mobley}
 \author[5]{Jacob I. Monroe}
 \author[6]{Samarjeet Prasad}
@@ -48,7 +48,7 @@
 %\author[2*]{Firstname Surname}
 \affil[1]{University of California, Berkeley}
 \affil[2]{Vanderbilt University}
-\affil[3]{University of Michigan}
+\affil[3]{University of Michigan, Ann Arbor}
 \affil[4]{University of California, Irvine}
 \affil[5]{University of California, Santa Barbara}
 \affil[6]{National Institutes of Health}
@@ -98,23 +98,28 @@ We also provide a checklist of key issues to consider before and while setting u
 \label{sec:intro}
 
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
-Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications.
+Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
-The basic idea of any molecular simulation method is quite simple; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation. 
+The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation~\cite{Frenkel:2001:,LeachBook}.
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
 
 Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC).
-With MD methods, the equation of motion is numerically integrated and a dynamical trajectory of the system is generated. 
+With MD methods, the equations of motion are numerically integrated to generate a dynamical trajectory of the system.
 MD simulations can be used for investigating structural, dynamic, and thermodynamic properties of the system.
 With MC methods, probabilistic rules are used to generate a new configuration from the present configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time. 
-Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system. 
+Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, but the ensemble of configurations that reflect those that could be dynamically sampled.
 This foundational document will focus on the concepts needed to carry out correct MD simulations that utilize good practices. 
-Many, but not all, of the concepts here are also useful for MC simulations and apply there as well, but MC as a whole needs its own document.
+Many, but not all, of the concepts here are also useful for MC simulations and apply there as well. However, there are a sufficient number of key differences, which are outside the scope of this current document.
 
 Either method can be carried out with different underlying physical theories to describe the particle-based model of the system under investigation.
-If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability. 
-In a classical description, the molecules are represented by particles representing atoms or groups of atoms.  Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data)  is used to calculate non-bonded as well bonded interactions.
-Classical simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase.
+If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability.
+In a molecular mechanics (MM) description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data) used to calculate non-bonded and bonded interactions. Unless otherwise specified, MD simulations employ MM force fields, which calculate the forces that determine the system dynamics.
+MM simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase.
+However, typically, they are of lower-accuracy than QM simulations and cannot simulate bond rearrangements.
+QM simulations may be too computationally expensive to allow simulations of the time and length scales required to describe the system of interest~\cite{Bottaro2018}.
+The size of the system amenable for to QM simulation also depends on what type of method is chosen, from high-level ab initio methods to semi-empirical methods; discussion of these methods are outside the scope of this article, and useful references are separately available~\cite{Jensen2007}.
+Computational resources available are also an important consideration in deciding whether QM simulations are tractable. Roughly, QM simulations might be tractable with hundreds of atoms or fewer, while MD simulations routinely have tens or hundreds of thousands of atoms in the system. Much above that level, coarse-graining methods are used.
+They reduce resolution and computational cost. Although many of the approaches for atomistic simulations discussed here can apply to coarse-grained simulations, such simulations are not the focus of this paper and we will not discuss how coarse-grained simulations are initially built.
 %\todo[inline, color={red!20}]{Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good. Also add in general, that the topology does not change--most FF do not allow chemical reactions}
 
 Speed is a particular concern when describing condensed phase systems, as we are often interested in the properties of molecules (even biomacromolecules) in solution, meaning that systems will consist of thousands to hundreds of thousands or millions of atoms.
@@ -128,7 +133,7 @@ Thus the need for speed limits the use of quantum mechanical descriptions.
 Thus, for the rest of this document we will restrict ourselves to classical MD.
 
 One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the overall topology or chemistry of a system will remain constant as a function of time.
-That is, the particles comprising the system move around, but the chemical identity of each molecule in the system is a constant over the course of the simulation (with only partial exceptions, such as the case of constant pH simulations~\cite{Chen:2014:Mol.Simul.}).
+That is, the particles comprising the system move around, but the chemical identity of each molecule in the system remains a constant over the course of the simulation (with only partial exceptions, such as the case of constant pH simulations~\cite{Chen:2014:MolSimul}).
 This also means that the notion of pH in molecular simulations primarily refers to the selection of \emph{fixed} protonation states for the components of the system.
 
 Here, we first discuss the scope of this document, then go over some of the fundamental concepts or science topics which provide the underpinnings of molecular simulations, giving references for further reading.
@@ -282,7 +287,7 @@ However, an MD simulation is guaranteed to exhibit dynamical behavior.
 The key dynamical concept to understand is embodied in the twin characteristics of timescales and rates.  
 The two are literally reciprocals of one another.  
 In Fig.\ \ref{landscapes}(a), assume you have started an MD simulation in basin A.  
-The trajectory is likely to remain in that basin for a period of time -- the “dwell” timescale -- which increases exponentially with the barrier height according to the (reciprocal) Arrhenius factor as $\exp[(U^\ddagger - U_A)/k_B T]$; barriers many times the thermal energy $k_BT$ imply long dwells.  
+The trajectory is likely to remain in that basin for a period of time -- the ``dwell'' timescale -- which increases exponentially with the barrier height according to the (reciprocal) Arrhenius factor as $\exp[(U^\ddagger - U_A)/k_B T]$; barriers many times the thermal energy $k_BT$ imply long dwells.  
 The rate $k_{AB}$, which is the transition probability per unit time, exhibits reciprocal behavior -- i.e., $k_{AB} \sim \exp[-(U^\ddagger - U_A)/k_B T]$ according to the traditional Arrhenius factor.  
 Note that all transitions occur in a random, \emph{stochastic} fashion and are not predictable except in terms of average behavior.  
 More detailed discussions of rate constants can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
@@ -291,7 +296,7 @@ Once you have understood that MD behavior reflects system timescales, you must s
 Each small basin represents something like a different rotameric state of a protein side chain or perhaps a tiny part of the Ramachandran spaces (backbone phi-psi angles) for one or a few residues.  
 Observing the large-scale function motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
 Because functional biomolecular timescales tend to be on $\mu$s - ms scales, it is challenging if not impossible to observe them in traditional MD simulations.  
-There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:Annu.Rev.Biophys., Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:AnnuRevBiophys, Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
 What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
@@ -313,7 +318,7 @@ A final essential topic is the difference between equilibrium and non-equilibriu
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.  
 However, in a living cell where there is no shortage of time, biomolecules may exhibit non-equilibrium behavior for a quite different reason -- because they are \emph{driven} by the continual addition and removal of (possibly energy-carrying) substrate and product molecules.  
 In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann factor distribution.  
-Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:Annu.Rev.Biophys.} but they are not beginner-friendly.  
+Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:AnnuRevBiophys} but they are not beginner-friendly.  
 Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level (e.g. \url{http://www.physicallensonthecell.org/}).
 
 
@@ -321,7 +326,7 @@ Non-equilibrium molecular concepts pertinent to cell biology have been discussed
 
 Books which we recommend as particularly helpful in this area include:
 \begin{itemize}
-\item Reif's ``Fundamentals of Statistical and Thermal Physics''~\ref{Reif:2008:}
+\item Reif's ``Fundamentals of Statistical and Thermal Physics''~\cite{Reif:2009:}
 \item McQuarrie ``Statistical Mechanics''~\cite{McQuarrie:2000:}
 \item Dill and Bromberg's ``Molecular Driving Forces''~\cite{DillBook}
 \item Hill's ``Statistical Mechanics: Principles and Selected Applications''~\cite{Hill:1987:}
@@ -362,22 +367,22 @@ This means that interactions in non-polar media such as non-polar solvents, or p
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a nearby charge.
 
 It turns out that atoms and molecules also have their own levels of electrostatic response; particularly, their electron distributions polarize in response to their environment, effectively giving them an internal dielectric constant. 
-This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities~\cite{Ponder2003, Ponder:2010:J.Phys.Chem.B} or via Drude oscillator-type approaches~\cite{Lemkul:2016:Chem.Rev.}, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
+This polarization can be modeled in a variety of ways, such as (in fixed charge force fields) building in a fixed amount of polarization which is thought to be appropriate for simulations in a generic ``condensed phase'' or by explicitly including polarizability via QM or by building it into a simpler, classical model which includes polarizability such as via explicit atomic polarizabilities~\cite{Ponder2003, Ponder:2010:JPhysChemB} or via Drude oscillator-type approaches~\cite{Lemkul:2016:ChemRev}, where inclusion of extra particles attached to atoms allows for a type of effective polarization.
 
 %\item why/when we need Ewald-type sums
 Because so many interactions in physical systems involve polarity, and thus significant long-range interactions that decay only slowly with distance, it is important to regard electrostatic interactions as fundamentally long-range interactions.
 Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
 Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
-In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{LeachBook, York:1993:J.Chem.Phys., Darden:1993:J.Chem.Phys., Piana:2012:PLOSONE, Sagui:1999:Annu.Rev.Biophys.Biomol.Struct.}. 
+In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{LeachBook, York:1993:JChemPhys, Darden:1993:JChemPhys, Piana:2012:PLOSONE, Sagui:1999:AnnuRevBiophysBiomolStruct}. 
 Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range. 
 Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
 First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
 But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
 The remaining option, then, is to apply periodic boundary conditions (see Section~\ref{sec:periodic}) to tile all of space with repeating copies of the system. 
-Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics~\cite{Sagui:1999:Annu.Rev.Biophys.Biomol.Struct., Cisneros:2014:Chem.Rev.} where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
+Once periodic boundary conditions are set up, defining a periodic lattice, it becomes possible to include all long-range electrostatic interactions via a variety of different types of sums which can be described as ``lattice sum electrostatics'' or Ewald-type electrostatics~\cite{Sagui:1999:AnnuRevBiophysBiomolStruct, Cisneros:2014:ChemRev} where the periodicity is used to make possible an evaluation of all long range electrostatic interactions, including those of particles with their own periodic images.
 
 In practice, lattice sum electrostatics introduce far fewer and less severe artifacts than do cutoff schemes, so these are used for most classical all-atom simulation algorithms at present. 
-A variety of different efficient lattice-sum schemes are available~\cite{Cisneros:2014:Chem.Rev.}.
+A variety of different efficient lattice-sum schemes are available~\cite{Cisneros:2014:ChemRev}.
 In general these should be used whenever long range electrostatic interactions are expected to be significant; they may not be necessary in especially nonpolar systems and/or with extremely high dielectric constant solvents where electrostatic interactions are exclusively short range, but in general they should be regarded as standard (see also Section~\ref{sec:lr_electrostatics}, below). 
 
 
@@ -508,7 +513,7 @@ Even with force fields developed to be general and transferable, it is essential
 Either way, it is always a good idea to check results against previous literature when possible.
 This helps ensure that the force field is being implemented properly and, though it may seem laborious on a short-time horizon, can pay substantial dividends in the long-run.
 
-Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space (e.g.~\cite{Dupradeau:2010:Phys.Chem.Chem.Phys.}).
+Because this balance of accuracy versus generality and transferability can be challenging, some efforts eschew transferability entirely and instead build ``bespoke'' force fields, where each molecule is considered as a unique entity and assigned parameters independently of any other molecule or representation of chemical space (e.g.~\cite{Dupradeau:2010:PhysChemChemPhys}).
 Such approaches offer the opportunity to assign all molecules with parameters assigned in a consistent way; however, they are unsuitable for applications where speed needs to exceed that of the parameter assignment process -- so, for example, for docking of a large library of potential ligands to a target receptor, if compounds must be screened at seconds or less per molecule, such approaches may not be suitable.
 
 
@@ -565,7 +570,7 @@ these steps:
 \item Production
 \end{enumerate}
 
-Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials \citep{LemkulTutorials, AmberBeginner}.
+Additional explanations of these steps along with procedural details specific to a given simulation package and application may be found in a variety of tutorials~\cite{LemkulTutorials,AmberBeginner}.
 It should be noted that these steps may be difficult to unambiguously differentiate and define in some cases.
 Additionally, it is assumed that prior to performing any of these steps, an appropriate amount of deliberation has been devoted to clearly defining the system and determining the appropriate simulation techniques.
 
@@ -682,7 +687,7 @@ We review background information about thermostats and how they work, introduce 
 % Motivation for using thermostats
 \subsubsection{Thermostats seek to maintain a target temperature}
 As mentioned above, molecular dynamics simulations are used to observe and glean properties of interest from some system of study.
-In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant temperature) ensemble is desired\cite{thermostatAlgorithms2005}.
+In many cases, to emulate experiments done in laboratory conditions (exposed to the surroundings), sampling from the canonical (constant temperature) ensemble is desired~\cite{thermostatAlgorithms2005}.
 Generally, if the temperature of the system must be maintained during the simulation, some thermostat algorithm will be employed. 
 
 
@@ -696,7 +701,7 @@ The instantaneous temperature will not always be equal to the target temperature
 
 Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical (constant energy).
 Thus, it is preferable that a thermostat not be used if it is desired to calculate dynamical properties such as diffusion coefficients; instead, the thermostat should be turned off after equilibrating the system to the desired temperature.
-However, while all thermostats give non-physical dynamics, some have been found to have little effect on the calculation of particular dynamical properties, and they are commonly used during the production simulation as well\cite{Basconi:2013:J.Chem.TheoryComput.}.
+However, while all thermostats give non-physical dynamics, some have been found to have little effect on the calculation of particular dynamical properties, and they are commonly used during the production simulation as well\cite{Basconi:2013:JChemTheoryComput}.
 
 There are several ways to categorize the many thermostatting algorithms that have been developed.
 For example, thermostats can be either deterministic or stochastic depending on whether they use random numbers to guide the dynamics, and they can be either global or local depending on whether they are coupled to the dynamics of the full system or of a small subset.
@@ -715,25 +720,25 @@ This is by no means an exhaustive study of available thermostats, but is instead
         
         The goal of the Gaussian thermostat is to ensure that the instantaneous temperature is exactly equal to the target temperature.
         This is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{constraint}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation and $F_{constraint}$ is a Lagrange multiplier that keeps the kinetic energy constant.
-        The reasoning for the naming of this thermostat is due to its use of the Gaussian principle of least constraint to determine the smallest perturbative forces needed to maintain the instantaneous temperature\cite{thermostatAlgorithms2005}.
+        The reasoning for the naming of this thermostat is due to its use of the Gaussian principle of least constraint to determine the smallest perturbative forces needed to maintain the instantaneous temperature~\cite{thermostatAlgorithms2005}.
         Clearly, this thermostat does not sample the canonical distribution; it instead samples the isokinetic (constant kinetic energy) ensemble.
-        However, the isokinetic ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent (structural) equilibrium properties can be obtained equivalently with either ensemble\cite{Minary:2003:JChemPhys:Algorithms}.
+        However, the isokinetic ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent (structural) equilibrium properties can be obtained equivalently with either ensemble~\cite{Minary:2003:JChemPhysAlgorithms}.
         However, velocity-dependent (dynamical) properties will not be equivalent between the ensembles.
-        This thermostat is generally only used in certain advanced applications\cite{Minary:2002:JChemPhysAlgorithms}.
+        This thermostat is generally only used in certain advanced applications~\cite{Minary:2003:JChemPhysAlgorithms}.
 
     \item \textbf{Simple Velocity Rescaling}
 
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement; however, this thermostat is also one of the most non-physical thermostats.
-        This thermostat relies on rescaling the momenta of the particles such that the simulation's instantaneous temperature exactly matches the target temperature\cite{thermostatAlgorithms2005}.
+        This thermostat relies on rescaling the momenta of the particles such that the simulation's instantaneous temperature exactly matches the target temperature~\cite{thermostatAlgorithms2005}.
         Similarly to the Gaussian thermosat, simple velocity rescaling aims to sample the isokinetic ensemble rather than the canonical ensemble.
-        However, it has been shown that the sample velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018:arXiv:Anomalous}.
-        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018:arXiv:Anomalous}.
+        However, it has been shown that the sample velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018}.
+        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018}.
 
     \item \textbf{Berendsen}
 
         The Berendsen\cite{berendsen1984molecular} thermostat (also known as the weak coupling thermostat) is similar to the simple velocity rescaling thermostat, but instead of rescaling velocities completely and abruptly to the target kinetic energy, it includes a relaxation term to allow the system to more slowly approach the target.
         Although the Berendsen thermostat allows for temperature fluctuations, it samples neither the canonical distribution nor the isokinetic distribution.
-        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018:arXiv}.
+        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018}.
 
     \item \textbf{Bussi-Donadio-Parrinello (Canonical Sampling through Velocity Rescaling)}
 
@@ -755,17 +760,17 @@ This is by no means an exhaustive study of available thermostats, but is instead
         It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
         Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
-    \item {\bf Nos\'{e}-Hoover}
+    \item {\bf{Nos\'{e}-Hoover}}
 
         The Nos\'{e}-Hoover thermostat~\cite{thermostatAlgorithms2005} abstracts away the thermal bath from the previous thermostats and condenses it into a singular additional degree of freedom.
         This fictitious degree of freedom has a ``mass'' that can be changed to interact with the particles in the system in a predictable and reproducible way while maintaining the canonical ensemble.
         The choice of ``mass'' of the fictitious particle (which in many simulation packages is instead expressed as a time damping parameter) can be important as it affects the fluctuations that will be observed.
-        For many reasonable choices of the mass, dynamics are well-preserved\cite{Basconi:2013:J.Chem.TheoryComput.}.
+        For many reasonable choices of the mass, dynamics are well-preserved~\cite{Basconi:2013:JChemTheoryComput}.
         This is one of the most widely implemented and used thermostats.
-        However, it should be noted that with small systems, ergodicity can be an issue\cite{martyna1992nose,thermostatAlgorithms2005}. 
+        However, it should be noted that with small systems, ergodicity can be an issue\cite{martyna1992nose,thermostatAlgorithms2005}.
         This can become important even in systems with larger numbers of particles if a portion of the system does not interact strongly with the remainder of the system, such as in alchemical free energy calculations when a solute or ligand is non-interacting.
-        Martyna et al. \cite{martyna1992nose} discovered that by chaining thermostats, ergodicity can be enhanced, and most implementations of this thermostat use Nos\'{e}-Hoover chains.
-    
+        Martyna et al.~\cite{martyna1992nose} discovered that by chaining thermostats, ergodicity can be enhanced, and most implementations of this thermostat use Nos\'{e}-Hoover chains.
+
 \end{enumerate}
 
 \subsubsection{Summary}
@@ -777,8 +782,8 @@ Since dynamical properties are not important during equilibration, faster algori
 Overall, the Bussi thermostat has been shown to work well for most purposes, and its use is recommended as a general-purpose thermostat.
 
 \begin{table*}
-    \label{tstat_summary}
     \caption{Basic summary of popular thermostats. \ding{55} indicates that the thermostat does not fulfill the statement, \ding{51} indicates that the thermostat does fulfill the statement, and (\ding{51}) indicates that the thermostat fulfills the statement under certain circumstances.}
+    \label{tstat_summary}
     \begin{tabular*}{\textwidth}{@{\extracolsep{\fill}}lcccccc}
         \toprule
         Thermostat                  & Ensemble       & Deterministic/ & Global/ & Physical? & Correct     & Correct     \\
@@ -985,7 +990,7 @@ However, through fortuitous cancellation of error, some stochastic integration s
 Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
 When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
 If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
-If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:J.Chem.TheoryComput.}.
+If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:JChemTheoryComput}.
 \todo[inline, color={yellow!20}]{DLM: I need to review the paragraphing here; some of these are rather long and cover a lot. }
 
 %\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
@@ -1019,7 +1024,7 @@ Many such enhanced timestepping algorithms exist such as multiple-timestep metho
 
 \subsubsection{Motivation}
 
-Calculation of non-bonded interaction is generally the most time-consuming step of classical energy calculation. While the elements(?) for bonded interaction remain unchanged during the course of MD simulation, the ones for non-bonded interactions have to be updated frequently. Furthermore, $r^{-1} $ dependence  of coulombic interaction in a 3D space complicates the calculation in the following two ways :
+Calculation of non-bonded interaction is generally the most time-consuming step of classical energy calculation. While the number of type of bonded interactions remain unchanged during the course of MD simulation, the ones for non-bonded interactions have to be updated frequently as molecules move into and out of the cutoff regions specified for extramolecular interactions. Furthermore, $r^{-1} $ dependence  of coulombic interaction in a 3D space complicates the calculation in the following two ways :
 \begin{itemize}
 \item Coulombic potential is conditionally convergent. What do we mean by this? Consider for example the alternating harmonic series : \\
 \[
@@ -1028,10 +1033,10 @@ Calculation of non-bonded interaction is generally the most time-consuming step 
 
 But if we now change the order of the summation to, lets say :
 \[
-( 1 - \frac{1}{2})  - \frac{1}{4} + (\frac{1}{3} - \frac{1}{6}) - \frac{1}{8} + (\frac{1}{5} - \frac{1}{10}) - \frac{1}{12} + (\frac{1}{7} - \frac{1}{14}) - \frac{1}{16} + .. 
+( 1 - \frac{1}{2})  - \frac{1}{4} + (\frac{1}{3} - \frac{1}{6}) - \frac{1}{8} + (\frac{1}{5} - \frac{1}{10}) - \frac{1}{12} + (\frac{1}{7} - \frac{1}{14}) - \frac{1}{16} + ...
 \]
 \[
-= \frac{1}{2} - \frac{1}{4} + \frac{1}{6} - \frac{1}{8} + \frac{1}{10} - ... 
+= \frac{1}{2} - \frac{1}{4} + \frac{1}{6} - \frac{1}{8} + \frac{1}{10} - ...
 \]
 \[
 = \frac{1}{2} (1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ...) = \frac{1}{2} ln 2
@@ -1039,10 +1044,10 @@ But if we now change the order of the summation to, lets say :
 
 Using a different order might give us a different result. Thus the order of summation matters !
 
-\item Coulombic potential is a slow-decaying, long range potential. This means that we need to account for non-bonded pairs over larger pairwise distances in order to minimize the errors. As enlisting atom-pairs is fundamentally an $O(n^2) $ operation, the time taken to compute non-bonded pairs increases quadratically with respect to an increase in the number of atoms.   
-\end{itemize} 
+\item Coulombic potential is a slow-decaying, long range potential. This means that we need to account for non-bonded pairs over larger pairwise distances in order to minimize the errors. As enlisting atom-pairs is fundamentally an $O(n^2) $ operation, the time taken to compute non-bonded pairs increases quadratically with respect to an increase in the number of atoms.
+\end{itemize}
 
-As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).  
+As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).
 
 \subsubsection{ Ewald Summation}
 
@@ -1061,7 +1066,7 @@ Ewald method is based on replacing the point charge distributions by smooth char
 
 \[ \rho^{sr} = q\delta(\boldsymbol{x}-\boldsymbol{x_i}) - qG\] 
 
-\[ \rho^{lr} = qG \]      
+\[ \rho^{lr} = qG \]
 
 
 \begin{figure}[h]
@@ -1071,39 +1076,39 @@ Ewald method is based on replacing the point charge distributions by smooth char
 \label{charges_ewald}
 \end{figure}
 
-Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge of the same magnitude. 
+Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge of the same magnitude.
 \[
 E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
 \]
 
-Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well. 
+Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. Infact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
 
-Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space! 
+Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space!
 
 \[
 E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
 \]
 
-The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. If we used only the original point charges, we would not have had this dampening factor. 
+The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. If we used only the original point charges, we would not have had this dampening factor.
 
-Self term is not a physical quantity and comes up due to the way the Ewald summation is set up. 
+Self term is not a physical quantity and comes up due to the way the Ewald summation is set up.
 
 \[
 E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
 \]
- 
+
 \subsubsection{Grid based Ewald summation}
 
-Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach. 
+Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach.
 
 There are five general steps involved in these methods :
 \begin{enumerate}
-\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).  
+\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines of order n ($M_n$).
 
 \[
 Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 M_n(u_i^d - k_d - p_dK_d)
 \]
-\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.    
+\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.
 \[
 S(m) = \sum_j q_j \exp(mr_j)
 \]
