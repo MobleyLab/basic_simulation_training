@@ -981,17 +981,18 @@ Such integrators are not applicable, however, for simulations involving stochast
 
 Stochastic dynamics simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
 A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
-As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
+As detailed in Section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
 As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
 Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
 
-For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
-However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018}.
-Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
-When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
+With Langevin or other stochastic dynamics, the random forces usually prevent the integrator from preserving phase-space volume, which ends up dictating the choice of timestep.
+Specifically, despite issues with phase-space volume, some stochastic integration schemes achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018} via cancellation of error.
+In practice these issues are easily remedied through an appropriate choice of timestep depending on the integration scheme.
+
+Stochastic dynamics necessarily perturbs dynamics. 
+Specifically, with Langevin or Brownian dynamics, calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
 If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
 If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:JChemTheoryComput}.
-\todo[inline, color={yellow!20}]{DLM: I need to review the paragraphing here; some of these are rather long and cover a lot. }
 
 
 \subsubsection{Choosing an appropriate timestep}
