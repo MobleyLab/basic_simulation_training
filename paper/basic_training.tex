@@ -268,14 +268,8 @@ Key concepts from statistical mechanics are particularly important and prevalent
 \end{itemize}
 
 Traditional discussions of classical statistical mechanics, especially concise ones, tend to focus first or primarily on macroscopic thermodynamics and microscopic \emph{equilibrium} behavior based on the Boltzmann factor, which tells us that configurations $\conf$ occur with (relative) probability $\exp[-U(\conf)/k_B T]$, based on potential energy function $U$ and temperature $T$ in Kelvin units.  
-Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.  
-But in both fundamental and practical ways, this ordering is wrong.  
-Think Arrhenius first, then Boltzmann.
-
-MD simulation, like nature itself, runs dynamics.  
-Any equilibrium phenomena may (or may not) occur as a consequence and equilibrium behavior is hardly automatic~\cite{Zuckerman:2010:}.  
-In fact, based on current and foreseeable computational technology, it is much safer to assume that your simulation will not exhibit equilibrium behavior.  
-However, an MD simulation is guaranteed to exhibit dynamical behavior.
+Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.
+However, as the laws of statistical mechanics arise naturally from dynamical equations, we will discuss dynamics first.
 
 \begin{figure}[h]
 \centering
@@ -357,7 +351,7 @@ Key concepts from classical electrostatics include
 %\item Long range nature of the Coulomb interaction
 Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called
 ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles. 
-In classical molecular simulations, atoms are typically represented by sites bearing charge in units of fractions of an elementary charge, so atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster).  
+Atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster).  
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
 %\item Polarizability, dielectric constants
@@ -610,6 +604,8 @@ For a more involved discussion of minimization algorithms utilized in molecular 
 Minimization ideally takes us to a state from which we can begin numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4); however, to begin a simulation, we need not just positions but also velocities.
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
+The actual assignment process is typically unimportant, as the Maxwell-Boltzmann distribution will quickly arise naturally from the equations of motion.
+Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, the last particle is typically assigned a velocity to guarantee that the center-of-mass momentum is zero, preventing the simulation box from drifting.
 
 In some cases, we seek to obtain multiple separate and independent simulations of different instances or realizations of a particular system to assess error, collect better statistics, or help gauge dependence of results on the starting structure.
 It is worth noting that even very small differences in initial configuration, such as even a difference in position of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
@@ -666,7 +662,7 @@ Typically this phase is called ``production''.
 The main difference between equilibration and production is simply that in the production simulation, we plan to retain and analyze the collected data.
 Production must always be preceded by equilibration appropriate for the target production ensemble, and production data should never be collected immediately after a change in conditions (such as rescaling a box size, energy minimizing, or suddenly changing the temperature or pressure) except in very specific applications where this is the goal.
 
-For bookkeeping purposes, sometimes practitioners choose to discard some initial production data as additional equilibration; usually this is simply to allow additional equilibration time after a change in protocol (such as a switch from NVT to NPT), and the usual considerations for equilibration apply in such cases (see \citet{ShellNotes}, lecture on Computing Properties). 
+For bookkeeping purposes, sometimes practitioners choose to discard some initial production data as additional equilibration; usually this is simply to allow additional equilibration time after a change in protocol (such as a switch from NPT to NVT), and the usual considerations for equilibration apply in such cases (see \citet{ShellNotes}, lecture on Computing Properties).
 
 Analysis of production is largely outside the scope of this work, but requires considerable care in computing observables and assessing the uncertainty in any computed properties.
 Usually, analysis involves computing expectation values of particular observables, and a key consideration is to obtain \emph{converged} estimates of these properties --- that is, estimates that are based on adequate simulation data so that they no longer depend substantially on the length of the simulation which was run or on its initial conditions.
@@ -676,7 +672,19 @@ Depending on the relaxation timescales involved, one may only realize after anal
 A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
-\todo[inline, color={yellow!20}]{DLM: Probably need to add something here about how often to store data.}
+One other key consideration in production is what data to store, and how often.
+Storing data especially frequently can be tempting, but utilizes a great deal of storage space and does not actually provide significant value in most situations.
+Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
+Thus, storing data more frequently than intervals of the autocorrelation time is generally unnecessary.
+Disk space may also be a limiting factor that dictates the frequency of storing data, and should at least be considered.
+Trajectory snapshots can be particularly large.
+However, if there are no disk space limitations it may be best to avoid discarding uncorrelated data so sampling \emph{at} intervals of the autocorrelation time may be appropriate.
+
+If disk space proves limiting, various strategies can be used to reduce storage use, such as storing full-precision trajectory snapshots only less frequently and storing reduced-precision ones, or snapshots for only a portion of the system, more often.
+However, these choices will depend on the desired analysis.
+
+For many applications, it will likely be desirable to store energies and trajectory snapshots at the same time points in case structural analysis is needed along with analysis of energies.
+Since energies typically use far less space, however, these can be stored more often if desired.
 
 \subsection{Thermostats}
 \label{sec:thermostats}
@@ -809,114 +817,97 @@ Here, we discuss why barostats are used, give their background, discuss roughly 
 
 \subsubsection{Motivation}
 Typically, thermodynamic properties of interest are measured under open air conditions in a laboratory, which (for short timescales) means at they are measured at essentially constant temperature and pressure.
+To obtain a non-atmospheric pressure, some device, like a piston, inert gas, etc\@., would be needed to control the pressure and volume of the system~\cite{tuckermanBook, ShellNotes}.
 Such conditions correspond to what is called the isothermal-isobaric ensemble, probably one of the most popular ensembles for MD simulationsl.
 As is the case with thermostats, if the pressure must be maintained in a simulation, a barostat algorithm will be needed to sample this ensemble.
 
 \subsubsection{Background and How They Work}
-In many experiments, the container is either open to the atmosphere, meaning that it is subject to a roughly constant pressure of approximately one atmosphere. % is subjected to a constant pressure of one atmosphere; or under some enclosure, which will control the volume, thus controlling the pressure.
-%DLM: Removed this; if it was sealed, it is constant volume, not constant pressure, yes?
-To obtain a different pressure, some device, like a piston, inert gas, etc\@., would be needed to control the pressure and volume of the system~\cite{tuckermanBook, ShellNotes}.
-
-For the purpose of molecular modeling, consider a hypothetical system that is being compressed and/or expanded by a fictitious piston that has some mass which acts in all directions uniformly.
-Since the piston is acting on the system from all directions, it can be considered as applying a uniform compression or expansion.
-The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
-These impacts from the particles on the ``enclosure'' will impart a stress on the system box which can be related to the stress the surroundings are imparting on the system.
-With this relationship, we can use the virial theorem (an expectation value relating to positions and forces) to calculate the pressure of a system~\cite{ShellNotes, LeachBook}.
-However, this is much more challenging when considering pairwise interactions and periodic boundary conditions~\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}, and a different approach is often utilized.
-Our main point here, however, is that pressure can be related to instantaneous properties of the system allowing us to calculate an instantaneous pressure in a similar manner to how we calculate an instantaneous temperature for thermostats.
-
-Thus, barostat algorithms apply to keep the instantaneous pressure of a system at or near the target pressure.
 
 Barostat algorithms control pressure alone, not temperature, so if the target ensemble is isothermal-isobaric, they must also be applied with a thermostat.
 If a barostat is applied without a thermostat, only the number of particles (N), the pressure (P), and the enthalpy (H) of the system is held constant.
 This is known as the isoenthalpic-isobaric ensemble (NPH).
 To sample from the isothermal-isobaric ensemble (NPT), a thermostating algorithm like the ones discussed earlier must also be applied.
 
-Many barostats are available, but can usually can be classified into three main categories: volume rescaling, weakly coupled, and extended ensemble barostats~\cite{ShellNotes, tuckermanBook}. 
-The next section will describe the main differences between these barostats, and give some recommendations for proper use.
+Much of the background information on barostats is analogous to thermostats.
+The pressure of a molecular dynamics simulation is commonly measured using the virial theorem (an expectation value relating to positions and forces)\cite{ShellNotes, LeachBook}.
+When pairwise interactions and periodic boundary conditions are considered, different approaches are often utilized~\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
+Regardless, these formulas give pressure as a time-averaged quantity, similar to the temperature.
+If we use these formulas to calculate the pressure for a single snapshot, this quantity is referred to as the instantaneous pressure.
+The instantaneous pressure will not always be equal to the target pressure; in fact, in the NPH and NPT ensembles, the instantaneous pressure should undergo fluctuations around the target pressure.
+
+For the purpose of molecular modeling, consider a hypothetical system that is being compressed and/or expanded by a fictitious piston that has some mass which acts in all directions uniformly.
+Since the piston is acting on the system from all directions, it can be considered as applying a uniform compression or expansion.
+The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
+These impacts from the particles on the ``enclosure'' will impart a stress on the system box which can be related to the stress the surroundings are imparting on the system.
 
 
-\subsubsection{Popular and Notable Barostats}
+The next section will describe the main differences between the many barostats that are available, and give some recommendations for proper use.
+
+\subsubsection{Popular Barostats}
 Here, we introduce a few notable barostats and give a high-level summary of each, noting some key issues.
 This is not an exhaustive list of barostats and barostat algorithms, just a sampling of popular and historic ones used in MD\@.
 
-\subparagraph{Volume Rescaling}
 \begin{enumerate}[listparindent=\parindent]
-    \item \textbf{Volume Rescaling}
 
-Volume rescaling barostats are the simplest example of pressure control in molecular simulations.
-Every time this barostat is executed, the volume of the system is modified to produce the exact pressure desired.
-This does \textbf{not} sample the proper ensemble and thus cannot be used for production sampling~\cite{ShellNotes}.
-This also does not smoothly approach the target pressure either, which might cause very unphysical issues with the system during integration.
+    \item \textbf{Simple volume rescaling}
 
-\end{enumerate}
+        Every time this barostat is executed, the volume of the system is modified such that the instantaneous pressure is exactly equal to the target pressure.
+        This does \textbf{not} sample the proper ensemble and thus cannot be used for production sampling~\cite{ShellNotes}.
+        This also does not smoothly approach the target pressure either, which might cause very unphysical issues with the system during integration.
 
-\subparagraph{Weakly Coupled Barostats}
-\begin{enumerate}[listparindent=\parindent]
-\item \textbf{Berendsen}
+    \item \textbf{Berendsen}
 
-The Berendesen~\cite{berendsen1984molecular} barostat is very similar to the Berendsen thermostat discussed earlier.
-It seeks to improve upon the volume rescaling methods mentioned above.
-This was to be achieved by coupling the system to a weakly interacting pressure bath~\cite{berendsen1984molecular}.
-This bath scales the volume periodically by a scaling factor, which produces more realisitc fluctuations in the pressure as it slowly approaches the target pressure.
-In contrast to volume rescaling, Berendsen will approach the target pressure more realistically, but the ensemble it is sampling from is not well defined and cannot be guaranteed to be NPT or NPH\@.
-Berendsen can be useful for the beginning stages of equilibration, but should \textbf{not} be used for production sampling.
+        The Berendesen~\cite{berendsen1984molecular} weak coupling barostat is very similar to the Berendsen thermostat discussed earlier.
+        It seeks to improve upon the simple volume rescaling method mentioned above.
+        This is achieved by coupling the system to a weakly interacting pressure bath~\cite{berendsen1984molecular}.
+        This bath scales the volume periodically by a scaling factor, which produces more realisitc fluctuations in the pressure as it slowly approaches the target pressure.
+        In contrast to volume rescaling, Berendsen will approach the target pressure more realistically, but the ensemble it is sampling from is not well defined and cannot be guaranteed to be NPT or NPH\@.
+        Berendsen can be useful for the beginning stages of equilibration, but should \textbf{not} be used for production sampling.
 
-\end{enumerate}
+    \item \textbf{Andersen}
 
-\subparagraph{Extended System Barostats}
-\begin{enumerate}[listparindent=\parindent]
-\item \textbf{Andersen Barostat}
+        First described by Andersen~\cite{andersen1980molecular} in 1980, the system is coupled to a fictitious pressure bath, by adding an additional degree of freedom to the equations of motion.
+        This behaves as if the system is being acted upon by an isotropic piston.
+        This is similar to the Nos\'{e}-Hoover thermostat, which is also an extended system algorithm.
+        This barostat does sample the correct ensemble. However, it is isotropic in nature and applying anisotropic pressures to parts of the system is not possible.
 
-First described by Andersen~\cite{andersen1980molecular} in 1980, the system is coupled to a fictitious pressure bath, by adding an additional degree of freedom to the equations of motion.
-This behaves as if the system is being acted upon by an isotropic piston.
-This is similar to the Nos\'{e}-Hoover thermostat, which is also an extended system algorithm.
-This barostat does sample the correct ensemble. However, it is isotropic in nature and applying anisotropic pressures to parts of the system is not possible.
+    \item \textbf{Parrinello-Rahman}
+    
+        The Parrinello-Rahman~\cite{Parrinello1981} barostat is an extension to the Andersen barostat.
+        Unlike the Andersen barostat, Parrinello-Rahman supports the anisotropic scaling of the size and shape of the simulation box~\cite{Parrinello1981}.
+        This can be quite useful in solid simulations, where phase changes can be shape changes in a crystal lattice, compared to a liquid or gas, which has no well defined shape.
+        This barostat has essentially the same properties as the Andersen one, with the additional support anisotropy.
+    
+    \item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK)}
+    
+        The MTTK barostat has substantial similarity to the Parrinello-Rahman and Andersen barostats.
+        When Parrinello-Rahman's equations of motion were discovered to only hold true in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
+        Thus, MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as an improvement over Parrinello-Rahman~\cite{Parrinello1981} for such systems.
 
-\item \textbf{Parrinello-Rahman Barostat}
-
-The Parrinello-Rahman~\cite{Parrinello1981} barostat is an extension to the Andersen barostat.
-Unlike the Andersen barostat, Parrinello-Rahman supports the anisotropic scaling of the size and shape of the simulation box~\cite{Parrinello1981}.
-This can be quite useful in solid simulations, where phase changes can be shape changes in a crystal lattice, compared to a liquid or gas, which has no well defined shape.
-This barostat has essentially the same properties as the Andersen one, with the additional support anisotropy.
-
-\item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK) Barostat}
-
-The MTTK barostat has substantial similarity to the Parrinello-Rahman and Andersen barostats.
-When Parrinello-Rahman's equations of motion were discovered to only hold true in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
-Thus, MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as an improvement over Parrinello-Rahman~\cite{Parrinello1981} for such systems.
-
-\end{enumerate}
-
-\subparagraph{Monte Carlo Barostats}
-\begin{enumerate}[listparindent=\parindent]
-\item \textbf{MC Barostat}
-
-Constant pressure may also be achieved by periodically performing Monte Carlo moves that adjust the system volume.
-For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in ~\citet{ShellNotes}.
-These MC barostats are computationally advantageous in that the Virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
-However, they rigorously only explore the correct distribution of volumes in the NPT ensemble without any attempt at preserving the dynamic fluctuations involved in this sampling.
-Unlike for extended system barostats, there is no sense of relaxation time over which the volume of the system responds.
-Instead, the rate at which the volume may respond is limited by the frequency with which MC moves are performed and the maximum allowed change in volume.
-Thus, long-time dynamics are not accurately reproduced in any sense for MC barostats.
+    \item \textbf{Monte Carlo}
+    
+        Constant pressure may also be achieved by periodically performing Monte Carlo moves that adjust the system volume.
+        For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in ~\citet{ShellNotes}.
+        These MC barostats are computationally advantageous in that the Virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
+        However, they rigorously only explore the correct distribution of volumes in the NPT ensemble without any attempt at preserving the dynamic fluctuations involved in this sampling.
+        Unlike for extended system barostats, there is no sense of relaxation time over which the volume of the system responds.
+        Instead, the rate at which the volume may respond is limited by the frequency with which MC moves are performed and the maximum allowed change in volume.
+        Thus, long-time dynamics are not accurately reproduced in any sense for MC barostats.
 
 \end{enumerate}
 
 \subsubsection{Summary}
 
-In summary, there are three types of barostats usually implemented in molecular dynamics codes which can greatly affect the data you are collecting from the system. 
-Volume rescaling is not recommended for collection of production data.
-This barostat does not sample from any correct ensemble, nor does it utilize any ``realistic'' approach to achieve the target pressure.
-Weak coupling barostats provide some improvement compared to volume rescaling methods.
-However, these methods cannot be used to bring the system to equilibrium effectively.
-They can be used for approaching the target pressure in a more realistic fashion compared to the volume rescaling barostat, which itself is primarily useful only as a very stable thermostat for very early simulation stages if other algorithms have trouble beginning from particularly strained starting structures. 
+The simple volume rescaling and Berendsen barostats are not recommended for collection of production data, as they do not sample from any correct ensemble, nor do they utilize any ``realistic'' approach to achieve the target pressure.
+They can, however,  be used for approaching the target pressure.
+The Berendsen barostat acts in a more realistic fashion in this regard compared to the volume rescaling barostat, which itself is primarily useful only as a very stable thermostat for very early simulation stages if other algorithms have trouble beginning from particularly strained starting structures. 
 (Alternatively, such issues can be avoided by running NVT equilibration before using a barostat, Figure~\ref{eqworkflow}.)
-Finally, extended ensemble barostats are suitable for the production runs of most systems.
+Extended ensemble barostats are suitable for the production runs of most systems.
 It is usually not recommended to use these for the equilibration process, as these barostats do not behave as well when not near the target pressure.
-These can be affected by the starting configuration and pressure values much more than the Berendsen or volume rescaling barostats.
+These can be affected by the starting configuration and pressure values much more than the Berendsen or simple volume rescaling barostats.
 MTTK and Parinello-Rahman allow for more flexibility in terms of the shape modulation of the simulation box.
 Ultimately, however, one's choice often is limited by which extended-ensemble barostat has been implemented in your simulation engine of choice.
-It is recommended to begin with a volume rescaling or weakly coupled barostat to quickly bring the system to the target pressure, then switch to an extended ensemble barostat for final equilibration and production.
+It is recommended to begin with the Berendsen barostat to quickly bring the system to the target pressure, and then switch to an extended ensemble barostat for final equilibration and production.
 
 \subsection{Integrators}
 \label{sec:integrators}
@@ -981,23 +972,21 @@ Such integrators are not applicable, however, for simulations involving stochast
 
 Stochastic dynamics simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
 A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
-As detailed in section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
+As detailed in Section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
 As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
 Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
 
-For simulating Langevin or other stochastic dynamics, the presence of random forces usually prevents the integrator from preserving phase-space volume.
-However, through fortuitous cancellation of error, some stochastic integration schemes may achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018}.
-Though this may sound dire, in practice this is easily remedied through an appropriate choice of timestep - this just might need to be shorter or longer depending on the integration scheme.
-When using Langevin or Brownian dynamics, one should also be aware that calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
+With Langevin or other stochastic dynamics, the random forces usually prevent the integrator from preserving phase-space volume, which ends up dictating the choice of timestep.
+Specifically, despite issues with phase-space volume, some stochastic integration schemes achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018} via cancellation of error.
+In practice these issues are easily remedied through an appropriate choice of timestep depending on the integration scheme.
+
+Stochastic dynamics necessarily perturbs dynamics. 
+Specifically, with Langevin or Brownian dynamics, calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
 If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
 If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:JChemTheoryComput}.
-\todo[inline, color={yellow!20}]{DLM: I need to review the paragraphing here; some of these are rather long and cover a lot. }
 
-%\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
-%\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
-\subsubsection{How to choose an appropriate timestep?}
-%\todo[inline, color={yellow!20}]{DLM: Above should be broken into subsubsections for consistency with thermostats/barostats and because a subsection with only one subsubsection doesn't make sense.}
+\subsubsection{Choosing an appropriate timestep}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
@@ -1192,6 +1181,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
 \item Determine reference states that you are trying to emulate/discover.
 \item What temperature, pressure, etc. are you interested in?
+\item What force field properly describes your system?
 \item What is already known in the literature and what data do you wish to compare to?
 \end{itemize}
 \end{checklist}
@@ -1201,7 +1191,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{itemize}
 \item Choose a simulation package suitable for simulating that ensemble with your target force field
 \item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in Section~\ref{sec:periodic}
-\item Prepare your system, paying particular attention to ensuring it contains the chemical components you want with the structures you want, and that force field parameters are assigned as intended
+\item Prepare your system, paying particular attention to ensuring it contains the chemical components you want with the structures you want, and that force field parameters are assigned as intended (it is good practice to ensure that you properly implemented the force field by replicating energies, forces, or other observables from prior publications)
 \end{itemize}
 \end{checklist}
 
