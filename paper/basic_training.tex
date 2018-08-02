@@ -147,21 +147,18 @@ We also provide a checklist to assist with preparing for and beginning a modelin
 There are several excellent textbooks on classical simulation methods; some we have found particularly helpful are Allen and Tildesley's ``Computer Simulations of Liquids''~\cite{allen_computer_2017}, Leach's ``Molecular Modelling''~\cite{LeachBook}, and Frenkel and Smit's ``Understanding Molecular Simulations''~\cite{Frenkel:2001:}, though there are many other sources.
 Tuckerman's ``Statistical Mechanics: Theory and Molecular Simulation''~\cite{Tuckerman:2010:} may be helpful to a more advanced audience.
 
-In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations, perhaps with help from a good statistical mechanics and thermodynamics book or two.
+In principle, anyone with adequate prior knowledge (namely, undergraduate level calculus and physics) should be able to pick up one of these books and learn the required skills to perform molecular simulations, perhaps with help from a good statistical mechanics and thermodynamics book or two.
 In practice, due to the interdisciplinary and somewhat technical nature of this field, many newcomers may find it difficult and time consuming to understand all the methodological issues involved in a simulation study.  
 The goal of this document is to introduce a new practitioner to some key basic concepts and bare minimum scientific knowledge required for correct execution of these methods. 
 We also provide a basic set of ``best practices'' that can be used to avoid common errors, missteps and confusion in elementary molecular simulations work.
 This document is not meant as a full introduction to the area; rather, it is intended to help guide further study, and to provide a foundation for other more specialized best-practices documents focusing on particular simulation areas.
 
-Modern implementations of classical simulations also rely on a large body of knowledge from the fields of computer science and numerical methods, which will
-not be covered in detail here.
-
+Modern implementations of classical simulations also rely on a large body of knowledge from the fields of computer science, programming, and numerical methods, which will not be covered in detail here.
 
 \section{Science topics}
 \label{sec:science}
-A variety of fields provide the foundation for our simulation methods and analysis of the data produced by these methods.
-A new practitioner does not have to be an expert of all these fields but needs to understand some key concepts from each of these disciplines.
-In this section, we survey some topics that we believe even basic users of molecular simulations need to grasp, with suggestions for further reading on these subjects, as a preface for Section~\ref{sec:basics}.
+A new practitioner does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
+However, grasping some key concepts from each of these disciplines, described below, are essential for every practitioner of molecular simulations. This section serves as a preface for Section~\ref{sec:basics} and suggestions for further reading on these subjects are provided throughout the document.
 In each subsection, we begin by highlighting some of the critical topics from the corresponding area, then describe what these are and why they are important to molecular simulations.
 
 \subsection{Classical mechanics}
@@ -170,7 +167,7 @@ In each subsection, we begin by highlighting some of the critical topics from th
 
 Critical concepts from classical mechanics include:
 \begin{itemize}
-\item Newton's equations of motion and constants of motion
+\item Newton's equations of motion 
 \item Hamilton's equations
 \item Point particles and rigid bodies
 \item Holonomic constraints
@@ -182,17 +179,19 @@ Here, we will assume you are already familiar with Newtonian mechanics.
 
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
-Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep, so for computational efficiency water is often instead treated as a rigid body.
+The timestep for simulation is determined by the fastest frequency motion. 
+Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep (commonly 1 fs). 
+Thus, for computational efficiency water is often instead treated as a rigid body to allow a larger timestep (often double the length).
 Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
-It is important to understand the concept of point particles, rigid bodies and constraints.
+% HM: I commented out the following line because it doesn't provide new knowledge and feels out of place (deleted sentence: ``It is important to understand the concept of point particles, rigid bodies and constraints.'') Hopefully we will be emphasizing this later as this knowledge is conveyed).
 
-Classical mechanics has several mathematical formulations --- namely the Newtonian, Hamiltonian and Lagrangian formulations.
-These formulations are equivalent, but for certain applications one formulation can be more appropriate than the other. 
-Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is essential if you wish to understand the details of simulation methods.
+Classical mechanics has several mathematical formulations, namely the Newtonian, Hamiltonian and Lagrangian formulations.
+These formulations are physically equivalent, but for certain applications one formulation can be more appropriate than the other. 
+Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is particularly important.
 
 Classical mechanics has several conserved quantities and simulators should be familiar with these, for example, the total energy of a system is a constant of motion.
 These concepts play very important role in development and proper implementation of simulation methods.
-For example, a particularly straightforward check of the correctness of an MD code is to test the quality of the energy conservation.
+For example, a particularly straightforward check of the correctness of an MD code is to test whether energy is conserved.
 
 Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts; Shell's book also has a chapter on simulation methods which covers some of these details~\cite{ShellBook}.
 A variety of good books on classical mechanics are also available and give further details on these concepts.
@@ -490,7 +489,7 @@ Specifically, settings such as the use of constraints, the treatment of cut-offs
 Thus, to replicate a particular force field as described previously, such settings should be matched to prior work such as the work which parameterized the force field.
 The choice of how to apply a cutoff, such as through direct truncation, shifting of the potential energy function, or through the use of switching functions, should be maintained if identical matches to prior work computing the properties of interest are desired.
 This is especially important for the purposes of free energy calculations, where the potential energy itself is recorded.
-However, force fields are in some cases slow to adapt to changes in protocol, so current best practices seem to suggest that lattice-sum electrostatics should be used for Coulomb electrostatics in condensed phase systems, even if the chosen force field was fitted with cutoff electrostatics, and in many cases long-range dispersion corrections should be applied to the energy and pressure to account for truncated Lennard-Jones interactions~\cite{Shirts:2007:JPhysChemB, Isele-Holder:2012:J.Chem.Phys.}.
+However, force fields are in some cases slow to adapt to changes in protocol, so current best practices seem to suggest that lattice-sum electrostatics should be used for Coulomb electrostatics in condensed phase systems, even if the chosen force field was fitted with cutoff electrostatics, and in many cases long-range dispersion corrections should be applied to the energy and pressure to account for truncated Lennard-Jones interactions~\cite{Shirts:2007:JPhysChemB,Isele-Holder:2012:JChemPhys}.
 
 For almost all force fields, many versions, variants, and modifications exist, so if you are using a literature force field or one distributed with your simulation package of choice, it is important to pay particular attention (and make note of) exactly what version you are using and how you obtained it so you will be able to accurately detail this in any subsequent publications.
 
@@ -1065,7 +1064,7 @@ Ewald method is based on replacing the point charge distributions by smooth char
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{ewald.pdf}
-    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge. }
+    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge.}
 \label{charges_ewald}
 \end{figure}
 
@@ -1080,7 +1079,7 @@ Unlike the potential due to the original charge, the potential due to direct spa
 \centering
 \includegraphics[width=\linewidth]{decay_comparison.pdf}
     \caption{Comparison of decay of original $r^{-1}$ term(blue,*), erfc(r) in direct space(black,-) and $r^{-6}$ in van der waals term (red, -.).  }
-\label{charges_ewald}
+\label{decay}
 \end{figure}
 
 
@@ -1198,7 +1197,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or
-periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{lr_electrostatics})
+periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{sec:classical_electrostatics} % changed section ref since the folloing does not currently exist (Section~\ref{lr_electrostatics})
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed (Section~\ref{sec:force_fields})
 \end{itemize}
 \end{checklist}
