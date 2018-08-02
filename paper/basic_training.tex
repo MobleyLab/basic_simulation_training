@@ -447,14 +447,13 @@ Above, we covered a variety of fundamental concepts needed for understanding mol
 \subsection{Force fields}
 \label{sec:force_fields}
 
-The term ``force field'' simply refers to the included terms, particular form, and specific implementation details, including parameter values, of the 
-chosen potential energy function.\footnote{It is worth noting there is a occasionally a bit of ambiguity when the term ``force field'' is used.
-In some cases it is used to refer to a library of parameters that could be applied to assign an energy function to a specific molecular system via a parameterization process after applying some specific chemical perception like atom typing to that system~\citep{Mobley:2018:bioRxiv}.
+The term ``force field'' simply refers to the included terms, particular form, and specific implementation details, including parameter values, of the chosen potential energy function.\footnote{It is worth noting there is a occasionally a bit of ambiguity when the term ``force field'' is used.
+In some cases it is used to refer to a library of parameters that could be applied to assign an energy function to a specific molecular system via a parameterization process after applying some specific chemical perception like atom typing to that system~\cite{Mobley:2018:bioRxiv}.
 For example, one might speak of the AMBER ff15FB~\citep{amber15FB} protein force field, which essentially provides a recipe for assigning parameters to a protein once atom types are assigned.
 In other cases, ``force field'' is used to refer to the specifics of the potential energy function after application to a specific system --- what could also be called a ``parameterized system''. 
 For our purposes here, the distinction between a force field library and a parameterized system is not particularly important, but it is worth noting the potential ambiguity. }
 
-Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
+Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms (Figure \ref{potentials}). 
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
 Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6$ 
@@ -654,7 +653,7 @@ The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropr
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
 
-\begin{figure}[h]
+\begin{figure*}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_Workflow.pdf}
 \caption{Common equilibration work-flows are shown; these vary depending on the target ensemble for production simulations (right).
@@ -664,7 +663,7 @@ If the production ensemble is an NVE ensemble, an initial NVT simulation is usua
 If the production ensemble is NVT, protocols may differ depending on whether it is necessary to allow the system to equilibrate to a particular density/volume or whether the volume is selected \emph{a priori} (second and third rows).
 And if production is to be NPT, it is usually equilibrated first at NVT before equilibrating to the target pressure (final row).} 
 \label{eqworkflow}
-\end{figure}
+\end{figure*}
 
 \subsubsection{Production}
 
@@ -1059,9 +1058,8 @@ Thus the overall charge distribution is divided into a short-range or ``direct s
 \label{charges_ewald}
 \end{figure}
 
-Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly .
-In fact, it decays even faster than van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for van der Waals interactions, can be used for handling direct-space Coulomb interactions (Figure~\ref{decay}).
-
+Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{charges_ewald}).
+In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions (Figure~\ref{decay}).
 
 \begin{figure}[h]
 \centering
@@ -1186,7 +1184,7 @@ Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:20
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
 Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
 This means that if your system is complex and answering your questions will require sampling critical events that have a timescale of seconds or longer, MD will not be the right tool for the job.
-You could invest a huge amount of effort running a MD simulations and find that these do nothing whatsoever to address your questions.
+You could invest a huge amount of effort running MD simulations and find that they did not address your questions.
 
 Ideally, you should have some information before beginning that the relevant timescales for your system might be accessible given the amount of MD you can afford to run, or you could plan a set of exploratory MD simulations to assess feasibility. 
 But do not simply plunge in and attempt to run simulations until you find the answers to your questions, as the required timescales could end up being orders of magnitude longer than what you can afford to spend.
@@ -1215,7 +1213,7 @@ It's easy to run several short MD simulations where (for example) the compositio
 But as noted in Section~\ref{sec:velocities}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
 Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
-In summary, then, do not use MD simulations simply to make movies and inspect these; MD simulations do not produce the answer, and considerable care must be exercised to avoid overinterpeting the full atomistic detail they always provide. 
+In summary, then, do not use MD simulations simply to make movies and inspect these. Considerable care must be exercised to avoid overinterpeting the full atomistic detail they provide. 
 While movies in some cases can be useful, proper error analysis is always essential.
 
 
