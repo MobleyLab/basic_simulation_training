@@ -1013,81 +1013,57 @@ Many such enhanced timestepping algorithms exist such as multiple-timestep metho
 
 
 \subsection{Long range electrostatics}
-\todo[inline, color={yellow!20}]{DLM: I need to edit this section after we get Samarjeet's changes in; skipping for now.}
 \label{sec:lr_electrostatics}
-\begin{itemize}
-\item Cut-off is bad
-\item Need for special treatment
-\item Idea of an Ewald sum
-\item PPPM
-\item How to choose parameters
-\end{itemize}
 
+
+In view of the long-range nature of Coulombic interactions (Section~\ref{sec:classical_electrostatics}), handling of electrostatics is particularly important in many systems.
+Here we describe the motivation for the different treatments of these terms, and give an overview of the core idea of the basic algorithms typically employed.
 
 \subsubsection{Motivation}
 
-Calculation of non-bonded interaction is generally the most time-consuming step of classical energy calculation. While the number of type of bonded interactions remain unchanged during the course of MD simulation, the ones for non-bonded interactions have to be updated frequently as molecules move into and out of the cutoff regions specified for extramolecular interactions. Furthermore, $r^{-1} $ dependence  of coulombic interaction in a 3D space complicates the calculation in the following two ways :
-\begin{itemize}
-\item Coulombic potential is conditionally convergent. What do we mean by this? Consider for example the alternating harmonic series : \\
-\[
-\sum_{k=1}^{\infty} \frac{-1^{k+1}}{k} = 1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ... = ln 2 
-\]
+The calculation of non-bonded interactions is generally the most time-consuming step of classical energy calculation.
+While the number of type of bonded interactions remain unchanged during the course of MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds. 
 
-But if we now change the order of the summation to, lets say :
-\[
-( 1 - \frac{1}{2})  - \frac{1}{4} + (\frac{1}{3} - \frac{1}{6}) - \frac{1}{8} + (\frac{1}{5} - \frac{1}{10}) - \frac{1}{12} + (\frac{1}{7} - \frac{1}{14}) - \frac{1}{16} + ...
-\]
-\[
-= \frac{1}{2} - \frac{1}{4} + \frac{1}{6} - \frac{1}{8} + \frac{1}{10} - ...
-\]
-\[
-= \frac{1}{2} (1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ...) = \frac{1}{2} ln 2
-\]
+Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
+First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order of operations~\cite{LeachBook}, meaning we must exercise extreme care.
+Second, even very long-range interactions may be relevant, but even determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
-Using a different order might give us a different result. Thus the order of summation matters !
 
-\item Coulombic potential is a slow-decaying, long range potential. This means that we need to account for non-bonded pairs over larger pairwise distances in order to minimize the errors. As enlisting atom-pairs is fundamentally an $O(n^2) $ operation, the time taken to compute non-bonded pairs increases quadratically with respect to an increase in the number of atoms.
-\end{itemize}
+As discussed in Section~\ref{sec:periodic}, simulations designed to represent bulk systems are generally performed under periodic boundary conditions, so that the electrostatic potential at any point is due to all the other charges in the system including all of their periodic copies. 
+Given that this is the goal, a set of different methods have been developed to efficiently compute the electrostatic potential due to this infinite, periodic system. 
 
-As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).
+In the early days of simulations, electrostatic interactions were often simply truncated at a particular cutoff radius $(r_c)$.
+This, however, creates artificial boundary effects and other problems~\cite{allen_computer_2017}, as well as neglecting important long-range interactions.
+
 
 \subsubsection{ Ewald Summation}
 
-One way of handling the aforementioned issues in an efficient manner is to use the Ewald summation technique (ref, Ewald 1921). To understand this technique, lets represent the relation between the charge distribution and the coulombic potential  in the differential form (Poisson equation) :
+The Ewald summation technique~\cite{Ewald_1921} provides one way to efficiently handle long-range electrostatics in periodic systems.
+To understand this technique, consider the relationship between the charge distribution and the Coulombic potential written in the differential form (the Poisson equation):
 
 \[
 \Delta \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x}) 
 \] 
 
-where,   $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permissivity of the medium. 
-This equation is an elliptical partial differential equation(pde) of the second order. 
-The standard way to determine the potential from this equation is a two step method - discretization of the equation followed by solution. These techniques however depend on the smoothness of the functions - $\rho$ and $\phi$ - involved. 
-However, in the case of charge distribution in our simulation system, $\rho$ is a set of delta functions which are clearly not smooth! 
-As $\rho$ is not smooth, $\phi$ is not smooth either. \\
-
+where  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permittivity of the medium. 
+The standard way to determine the potential from this equation is to first discretize the equation and then solve, but this requires the functions  $\rho$ and $\phi$ to be smooth.
+However, here, because we use point charge electrostatics, $\rho$ is a set of delta functions.
    
-Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solution techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
-
-\[ \rho = \rho^{sr} + \rho^{lr} \]
-
-\[ \rho^{sr} = q\delta(\boldsymbol{x}-\boldsymbol{x_i}) - qG\] 
-
-\[ \rho^{lr} = qG \]
-
+The Ewald method is based on (temporarily) replacing the point charge distributions by smooth charge distributions in order to apply existing numerical techniques to solve this partial differential equation (PDE).
+The most common smooth function used in Ewald method is the Gaussian distribution, although other distributions have been used as well.
+Thus the overall charge distribution is divided into a short-range or ``direct space'' component ($\rho^{sr}$) involving the original point charges screened by the Gaussian-distributed charge of the same magnitude (Figure~\ref{fig:screening}) but opposite sign, and a long-range component involving Gaussian-distributed charges of the original sign ($\rho^{lr}$).
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{ewald.pdf}
-    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge.}
+
+    \caption{\label{fig:screening}Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the Gaussian-distributed charge. }
 \label{charges_ewald}
 \end{figure}
 
-Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge (G)of the same magnitude. 
-\[
-E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
-\]
+Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{fig:charges_ewald}).
+In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions.
 
-Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. In fact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
 
 \begin{figure}[h]
 \centering
@@ -1097,92 +1073,52 @@ Unlike the potential due to the original charge, the potential due to direct spa
 \end{figure}
 
 
-Potential due to the long range charge however doesn't decay rapidly and if calculated in the direct space would require summation over the infinite images. However, as we discussed earlier, the smoothness of the  charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast pde solvers. Fourier based solvers use the important result that differentiation operation in direct space corresponds to multiplication by (ik) in reciprocal space!
+The potential due to long-range charge interactions does not decay rapidly, and thus requires consideration of all periodic copies.
+This would pose severe problems if calculated via direct summation, but the smoothness of the charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast PDE solvers. 
+Specifically, while the sum is long-ranged in real space, taking the Fourier transform converts it into a sum in reciprocal space which is short-ranged in reciprocal space, damped by a factor $\exp{-k^2 \sigma^2/2}$ where $k$ is the reciprocal space vector and $\sigma$ is the width of the Gaussian. 
 
-%\[
-%E^{lr} = \frac{1}{2L^3} \sum_{k \neq 0} \frac{4\pi}{k^2} \exp^{-\frac{k^2}{4\alpha^2}} |\rho(k)|^2
-%\]
-
-\[
-E^{lr} = (const) \sum_{k \neq 0} \frac{\exp(-k^2)}{k^2}  |\rho(k)|^2
-\]
-
-The interesting factor here in $E^{lr}$ is the $\exp (-k^2)$ which decays exponentially. This means that we need to calculate this term only for a small values of $|k|$ before the term dies down. If we used only the original point charges and not the gaussian-distributed charges as we are using in reciprocal space, we would not have this dampening factor. 
-
-The final term in Ewald summation is the so-called self term. 
-
-%\[
-%E^{s} = - \frac{\alpha}{\sqrt{\pi}}\sum_i q_i^2
-%\]
-\[
-E^{s} = (const)\sum_i q_i^2
-\]
-
-It is not a physical quantity and comes up due to the way the reciprocal space Ewald summation is set up. 
-It has to be subtracted out from the Ewald summation. 
-Interestingly, self term needs to be calculated only once at the beginning of the simulation as it depends only on the charges and does not change with a change in the positions of the charges. For the same reason, it does not contribute to the force either. 
+The final term in Ewald summation is a so-called self term which gets subtracted out of the overall sum; it is calculated only once at the beginning of the simulation as it depends only on the charge magnitudes and not their positions.
+It also does not contribute to the force.
 
 
 \subsubsection{Grid based Ewald summation}
 
-Ewald summation, through Fourier transform, as described in the previous section takes $O(n^{3/2})$ time. Discrete Fourier Transform (DFT) provides a  faster way of solving the problem and reduces the time complexity to $O(n log(n))$. In order to use DFT, the charge distribution has to be discretized over a grid. Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME) are three different implementations of the grid-based solution and are very similar in spirit though the details are slightly different. The choice of specifics in each one is based on a combination of accuracy, speed and ease of implementation. In this subsection, we give an overview of the grid-based approach.
+Ewald summation as described in the previous section takes $O(n^{3/2})$ time, where $n$ is the number of charge sites.
+Switching to a discrete Fourier transform can reduce the cost to to $O(n log(n))$.
+Discretization involves spreading the charge over a grid. 
+Several common grid-based implementations are available which tackle this problem, including Particle-Particle Particle Mesh (P3M), Particle Mesh Ewald (PME) and Smooth Particle Mesh Ewald (SPME). 
+Specifics are chosen in each case to combine accuracy, speed and ease of implementation.
+In this subsection, we give an overview of the grid-based approach.
 
-There are five general steps involved in these methods :
+Grid-based Ewald summation approaches involve five general steps :
 \begin{enumerate}
-\item Charge assignment : In this step, charges are interpolated onto the grid. While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines(hence the name Smooth-PME). These interpolation functions make sure that the charge density is distributed over the neighboring grid points. 
+\item Charge assignment: In this step, charges are interpolated onto the grid.
+While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines (hence the name Smooth-PME) to distribute charge onto the grid. 
 
-%\[
-%Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 %M_n(u_i^d - k_d - p_dK_d)
-%\]
-\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.
-%\[
-%S(m) = \sum_j q_j \exp(mr_j)
-%\]
-%\[
-%=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
-%\]
-%where
-%\[
-%b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
-%\]
-%\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
-%\] 
+\item Transformation of the grid to reciprocal space: A Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent Fourier space structure factors.
 
-\item Energy calculation : Reciprocal space potential  is calculated by solving the Poisson equation in Fourier space. As noted earlier, solving the Poisson equation in Fourier space is simply a division by  $k^2$, where k is the reciprocal space frequency. At the same time, the grid is modified to store the reciprocal space potential.
+\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space. At the same time, the grid is modified to store the reciprocal space potential. 
+\todo[inline, color={yellow!20}]{DLM: What does ``the grid is modified'' mean here and is it important? Does this mean just that the potential is stored at for each grid point?}
 
-%\[
-%E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}%*Q)(m_1,m_2,m_3)
-%\]
-%where
-%\[
-%\theta_{rec} = F(BXC)
-%\]
-%
-%\[
-%B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
-%\]
-%and
-%\[
-%C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
-%\]
-%Here * is the convolution operation which is simply a product in the %reciprocal space. 
 
-\item Transformation of the grid back to real space : Inverse FFT is used to convert the reciprocal space potential back to the real space. 
-\item Force calculation : Force is given by the gradient of the energy. PME, SPME and P3M use different methods for calculating it. SPME specifically calculated it by analytic differentiation in the real space. 
-%\[
-%\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
-%\]
+\item Transformation of the grid back to real space: An Inverse FFT is used to convert the reciprocal space potential back to the real space. 
+\item Force calculation: The force is given by the gradient of the potential.
+PME, SPME and P3M use different methods for calculating the force given the resulting potential. 
 \end{enumerate}
 
 
-
-Optimizing the performance of grid based methods is tricky as many of the choices would already have been made in the implementation of the method. As a user, there are a few ways to tweak the performance of the SPME : 
+Optimizing the performance of grid based methods can be somewhat challenging; many key choices are made in method implementation and only relative few settings are exposed to the user.
+Some typical options include: 
  
 \begin{itemize}
-\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
-\item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
-\item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
+\item Grid dimensions or spacing: A fine grid would be slower, requiring interpolation and calculations for more grid points, but in principle accuracy should be higher.
+\item Screening function: The width of the Gaussian screening function can often be tuned, but the ideal width is coupled with the direct space cutoff giving limited room for tuning. In some cases alternate, non-Gaussian screening functions are available.
+\item Direct-space cutoff: This is typically kept at or near the value used for the van der Waals cutoff.
+Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
 \end{itemize}
+
+In principle, it is possible to optimize settings for handling of long-range electrostatics in order to achieve considerable efficiency gains while maintaining accuracy, though this can involve considerable care~\cite{Paliwal:2013:J.Chem.TheoryComput.}. 
+For novice users, we suggest typically using well-validated or default settings for the particular method employed, and only deviating from these with careful consideration and testing.
 
 
 \begin{Checklists*}[p!]
