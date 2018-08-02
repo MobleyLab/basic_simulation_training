@@ -406,7 +406,7 @@ separately.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{potentials_basic_horiz.pdf}
-\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied. (b) Rotation around dihedral angles (green arrow) are defined using four atoms.}
+\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied; and (b) rotation around dihedral angles (green arrow) defined using four atoms, typically using a cosine expansion.}
 \label{potentials}
 \end{figure}
 
@@ -523,7 +523,7 @@ Such approaches offer the opportunity to assign all molecules with parameters as
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{PBC_figure.pdf}
-\caption{Periodic boundary conditions are shown for a simple 2D system. Note that the simulated system is a sub-ensemble within an infinitely sized system of identical, small ensembles.}
+\caption{Periodic boundary conditions are shown for a simple 2D system. Note that the simulated system is a sub-ensemble within an infinite system of identical, small ensembles.}
 \label{pbcfig}
 \end{figure}
 
@@ -639,11 +639,12 @@ Thus, for example, for biomolecular simulations it is common to examine the root
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_fig.png}
-\caption{For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
+\caption{Shown are graphs of a hypothetical computed property (vertical axis) versus simulation time (horizontal axis). For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
 \label{equilibration}
 \end{figure}
 
 Once the kinetic and potential energies fluctuate around constant values and other key properties are no longer changing with time, the equilibration period has reached its end.
+In general, if any observed properties still exhibit a systematic trend with respect to simulation time (e.g. Figure~\ref{equilibration}) this should be taken as a sign that equilibration is not yet complete.
 
 Depending on the target ensemble for production, the procedure for the end of equilibration is somewhat different.
 If an NVE simulation is desired, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
