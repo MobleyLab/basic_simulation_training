@@ -60,7 +60,7 @@
 \corr{hbmayes@umich.edu}{HM}
 \corr{dmobley@mobleylab.org}{DLM}
 \corr{jimonroe@umail.ucsb.edu}{JIM}
-\corr{p.samar.j@gmail.com}{SP}
+\corr{samarjeet@jhmi.edu}{SP}
 \corr{zuckermd@ohsu.edu}{DMZ}
 
 %\contrib[\authfn{1}]{These authors contributed equally to this work}
@@ -1098,8 +1098,8 @@ While the original PME method uses Lagrangian interpolation for charge assignmen
 
 \item Transformation of the grid to reciprocal space: A Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent Fourier space structure factors.
 
-\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space. At the same time, the grid is modified to store the reciprocal space potential. 
-\todo[inline, color={yellow!20}]{DLM: What does ``the grid is modified'' mean here and is it important? Does this mean just that the potential is stored at for each grid point?}
+\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space. At the same time, the grid is replaced by the reciprocal space potential. 
+%\todo[inline, color={yellow!20}]{DLM: What does ``the grid is modified'' mean here and is it important? Does this mean just that the potential is stored at for each grid point?}
 
 
 \item Transformation of the grid back to real space: An Inverse FFT is used to convert the reciprocal space potential back to the real space. 
