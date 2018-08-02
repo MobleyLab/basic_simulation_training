@@ -16,7 +16,7 @@
 \usepackage{siunitx}
 \DeclareSIUnit\Molar{M}
 \usepackage[italic]{mathastext}
-\newcommand{\versionnumber}{0.1}  % you should update the minor version number in preprints and major version number of submissions.
+\newcommand{\versionnumber}{1.0}  % you should update the minor version number in preprints and major version number of submissions.
 \newcommand{\githubrepository}{\url{https://github.com/MobleyLab/basic_simulation_training}}  %this should be the main github repository for this article
 \graphicspath{{figures/}}
 
@@ -52,22 +52,18 @@
 \affil[4]{University of California, Irvine}
 \affil[5]{University of California, Santa Barbara}
 \affil[6]{National Institutes of Health}
+\affil[6]{Johns Hopkins University, Baltimore}
 \affil[7]{Oregon Health and Science University}
 
 
-\corr{efrem.braun@berkeley.edu }{EB}  % Correspondence emails.  FMS and FS are the appropriate authors initials.
+\corr{efrem.braun@berkeley.edu }{EB}  
 \corr{justin.b.gilmer@vanderbilt.edu}{JG}
 \corr{hbmayes@umich.edu}{HM}
 \corr{dmobley@mobleylab.org}{DLM}
 \corr{jimonroe@umail.ucsb.edu}{JIM}
-\corr{p.samar.j@gmail.com}{SP}
+\corr{samarjeet@jhmi.edu}{SP}
 \corr{zuckermd@ohsu.edu}{DMZ}
 
-%\contrib[\authfn{1}]{These authors contributed equally to this work}
-%\contrib[\authfn{2}]{These authors also contributed equally to this work}
-
-%\presentadd[\authfn{3}]{Department, Institute, Country}
-%\presentadd[\authfn{4}]{Department, Institute, Country}
 
 \blurb{This LiveCoMS document is maintained online on GitHub at
 \githubrepository; to provide feedback, suggestions, or help improve it, please
@@ -406,7 +402,7 @@ separately.
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{potentials_basic_horiz.pdf}
-\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied. (b) Rotation around dihedral angles (green arrow) are defined using four atoms.}
+\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied; and (b) rotation around dihedral angles (green arrow) defined using four atoms, typically using a cosine expansion.}
 \label{potentials}
 \end{figure}
 
@@ -451,14 +447,13 @@ Above, we covered a variety of fundamental concepts needed for understanding mol
 \subsection{Force fields}
 \label{sec:force_fields}
 
-The term ``force field'' simply refers to the included terms, particular form, and specific implementation details, including parameter values, of the 
-chosen potential energy function.\footnote{It is worth noting there is a occasionally a bit of ambiguity when the term ``force field'' is used.
-In some cases it is used to refer to a library of parameters that could be applied to assign an energy function to a specific molecular system via a parameterization process after applying some specific chemical perception like atom typing to that system~\citep{Mobley:2018:bioRxiv}.
+The term ``force field'' simply refers to the included terms, particular form, and specific implementation details, including parameter values, of the chosen potential energy function.\footnote{It is worth noting there is a occasionally a bit of ambiguity when the term ``force field'' is used.
+In some cases it is used to refer to a library of parameters that could be applied to assign an energy function to a specific molecular system via a parameterization process after applying some specific chemical perception like atom typing to that system~\cite{Mobley:2018:bioRxiv}.
 For example, one might speak of the AMBER ff15FB~\citep{amber15FB} protein force field, which essentially provides a recipe for assigning parameters to a protein once atom types are assigned.
 In other cases, ``force field'' is used to refer to the specifics of the potential energy function after application to a specific system --- what could also be called a ``parameterized system''. 
 For our purposes here, the distinction between a force field library and a parameterized system is not particularly important, but it is worth noting the potential ambiguity. }
 
-Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms. 
+Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms (Figure \ref{potentials}). 
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
 Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6$ 
@@ -523,7 +518,7 @@ Such approaches offer the opportunity to assign all molecules with parameters as
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{PBC_figure.pdf}
-\caption{Periodic boundary conditions are shown for a simple 2D system. Note that the simulated system is a sub-ensemble within an infinitely sized system of identical, small ensembles.}
+\caption{Periodic boundary conditions are shown for a simple 2D system. Note that the simulated system is a sub-ensemble within an infinite system of identical, small ensembles.}
 \label{pbcfig}
 \end{figure}
 
@@ -639,11 +634,12 @@ Thus, for example, for biomolecular simulations it is common to examine the root
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_fig.png}
-\caption{For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
+\caption{Shown are graphs of a hypothetical computed property (vertical axis) versus simulation time (horizontal axis). For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
 \label{equilibration}
 \end{figure}
 
 Once the kinetic and potential energies fluctuate around constant values and other key properties are no longer changing with time, the equilibration period has reached its end.
+In general, if any observed properties still exhibit a systematic trend with respect to simulation time (e.g. Figure~\ref{equilibration}) this should be taken as a sign that equilibration is not yet complete.
 
 Depending on the target ensemble for production, the procedure for the end of equilibration is somewhat different.
 If an NVE simulation is desired, the thermostat may be removed and a snapshot selected that is simultaneously as close to the average kinetic and potential energies as possible.
@@ -657,7 +653,7 @@ The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropr
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
 
-\begin{figure}[h]
+\begin{figure*}[h]
 \centering
 \includegraphics[width=\linewidth]{Equilibration_Workflow.pdf}
 \caption{Common equilibration work-flows are shown; these vary depending on the target ensemble for production simulations (right).
@@ -667,7 +663,7 @@ If the production ensemble is an NVE ensemble, an initial NVT simulation is usua
 If the production ensemble is NVT, protocols may differ depending on whether it is necessary to allow the system to equilibrate to a particular density/volume or whether the volume is selected \emph{a priori} (second and third rows).
 And if production is to be NPT, it is usually equilibrated first at NVT before equilibrating to the target pressure (final row).} 
 \label{eqworkflow}
-\end{figure}
+\end{figure*}
 
 \subsubsection{Production}
 
@@ -895,7 +891,7 @@ This is not an exhaustive list of barostats and barostat algorithms, just a samp
     \item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK)}
     
         The MTTK barostat has substantial similarity to the Parrinello-Rahman and Andersen barostats.
-        When Parrinello-Rahman's equations of motion were discovered to only hold true in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
+        When Parr\-inello-Rah\-man's equations of motion were discovered to only hold true in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
         Thus, MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as an improvement over Parrinello-Rahman~\cite{Parrinello1981} for such systems.
 
     \item \textbf{Monte Carlo}
@@ -1058,18 +1054,17 @@ Thus the overall charge distribution is divided into a short-range or ``direct s
 \centering
 \includegraphics[width=\linewidth]{ewald.pdf}
 
-    \caption{\label{fig:screening}Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the Gaussian-distributed charge. }
+    \caption{\label{fig:screening}Screening charge distribution. (Top) The original charge distribution. (Bottom) Point charges can be split into Direct space (blue) and Reciprocal space charges (red). The direct space charge consists of the original charges and Gaussian-distributed screening charges of opposite sign. The reciprocal space charge is only the Gaussian-distributed charge of the original sign. Together these sum to the original charge distribution, but computation of the electrostatic potential due to each component becomes much easier.}
 \label{charges_ewald}
 \end{figure}
 
-Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{fig:charges_ewald}).
-In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions.
-
+Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{charges_ewald}).
+In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions (Figure~\ref{decay}).
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{decay_comparison.pdf}
-    \caption{Comparison of decay of original $r^{-1}$ term(blue,*), erfc(r) in direct space(black,-) and $r^{-6}$ in van der waals term (red, -.).  }
+    \caption{Comparison of decay of the original $r^{-1}$ term for Coulomb interactions (blue,*), the resulting direct-space term after Gaussian screening (black,-) and the $r^{-6}$ in van der Waals term (red, -.).  }
 \label{decay}
 \end{figure}
 
@@ -1098,9 +1093,7 @@ While the original PME method uses Lagrangian interpolation for charge assignmen
 
 \item Transformation of the grid to reciprocal space: A Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent Fourier space structure factors.
 
-\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space. At the same time, the grid is modified to store the reciprocal space potential. 
-\todo[inline, color={yellow!20}]{DLM: What does ``the grid is modified'' mean here and is it important? Does this mean just that the potential is stored at for each grid point?}
-
+\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space, and the reciprocal space potential is then stored on the grid.
 
 \item Transformation of the grid back to real space: An Inverse FFT is used to convert the reciprocal space potential back to the real space. 
 \item Force calculation: The force is given by the gradient of the potential.
@@ -1191,7 +1184,7 @@ Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:20
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
 Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
 This means that if your system is complex and answering your questions will require sampling critical events that have a timescale of seconds or longer, MD will not be the right tool for the job.
-You could invest a huge amount of effort running MD simulations and find that these do nothing whatsoever to address your questions.
+You could invest a huge amount of effort running MD simulations and find that they did not address your questions.
 
 Ideally, you should have some information before beginning that the relevant timescales for your system might be accessible given the amount of MD you can afford to run, or you could plan a set of exploratory MD simulations to assess feasibility. 
 But do not simply plunge in and attempt to run simulations until you find the answers to your questions, as the required timescales could end up being orders of magnitude longer than what you can afford to spend.
@@ -1220,7 +1213,7 @@ It's easy to run several short MD simulations where (for example) the compositio
 But as noted in Section~\ref{sec:velocities}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
 Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
-In summary, then, do not use MD simulations simply to make movies and inspect these; MD simulations do not produce the answer, and considerable care must be exercised to avoid overinterpeting the full atomistic detail they always provide. 
+In summary, then, do not use MD simulations simply to make movies and inspect these. Considerable care must be exercised to avoid overinterpeting the full atomistic detail they provide. 
 While movies in some cases can be useful, proper error analysis is always essential.
 
 
@@ -1238,7 +1231,7 @@ This document also provides a checklist covering some of the key points raised i
 
 Our focus here has been on the basics --- focusing on things you need to understand before beginning to prepare simulations for yourself.
 Additionally, we have primarily focused on issues relating to how simulations are conducted, and leave data analysis for a separate treatment.
-As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty})).
+As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
 Please remember that this is an updatable work, so we welcome contributions and suggestions via our GitHub issue tracker so that we can make this a valuable resource for the field which clearly addresses the key fundamentals.
 
