@@ -183,7 +183,6 @@ The timestep for simulation is determined by the fastest frequency motion.
 Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep (commonly 1 fs). 
 Thus, for computational efficiency water is often instead treated as a rigid body to allow a larger timestep (often double the length).
 Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
-% HM: I commented out the following line because it doesn't provide new knowledge and feels out of place (deleted sentence: ``It is important to understand the concept of point particles, rigid bodies and constraints.'') Hopefully we will be emphasizing this later as this knowledge is conveyed).
 
 Classical mechanics has several mathematical formulations, namely the Newtonian, Hamiltonian and Lagrangian formulations.
 These formulations are physically equivalent, but for certain applications one formulation can be more appropriate than the other. 
