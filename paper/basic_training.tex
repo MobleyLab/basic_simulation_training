@@ -93,12 +93,12 @@ We also provide a checklist of key issues to consider before and while setting u
 \section{Introduction}
 \label{sec:intro}
 
-Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
-Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory, helping interpret experimental data in terms of molecular motions.
+Molecular simulation techniques play an important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
+Simulation methods are useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory, helping interpret experimental data in terms of molecular motions.
 Additionally, they are increasingly used for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
 The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation~\cite{Frenkel:2001:,LeachBook}.
-Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
+Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the entire trajectory to compute estimates of desired properties.
 
 Depending on how the system is propagated, molecular simulation methods can be divided into two main categories: Molecular Dynamics (MD) and Monte Carlo (MC).
 With MD methods, the equations of motion are numerically integrated to generate a dynamical trajectory of the system.
@@ -106,21 +106,21 @@ MD simulations can be used for investigating structural, dynamic, and thermodyna
 With MC methods, probabilistic rules are used to generate a new configuration from the present configuration and this process is repeated to generate a sequence of states that can be used to calculate structural and thermodynamic properties but not dynamical properties; indeed, MC simulations lack any concept of time. 
 Thus, the ``dynamics'' produced by an MC method are not the temporal dynamics of the system, but the ensemble of configurations that reflect those that could be dynamically sampled.
 This foundational document will focus on the concepts needed to carry out correct MD simulations that utilize good practices. 
-Many, but not all, of the concepts here are also useful for MC simulations and apply there as well. However, there are a sufficient number of key differences, which are outside the scope of this current document.
+Many, but not all, of the concepts here are also useful for MC simulations and apply there as well. However, there are a number of key differences, which are outside the scope of this current document.
 
 Either method can be carried out with different underlying physical theories to describe the particle-based model of the system under investigation.
 If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability.
-In a molecular mechanics (MM) description, the molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data) used to calculate non-bonded and bonded interactions. Unless otherwise specified, MD simulations employ MM force fields, which calculate the forces that determine the system dynamics.
+In a molecular mechanics (MM) description, molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data) used to calculate non-bonded and bonded interactions. Unless otherwise specified, MD simulations employ MM force fields, which calculate the forces that determine the system dynamics.
 MM simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase.
 However, typically, they are of lower-accuracy than QM simulations and cannot simulate bond rearrangements.
 QM simulations may be too computationally expensive to allow simulations of the time and length scales required to describe the system of interest~\cite{Bottaro2018}.
-The size of the system amenable for to QM simulation also depends on what type of method is chosen, from high-level ab initio methods to semi-empirical methods; discussion of these methods are outside the scope of this article, and useful references are separately available~\cite{Jensen2007}.
+The size of the system amenable for to QM simulation also depends on what method is chosen, from high-level ab initio methods to semi-empirical methods; discussion of these methods are outside the scope of this article, and useful references are separately available~\cite{Jensen2007}.
 Computational resources available are also an important consideration in deciding whether QM simulations are tractable. Roughly, QM simulations might be tractable with hundreds of atoms or fewer, while MD simulations routinely have tens or hundreds of thousands of atoms in the system. Much above that level, coarse-graining methods are used.
 They reduce resolution and computational cost. Although many of the approaches for atomistic simulations discussed here can apply to coarse-grained simulations, such simulations are not the focus of this paper and we will not discuss how coarse-grained simulations are initially built.
 %\todo[inline, color={red!20}]{Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good. Also add in general, that the topology does not change--most FF do not allow chemical reactions}
 
 Speed is a particular concern when describing condensed phase systems, as we are often interested in the properties of molecules (even biomacromolecules) in solution, meaning that systems will consist of thousands to hundreds of thousands or millions of atoms.
-While system size alone does not require a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include substantial entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not just sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
+While system size alone does not require a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not just sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
 Furthermore, many systems of interest, such as polymers (biological and otherwise) have slow motions that must be captured for accurate calculation of properties.
 For example, for proteins, relevant timescales span from nanoseconds to seconds or more, and even rearrangements of buried amino acid sidechains can in some cases take microseconds or more, with larger conformational changes and protein folding taking even longer~\cite{Schlick:2010:, Mobley:2012:JComputAidedMolDes}. 
 Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range.
@@ -129,13 +129,13 @@ Thus the need for speed limits the use of quantum mechanical descriptions.
 
 Thus, for the rest of this document we will restrict ourselves to classical MD.
 
-One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the overall topology or chemistry of a system will remain constant as a function of time.
+One other important note is that, within classical molecular simulations, bond breaking and forming is generally not allowed (with notable exceptions such as reactive force fields),  meaning that the topology or chemistry of a system will remain constant as a function of time.
 That is, the particles comprising the system move around, but the chemical identity of each molecule in the system remains a constant over the course of the simulation (with only partial exceptions, such as the case of constant pH simulations~\cite{Chen:2014:MolSimul}).
 This also means that the notion of pH in molecular simulations primarily refers to the selection of \emph{fixed} protonation states for the components of the system.
 
 Here, we first discuss the scope of this document, then go over some of the fundamental concepts or science topics which provide the underpinnings of molecular simulations, giving references for further reading.
-Then, we introduce a variety of basic simulation concepts and terminology, with additional links to further reading.
-Our goal is not to cover all topics, but to provide some guidance as to the critical issues which must be considered.
+Then, we introduce a variety of basic simulation concepts and terminology, with links to further reading.
+Our goal is not to cover all topics, but to provide some guidance for the critical issues which must be considered.
 We also provide a checklist to assist with preparing for and beginning a modeling project, highlighting some key considerations addressed in this work.
 
 \section{Scope of this document}
@@ -154,7 +154,7 @@ Modern implementations of classical simulations also rely on a large body of kno
 
 \section{Science topics}
 \label{sec:science}
-A new practitioner does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
+A new simulationist does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
 However, grasping some key concepts from each of these disciplines, described below, is essential for every practitioner of molecular simulations. This section serves as a preface for Section~\ref{sec:basics} and suggestions for further reading on these subjects are provided throughout the document.
 In each subsection, we begin by highlighting some of the critical topics from the corresponding area, then describe what these are and why they are important to molecular simulations.
 
@@ -177,7 +177,7 @@ Here, we will assume you are already familiar with Newtonian mechanics.
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
 The timestep for simulation is determined by the fastest frequency motion. 
-Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep (commonly 1 fs). 
+Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a small timestep (commonly 1 fs). 
 Thus, for computational efficiency water is often instead treated as a rigid body to allow a larger timestep (often double the length).
 Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
 
@@ -186,10 +186,10 @@ These formulations are physically equivalent, but for certain applications one f
 Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is particularly important.
 
 Classical mechanics has several conserved quantities and simulators should be familiar with these, for example, the total energy of a system is a constant of motion.
-These concepts play very important role in development and proper implementation of simulation methods.
+These concepts play an important role in development and proper implementation of simulation methods.
 For example, a particularly straightforward check of the correctness of an MD code is to test whether energy is conserved.
 
-Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts; Shell's book also has a chapter on simulation methods which covers some of these details~\cite{ShellBook}.
+Most books on molecular simulations have a short discussion or appendices on classical mechanics that can serve the purpose of quick introductions to the basic concepts; Shell's book also has a chapter on simulation methods which covers some of these details~\cite{ShellBook}.
 A variety of good books on classical mechanics are also available and give further details on these concepts.
 
 \subsection{Thermodynamics}
@@ -213,7 +213,7 @@ Paramount, however, is an understanding of the connection between thermodynamics
 This topic involves a variety of subtleties and thus can be a confusing and difficult, so we refer the reader to a more extensive discussion in one of several books~\cite{ShellBook, DillBook}.
 
 As an example, consider temperature.
-In a macroscopic sense, we understand this quantity very intuitively as how hot or cold something is.
+In a macroscopic sense, we understand this quantity intuitively as how hot or cold something is.
 The laws of thermodynamics provide us with a further abstraction, telling us that this is in fact the derivative of the internal energy with respect to the entropy.
 This mathematical definition itself is not particularly helpful, but provides a starting point for other derivations.
 If we want to understand temperature from the point of view of understanding molecular behavior, we finally must turn to statistical mechanics.
@@ -234,7 +234,7 @@ This is due to the fact that the effect of interfaces or boundaries have largely
 Although we usually think of thermodynamics applying macroscopically and statistical mechanics applying on the microsopic level, it is important to remember that the laws of thermodynamics still hold \textit{on average} regardless of the length scale.
 That is, a molecule in contact with a thermal bath will exchange energy with the bath, but its average energy is a well-defined constant.
 This allows us to define thermodynamic quantities associated with microscopic events, such as the binding of a ligand to a protein.
-This is of course useful because it allows us to assign molecular meaning to a well-defined thermodynamic processes that can only be indirectly probed by experiment.
+This is useful because it allows us to assign molecular meaning to well-defined thermodynamic processes that can only be indirectly probed by experiment.
 Importantly, as long as we have carefully defined our ensemble and thermodynamic path, we can apply the powerful relationships of thermodynamics to more easily calculate many properties of interest.
 For instance, one may use molecular dynamics to efficiently numerically integrate the Clapeyron equation and construct equations of state along phase coexistence curves~\cite{Kofke1993, GonzalezSalgado2010}.
 
@@ -288,9 +288,9 @@ Observing the large-scale motion of a protein then would require an MD simulatio
 Because functional biomolecular timescales tend to be on $\mu$s - ms scales and beyond, it is challenging if not impossible to observe them in traditional MD simulations.  
 There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:AnnuRevBiophys, Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
-What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
+What is the connection between MD simulation and equilibrium? The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
-In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
+In such a long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
 We refer to such a system, where the time and ensemble averages are equivialent, as ``ergodic.''
 Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensemble. 
 Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
@@ -299,7 +299,7 @@ It is sometimes suggested that multiple MD trajectories starting structures can 
 A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
 Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_{AB} = \peq_B k_{BA}$, which is a consequence of ``detailed balance''.
-There is a closely related connection for on- and off-rates with the binding equilibrium constant.   
+There is a closely related connection for on- and off-rates with the binding equilibrium constant. 
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
 These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
@@ -364,7 +364,7 @@ Because so many interactions in physical systems involve polarity, and thus sign
 Indeed, contributions to the total energy of a system from distant objects may be even more important in some cases than those from nearby objects.
 Specifically, since interactions between charges fall off as $1/r$, but the volume of space at a given separation distance increases as $r^3$, distant interactions can contribute a great deal to the energies and forces in molecular systems.
 In practice, this means that severe errors often result from neglecting electrostatic interactions beyond some cutoff distance~\cite{LeachBook, York:1993:JChemPhys, Darden:1993:JChemPhys, Piana:2012:PLOSONE, Sagui:1999:AnnuRevBiophysBiomolStruct}. 
-Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long range. 
+Thus, we prefer to include \emph{all} electrostatic interactions, even out to very long ranges. 
 Once this is decided, it  leaves simulators with two main options, only one of which is really viable.
 First, we can simulate the actual finite (but large) system which is being studied in the lab, including its boundaries.
 But this is impractical, since macroscopic systems usually include far too many atoms (on the order of at least a mole or more).
@@ -597,7 +597,7 @@ For our purposes, we will assume you have already obtained or developed force fi
 
 \subsubsection{Minimization}
 
-The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately "blow up" (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single timestep).
+The purpose of minimization, or relaxation, is to find a local energy minimum of the starting structure so that the molecular dynamics simulation does not immediately ``blow up'' (i.e. the forces on any one atom are not so large that the atoms move an unreasonable distance in a single timestep).
 This involves standard minimization algorithms such as steepest descent.
 For a more involved discussion of minimization algorithms utilized in molecular simulation, see \citet{LeachBook}, sections 5.1-5.7.
 
@@ -730,14 +730,14 @@ Others include stochastic collisions between the system and an implicit bath of 
 
 \subsubsection{Popular Thermostats}
 Within this section, various thermostats will be briefly explored, with a small description of their uses and possible issues that are associated with each.
-This is by no means an exhaustive study of available thermostats, but is instead a survey of just some of the more popular and historic thermostats used in MD.
+This is not an exhaustive study of available thermostats, but is instead a survey of just some of the more popular and historic thermostats used in MD.
 
 \begin{enumerate}[listparindent=\parindent]
 
     \item \textbf{Gaussian}
         
         The goal of the Gaussian thermostat is to ensure that the instantaneous temperature is exactly equal to the target temperature.
-        This is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{constraint}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation and $F_{constraint}$ is a Lagrange multiplier that keeps the kinetic energy constant.
+        This is accomplished by modifying the force calculation with the form $F = F_{interaction} + F_{constraint}$, where $F_{interaction}$ is the standard interactions calculated during the simulation and $F_{constraint}$ is a Lagrange multiplier that keeps the kinetic energy constant.
         The reasoning for the naming of this thermostat is due to its use of the Gaussian principle of least constraint to determine the smallest perturbative forces needed to maintain the instantaneous temperature~\cite{thermostatAlgorithms2005}.
         Clearly, this thermostat does not sample the canonical distribution; it instead samples the isokinetic (constant kinetic energy) ensemble.
         However, the isokinetic ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent (structural) equilibrium properties can be obtained equivalently with either ensemble~\cite{Minary:2003:JChemPhysAlgorithms}.
@@ -775,7 +775,7 @@ This is by no means an exhaustive study of available thermostats, but is instead
     \item \textbf{Langevin}
 
         The Langevin\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
-        It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the course of the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
+        It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
         Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
     \item {\bf{Nos\'{e}-Hoover}}
@@ -796,7 +796,7 @@ To summarize, observe (Table \ref{tstat_summary}), as a general summary and guid
 Knowing the system you are simulating and the benefits and weaknesses to each thermostat is crucial to successfully and efficiently collect meaningful, physical data.
 If you are only interested in sampling structural properties such as radial distribution functions, many of the given thermostats can be used, including the Gaussian, Bussi, Andersen, Langevin, and Nos\'{e}-Hoover thermostats.
 If dynamical properties will be sampled, it is preferable to turn off the thermostat before beginning production cycles, but the Bussi and Nos\'{e}-Hoover thermostats (and in cases with implicit solvent, the Langevin thermostat), can often be used without overly affecting the calculation of dynamical properties.
-Since dynamical properties are not important during equilibration, faster algorithms like the Andersen or Bussi thermostats can be used, with a switch to the Nos\'{e}-Hoover thermostat for production.
+Since dynamical properties are unimportant during equilibration, faster algorithms like the Andersen or Bussi thermostats can be used, with a switch to the Nos\'{e}-Hoover thermostat for production.
 Overall, the Bussi thermostat has been shown to work well for most purposes, and its use is recommended as a general-purpose thermostat.
 
 \begin{table*}
@@ -897,7 +897,7 @@ This is not an exhaustive list of barostats and barostat algorithms, just a samp
     \item \textbf{Monte Carlo}
     
         Constant pressure may also be achieved by periodically performing Monte Carlo moves that adjust the system volume.
-        For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in ~\citet{ShellNotes}.
+        For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in~\citet{ShellNotes}.
         These MC barostats are computationally advantageous in that the Virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
         However, they rigorously only explore the correct distribution of volumes in the NPT ensemble without any attempt at preserving the dynamic fluctuations involved in this sampling.
         Unlike for extended system barostats, there is no sense of relaxation time over which the volume of the system responds.
@@ -984,7 +984,7 @@ Stochastic dynamics simulations include application of a random force to each pa
 A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
 As detailed in Section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
 As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
-Different combinations may demonstrate better performance and for expanded ensemble methods it is absolutely necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
+Different combinations may demonstrate better performance and for expanded ensemble methods it is necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
 
 With Langevin or other stochastic dynamics, the random forces usually prevent the integrator from preserving phase-space volume, which ends up dictating the choice of timestep.
 Specifically, despite issues with phase-space volume, some stochastic integration schemes achieve preservation of \textit{part} of the full phase-space (i.e. configurations \textit{or} velocities are preserved)~\cite{Fass2018} via cancellation of error.
@@ -999,7 +999,7 @@ If dynamics are of interest, the dependence of these properties on the integrato
 \subsubsection{Choosing an appropriate timestep}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+For the commonly used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
 For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system, one can determine that with a force field harmonic force constant of approximately 500 N/m, the oscillation period will be 8 fs; thus, a 0.5 fs timestep can be used.
@@ -1019,7 +1019,7 @@ Here we describe the motivation for the different treatments of these terms, and
 \subsubsection{Motivation}
 
 The calculation of non-bonded interactions is generally the most time-consuming step of classical energy calculation.
-While the number of type of bonded interactions remain unchanged during the course of MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds. 
+While the number of type of bonded interactions remain unchanged during an MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds. 
 
 Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
 First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order of operations~\cite{LeachBook}, meaning we must exercise extreme care.
@@ -1070,7 +1070,7 @@ In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and h
 
 
 The potential due to long-range charge interactions does not decay rapidly, and thus requires consideration of all periodic copies.
-This would pose severe problems if calculated via direct summation, but the smoothness of the charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast PDE solvers. 
+This would pose severe problems if calculated via direct summation, but the smoothness of the charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$)) allows the use of fast PDE solvers. 
 Specifically, while the sum is long-ranged in real space, taking the Fourier transform converts it into a sum in reciprocal space which is short-ranged in reciprocal space, damped by a factor $\exp{-k^2 \sigma^2/2}$ where $k$ is the reciprocal space vector and $\sigma$ is the width of the Gaussian. 
 
 The final term in Ewald summation is a so-called self term which gets subtracted out of the overall sum; it is calculated only once at the beginning of the simulation as it depends only on the charge magnitudes and not their positions.
@@ -1086,7 +1086,7 @@ Several common grid-based implementations are available which tackle this proble
 Specifics are chosen in each case to combine accuracy, speed and ease of implementation.
 In this subsection, we give an overview of the grid-based approach.
 
-Grid-based Ewald summation approaches involve five general steps :
+Grid-based Ewald summation approaches involve five general steps:
 \begin{enumerate}
 \item Charge assignment: In this step, charges are interpolated onto the grid.
 While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines (hence the name Smooth-PME) to distribute charge onto the grid. 
