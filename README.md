@@ -2,19 +2,21 @@
 
 This repository contains a document (and supporting materials) on Basic Simulation Training, intending to provide prerequisite information for people who want to begin conducting (bio)molecular simulations, especially Molecular Dynamics (MD). 
 Our focus here is to tell people what they need to know and why, with links/references to suitable training material. Some brief summaries of some of the key concepts may be provided, but as we are not out to write a textbook, a focus is on guiding people to the appropriate materials. 
-The current focus is on MD; Monte Carlo (MC) will be addressed in a separate document which will be linked from here.
+The current focus is on MD; Monte Carlo (MC) will be addressed in a separate document which will be linked from here when it is available.
 
 ## List of Authors
 
-(Add your name here if you help write; needs updating with list of people who contributed to outline)
-- Avisek Das (University of Michigan)
-- David Mobley (UC Irvine)
-- Jacob Monroe (UC Santa Barbara)
-- Justin Gilmer (Vanderbilt University)
+- Efrem Braun (Berkeley)
+- Justin Gilmer (Vanderbilt)
+- Heather B. Mayes (University of Michigan)
+- David L. Mobley (UC Irvine)
+- Jacob I. Monroe (UC Santa Barbara)
+- Samarjeet Prasad (National Institutes of Health; Johns Hopkins University)
+- Daniel M. Zuckerman (Oregon Health and Science University)
 
 ## List of Contributors
 <!-- We suggest listing contributers in order of addition. -->
-(Needs updating with everyone who provides input; should also list exactly what people did.)
+- Avisek Das (helped with outline and early brainstorming/planning of this document)
 
 ## Paper writing as code development
 <!-- This discussion is so that people know how to contribute to your document. -->
@@ -25,6 +27,7 @@ This paper is being developed as a living document, open to changes from the com
 
 ## Changelog
 <!-- Here, record summaries of important changes. A granular discussion of changes will be kept in GitHub by issue tracking.-->
-- Sept. 8, 2017: D. Mobley created repo, put in initial files from LiveCoMS. 
-
+- Sept. 8, 2017: D. Mobley created repo, put in initial files from LiveCoMS.
+- Spring/early summer 2018: Finalize who will be involved and write/edit first version of the paper 
+- Sept. 2, 2018: Final draft of version 1 submitted to LiveCoMS
 
