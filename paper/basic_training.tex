@@ -412,7 +412,7 @@ separately.
 
 %Bonded interactions
 Bonded interactions are those between atoms which are connected, or nearly so, and relating to the bonds connecting these atoms. 
-In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles, as shown in Figure \ref{potentials_basic}. 
+In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles, as shown in Figure \ref{potentials}. 
 Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper''
 torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring). 
 It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
@@ -428,16 +428,6 @@ These are particularly common in polarizable force fields such as the AMOEBA mod
 Often, the energy functions used by molecular simulations explicitly neglect nonbonded interactions between atoms which are immediately bonded to one
 another, and atoms which are separated by only one intervening atom, partly to make it easier to ensure that these atoms have preferred geometries dictated by their defined equilibrium lengths/angles regardless of the nonbonded interactions which would otherwise be present.
 This neglect of especially short range nonbonded interactions between near neighbors is called ``exclusion'', and energy functions typically specify which interactions are excluded.
-
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=\linewidth]{simplelandscapes.pdf}
-    \caption{Energy landscapes.  (a) A highly simplified landscape used to illustrate rate concepts and (b) a schematic of a more complex landscape with numerous minima and ambiguous state boundaries.}
-    \label{landscapes}
-\end{figure}
-
-
 
 The transition to torsions, especially proper torsions, is where exclusions typically end.
 However, many all-atom energy functions commonly used in biomolecular simulations retain only \emph{partial} nonbonded interactions between terminal atoms involved in a torsion. 
