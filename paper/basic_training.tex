@@ -98,7 +98,8 @@ We also provide a checklist of key issues to consider before and while setting u
 \label{sec:intro}
 
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
-Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
+Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory, helping interpret experimental data in terms of molecular motions.
+Additionally, they are increasingly used for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
 The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation~\cite{Frenkel:2001:,LeachBook}.
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
@@ -287,21 +288,21 @@ More detailed discussions of rates and rate coefficients can be found in numerou
 
 Once you have understood that MD behavior reflects system timescales, you must set this behavior in the context of an \emph{extremely} complex energy landscape consisting of almost innumerable minima and barriers, as schematized in Fig.\ \ref{landscapes}(b).  
 Each small basin represents something like a different rotameric state of a protein side chain or perhaps a tiny part of the Ramachandran spaces (backbone phi-psi angles) for one or a few residues.  
-Observing the large-scale function motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
-Because functional biomolecular timescales tend to be on $\mu$s - ms scales, it is challenging if not impossible to observe them in traditional MD simulations.  
+Observing the large-scale motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
+Because functional biomolecular timescales tend to be on $\mu$s - ms scales and beyond, it is challenging if not impossible to observe them in traditional MD simulations.  
 There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:AnnuRevBiophys, Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
 What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
 In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
 We refer to such a system, where the time and ensemble averages are equivialent, as ``ergodic.''
-Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
+Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensemble. 
 Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
 It is sometimes suggested that multiple MD trajectories starting structures can aid sampling, but unless the equilibrium distribution is known in advance, the bias from the set of starting structures is simply unknown and harder to diagnose.
 
 A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
-Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''.
+Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_{AB} = \peq_B k_{BA}$, which is a consequence of ``detailed balance''.
 There is a closely related connection for on- and off-rates with the binding equilibrium constant.   
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
@@ -354,7 +355,7 @@ Atom-atom interactions are thus necessarily long range compared to other interac
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
 %\item Polarizability, dielectric constants
-The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$. 
+The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions reduced by $\frac{1}{\epsilon_r}$. 
 Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a nearby charge.
@@ -402,9 +403,16 @@ Key interactions between atoms and within or between molecules are typically tho
 While these arise from similar or related physical effects (ultimately all tracing back to QM and the basic laws of physics) they are typically treated in rather distinct manners in molecular simulations so it is important to consider the two categories
 separately.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{potentials_basic_horiz.pdf}
+\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied. (b) Rotation around dihedral angles (green arrow) are defined using four atoms.}
+\label{potentials}
+\end{figure}
+
 %Bonded interactions
 Bonded interactions are those between atoms which are connected, or nearly so, and relating to the bonds connecting these atoms. 
-In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles. 
+In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles, as shown in Figure \ref{potentials}. 
 Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper''
 torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring). 
 It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
@@ -628,6 +636,13 @@ A more difficult portion of equilibration is to ensure that other properties of 
 At equilibrium, a system may still undergo slow fluctuations with time, especially if it has slow internal degrees of freedom -- but key properties should no longer show systematic trends away from their starting structure.
 Thus, for example, for biomolecular simulations it is common to examine the root mean squared deviation (RMSD) of the molecules involved as a function of time, and potentially other properties like the number of hydrogen bonds between the biomolecules present and water, as these may be slower to equilibrate than system-wide properties like the temperature and pressure.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Equilibration_fig.png}
+\caption{For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
+\label{equilibration}
+\end{figure}
+
 Once the kinetic and potential energies fluctuate around constant values and other key properties are no longer changing with time, the equilibration period has reached its end.
 
 Depending on the target ensemble for production, the procedure for the end of equilibration is somewhat different.
@@ -703,7 +718,7 @@ Generally, if the temperature of the system must be maintained during the simula
 
 The temperature of a molecular dynamics simulation is typically measured using kinetic energies as defined using the equipartition theorem: $\frac{3}{2} N k_{\text{B}} T = \left<\sum_{i=1}^{N} \frac{1}{2} m_i v_i^2\right>$.
 The angled brackets indicate that the temperature is defined as a time-averaged quantity.
-If we use the equipartition theorem to calculate the temperature for a single snapshot in time of a molecular dynamics simulation instead of time-averaging, this quantity is referred to as the instantaneous temperature.
+If we use the equipartition theorem to calculate the temperature for a single snapshot in time of a molecular dynamics simulation~\cite{Zuckerman:2010:, LeachBook} instead of time-averaging, this quantity is referred to as the instantaneous temperature.
 The instantaneous temperature will not always be equal to the target temperature; in fact, in the canonical ensemble, the instantaneous temperature should undergo fluctuations around the target temperature.
 
 Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical (constant energy).
@@ -936,7 +951,7 @@ Energy conservation is also a desirable integrator property and is imperative in
 This is a much trickier property to examine, and varies with different integrators.
 For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
 The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
-\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated.}
+%\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated. Update: Still working through the literature here, but not yet at the point I have a set of citations I'm happy with - will work on this and hopefully revise at a later time.}
 When the energy does change over the course of a simulation, it is said to ``drift.''
 The most common reason for energy drift is due to a timestep that is overly long.
 If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
@@ -1172,6 +1187,7 @@ periodicity is needed along with full treatment of long-range electrostatics (Se
 A critical question \emph{before} preparing an MD simulation of your system is whether you even \emph{should} use MD for your system in view of the resources you have and what information you hope to obtain.
 MD is a tool, but it may not be the right tool for your problem.
 Before beginning any study, it is critical to sort out what questions you want to answer, what resources (computational and otherwise) you have at your disposal, and whether you have any information about your system(s) of interest that indicate you can realistically expect to answer those questions given a set of MD simulations.
+Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:2009:AnnuRepComputChem} and \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) and use these to make an educated guess regarding your chances of extracting pertinent and reliable information from your simulation.
 
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
 Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
