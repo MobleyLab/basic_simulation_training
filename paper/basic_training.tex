@@ -310,6 +310,10 @@ However, in a living cell where there is no shortage of time, biomolecules may e
 In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann factor distribution.  
 Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:AnnuRevBiophys} but they are not beginner-friendly.  
 Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level (e.g. \url{http://www.physicallensonthecell.org/}).
+Notably, many experiments are conducted at non-equilibrium conditions; for example, membrane diffusion coefficients are commonly measured by setting up a concentration gradient across the membrane and measuring the flux.
+It can be tempting to the beginner to setup an MD simulation in the same manner as such an experiment.
+However, maintaining non-equilibrium conditions is typically more complicated in an MD simulation than in an experiment as large reservoirs are commonly required.
+Frequently there exist equilibrium methods that can be used to obtain the same or similar information as a non-equilibrium experiment; users should seek to obtain familiarity with such methods before choosing to conduct a non-equilibrium MD simulation.
 
 
 \subsubsection{Books}
@@ -1006,7 +1010,7 @@ For example, if hydrogen molecules are present in the simulation box and the H-H
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
+Some examples of these enhanced timestepping algorithms include multiple-timestep methods which separately integrate high-frequency motion from low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 
 \subsection{Long range electrostatics}
@@ -1047,7 +1051,7 @@ The standard way to determine the potential from this equation is to first discr
 However, here, because we use point charge electrostatics, $\rho$ is a set of delta functions.
    
 The Ewald method is based on (temporarily) replacing the point charge distributions by smooth charge distributions in order to apply existing numerical techniques to solve this partial differential equation (PDE).
-The most common smooth function used in Ewald method is the Gaussian distribution, although other distributions have been used as well.
+The most common smooth function used in the Ewald method is the Gaussian distribution, although other distributions have been used as well.
 Thus the overall charge distribution is divided into a short-range or ``direct space'' component ($\rho^{sr}$) involving the original point charges screened by the Gaussian-distributed charge of the same magnitude (Figure~\ref{fig:screening}) but opposite sign, and a long-range component involving Gaussian-distributed charges of the original sign ($\rho^{lr}$).
 
 \begin{figure}[h]
@@ -1070,8 +1074,8 @@ In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and h
 
 
 The potential due to long-range charge interactions does not decay rapidly, and thus requires consideration of all periodic copies.
-This would pose severe problems if calculated via direct summation, but the smoothness of the charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$)) allows the use of fast PDE solvers. 
-Specifically, while the sum is long-ranged in real space, taking the Fourier transform converts it into a sum in reciprocal space which is short-ranged in reciprocal space, damped by a factor $\exp{-k^2 \sigma^2/2}$ where $k$ is the reciprocal space vector and $\sigma$ is the width of the Gaussian. 
+This would pose severe problems if calculated via direct summation, but the smoothness of the charge $\rho^{lr}$ (and hence potential ($\phi^{lr}$) allows the use of fast PDE solvers. 
+Specifically, while the sum is long-ranged in real space, taking the Fourier transform converts it into a sum in reciprocal space which is short-ranged in reciprocal space, damped by a factor $\exp\left(-k^2 \sigma^2/2\right)$ where $k$ is the reciprocal space vector and $\sigma$ is the width of the Gaussian. 
 
 The final term in Ewald summation is a so-called self term which gets subtracted out of the overall sum; it is calculated only once at the beginning of the simulation as it depends only on the charge magnitudes and not their positions.
 It also does not contribute to the force.
@@ -1141,7 +1145,7 @@ For novice users, we suggest typically using well-validated or default settings 
 \begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or
-periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{sec:classical_electrostatics} % changed section ref since the folloing does not currently exist (Section~\ref{lr_electrostatics})
+periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{sec:classical_electrostatics}) % changed section ref since the folloing does not currently exist (Section~\ref{lr_electrostatics})
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed (Section~\ref{sec:force_fields})
 \end{itemize}
 \end{checklist}
