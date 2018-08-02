@@ -98,7 +98,8 @@ We also provide a checklist of key issues to consider before and while setting u
 \label{sec:intro}
 
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
-Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory and helping interpret experimental data in terms of molecular motions, as well as (increasingly) for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
+Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory, helping interpret experimental data in terms of molecular motions.
+Additionally, they see increasing use for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
 The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation~\cite{Frenkel:2001:,LeachBook}.
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
@@ -147,21 +148,18 @@ We also provide a checklist to assist with preparing for and beginning a modelin
 There are several excellent textbooks on classical simulation methods; some we have found particularly helpful are Allen and Tildesley's ``Computer Simulations of Liquids''~\cite{allen_computer_2017}, Leach's ``Molecular Modelling''~\cite{LeachBook}, and Frenkel and Smit's ``Understanding Molecular Simulations''~\cite{Frenkel:2001:}, though there are many other sources.
 Tuckerman's ``Statistical Mechanics: Theory and Molecular Simulation''~\cite{Tuckerman:2010:} may be helpful to a more advanced audience.
 
-In principle, anyone with adequate prior knowledge should be able to pick up one of these books and learn the required skills to perform molecular simulations, perhaps with help from a good statistical mechanics and thermodynamics book or two.
+In principle, anyone with adequate prior knowledge (namely, undergraduate level calculus and physics) should be able to pick up one of these books and learn the required skills to perform molecular simulations, perhaps with help from a good statistical mechanics and thermodynamics book or two.
 In practice, due to the interdisciplinary and somewhat technical nature of this field, many newcomers may find it difficult and time consuming to understand all the methodological issues involved in a simulation study.  
 The goal of this document is to introduce a new practitioner to some key basic concepts and bare minimum scientific knowledge required for correct execution of these methods. 
 We also provide a basic set of ``best practices'' that can be used to avoid common errors, missteps and confusion in elementary molecular simulations work.
 This document is not meant as a full introduction to the area; rather, it is intended to help guide further study, and to provide a foundation for other more specialized best-practices documents focusing on particular simulation areas.
 
-Modern implementations of classical simulations also rely on a large body of knowledge from the fields of computer science and numerical methods, which will
-not be covered in detail here.
-
+Modern implementations of classical simulations also rely on a large body of knowledge from the fields of computer science, programming, and numerical methods, which will not be covered in detail here.
 
 \section{Science topics}
 \label{sec:science}
-A variety of fields provide the foundation for our simulation methods and analysis of the data produced by these methods.
-A new practitioner does not have to be an expert of all these fields but needs to understand some key concepts from each of these disciplines.
-In this section, we survey some topics that we believe even basic users of molecular simulations need to grasp, with suggestions for further reading on these subjects, as a preface for Section~\ref{sec:basics}.
+A new practitioner does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
+However, grasping some key concepts from each of these disciplines, described below, is essential for every practitioner of molecular simulations. This section serves as a preface for Section~\ref{sec:basics} and suggestions for further reading on these subjects are provided throughout the document.
 In each subsection, we begin by highlighting some of the critical topics from the corresponding area, then describe what these are and why they are important to molecular simulations.
 
 \subsection{Classical mechanics}
@@ -170,7 +168,7 @@ In each subsection, we begin by highlighting some of the critical topics from th
 
 Critical concepts from classical mechanics include:
 \begin{itemize}
-\item Newton's equations of motion and constants of motion
+\item Newton's equations of motion 
 \item Hamilton's equations
 \item Point particles and rigid bodies
 \item Holonomic constraints
@@ -182,17 +180,18 @@ Here, we will assume you are already familiar with Newtonian mechanics.
 
 Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
 Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
-Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep, so for computational efficiency water is often instead treated as a rigid body.
+The timestep for simulation is determined by the fastest frequency motion. 
+Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a very small timestep (commonly 1 fs). 
+Thus, for computational efficiency water is often instead treated as a rigid body to allow a larger timestep (often double the length).
 Keeping specified objects rigid in a simulation involves applying holonomic constraints, where the rigidity is defined by imposing a minimal set of fixed bond lengths and angles through iterative procedures during the numerical integration of the equation of motion (see Section~\ref{sec:integrators} for more on constraints and integrators).
-It is important to understand the concept of point particles, rigid bodies and constraints.
 
-Classical mechanics has several mathematical formulations --- namely the Newtonian, Hamiltonian and Lagrangian formulations.
-These formulations are equivalent, but for certain applications one formulation can be more appropriate than the other. 
-Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is essential if you wish to understand the details of simulation methods.
+Classical mechanics has several mathematical formulations, namely the Newtonian, Hamiltonian and Lagrangian formulations.
+These formulations are physically equivalent, but for certain applications one formulation can be more appropriate than the other. 
+Many simulation methods use the Hamiltonian formulation and therefore basic knowledge of Hamiltonian mechanics is particularly important.
 
 Classical mechanics has several conserved quantities and simulators should be familiar with these, for example, the total energy of a system is a constant of motion.
 These concepts play very important role in development and proper implementation of simulation methods.
-For example, a particularly straightforward check of the correctness of an MD code is to test the quality of the energy conservation.
+For example, a particularly straightforward check of the correctness of an MD code is to test whether energy is conserved.
 
 Most books on molecular simulations have a short discussions or appendices on classical mechanics that can serve the purpose of very quick introductions to the basic concepts; Shell's book also has a chapter on simulation methods which covers some of these details~\cite{ShellBook}.
 A variety of good books on classical mechanics are also available and give further details on these concepts.
@@ -203,14 +202,14 @@ A variety of good books on classical mechanics are also available and give furth
 \subsubsection{Key concepts}
 A variety of thermodynamic concepts are particularly important for molecular simulations:
 \begin{itemize}
-\item Temperature, pressure, stress
-\item Internal energy, enthalpy
+\item Temperature and pressure % removed stress; seems out of place
+\item Internal energy and enthalpy
 \item Gibbs and Helmholtz free energy
 \item Entropy
 \end{itemize}
 
 One of the main objectives of molecular simulations is to estimate/predict thermodynamic behavior of real systems as observed in the laboratory.
-Typically this means we are interested in macroscopic systems, consisting of $10^{23}$ particles or more (i.e. at least several moles of particles). 
+Typically this means we are interested in macroscopic systems, consisting of $10^{23}$ particles or more (i.e. at least a mole of particles). 
 But properties of interest include not only macroscopic, bulk thermodynamic properties, such as density or heat capacity,
 but also microscopic properties like specific free energy differences associated with, say, changes in the conformation of a molecule.
 For this reason, it is important to understand key concepts in thermodynamics, such as temperature, pressure, entropy, internal energy, various forms of free energy, and the relationships between them.
@@ -274,39 +273,40 @@ However, as the laws of statistical mechanics arise naturally from dynamical equ
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{simplelandscapes.pdf}
-\caption{Energy landscapes.  (a) A highly simplified landscape used to illustrate rate concepts and (b) a schematic of a complex landscape with numerous minima and ambiguous state boundaries.}
+\caption{Energy landscapes.  (a) A highly simplified landscape used to illustrate rate concepts and (b) a schematic of a more complex landscape with numerous minima and ambiguous state boundaries.}
 \label{landscapes}
 \end{figure}
 
 The key dynamical concept to understand is embodied in the twin characteristics of timescales and rates.  
 The two are literally reciprocals of one another.  
 In Fig.\ \ref{landscapes}(a), assume you have started an MD simulation in basin A.  
-The trajectory is likely to remain in that basin for a period of time -- the ``dwell'' timescale -- which increases exponentially with the barrier height according to the (reciprocal) Arrhenius factor as $\exp[(U^\ddagger - U_A)/k_B T]$; barriers many times the thermal energy $k_BT$ imply long dwells.  
-The rate $k_{AB}$, which is the transition probability per unit time, exhibits reciprocal behavior -- i.e., $k_{AB} \sim \exp[-(U^\ddagger - U_A)/k_B T]$ according to the traditional Arrhenius factor.  
-Note that all transitions occur in a random, \emph{stochastic} fashion and are not predictable except in terms of average behavior.  
-More detailed discussions of rate constants can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
+The trajectory is likely to remain in that basin for a period of time -- the ``dwell'' timescale -- which increases exponentially with the barrier height, $(U^\ddagger - U_A)$. 
+Barriers many times the thermal energy $k_BT$ imply long dwell timescales, approximated as the reciprocal of $\exp[(U^\ddagger - U_A)/(k_B T)]$. 
+The rate coefficient $k_{AB}$, which relates to the transition probability per unit time per amount of reactant(s).
+All transitions occur in a random, \emph{stochastic} fashion and are predictable only in terms of average behavior.  
+More detailed discussions of rates and rate coefficients can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
 
 Once you have understood that MD behavior reflects system timescales, you must set this behavior in the context of an \emph{extremely} complex energy landscape consisting of almost innumerable minima and barriers, as schematized in Fig.\ \ref{landscapes}(b).  
 Each small basin represents something like a different rotameric state of a protein side chain or perhaps a tiny part of the Ramachandran spaces (backbone phi-psi angles) for one or a few residues.  
-Observing the large-scale function motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
-Because functional biomolecular timescales tend to be on $\mu$s - ms scales, it is challenging if not impossible to observe them in traditional MD simulations.  
+Observing the large-scale motion of a protein then would require an MD simulation longer than the sum of all the timescales for the necessary hops, bearing in mind that numerous stochastic reversals are likely during the simulation.  
+Because functional biomolecular timescales tend to be on $\mu$s - ms scales and beyond, it is challenging if not impossible to observe them in traditional MD simulations.  
 There are numerous enhanced sampling approaches~\cite{Zuckerman:2011:AnnuRevBiophys, Chong:2017:CurrentOpinioninStructuralBiology} but these are beyond the scope of this discussion and they have their own challenges which often are much harder to diagnose (see~\cite{Grossfield:2009:AnnuRepComputChem} and  \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
 What is the connection between MD simulation and equilibrium?  The most precise statement we can make is that an MD trajectory is a single sample of a process that is relaxing to equilibrium from the starting configuration~\cite{Zuckerman:2015:StatisticalBiophysicsBlog, Zuckerman:2010:}.  
 \emph{If} the trajectory is long enough, it should sample the equilibrium distribution -- where each configuration occurs with frequency proportional to its Boltzmann factor.  
 In such a very long trajectory (only), a time average thus will give the same result as a Boltzmann-factor-weighted, or ensemble, average.  
 We refer to such a system, where the time and ensemble averages are equivialent, as ``ergodic.''
-Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensembles. 
+Note that the Boltzmann-factor distribution implies that every configuration has some probability, and so it is unlikely that a single conformation or even a single basin dominates an ensemble. 
 Beware that in a typical MD trajectory it is likely that only a small subset of basins will be sampled well -- those most quickly accessible to the initial configuration.  
 It is sometimes suggested that multiple MD trajectories starting structures can aid sampling, but unless the equilibrium distribution is known in advance, the bias from the set of starting structures is simply unknown and harder to diagnose.
 
 A fundamental equilibrium concept that can only be sketched here is the representation of systems of enormous complexity (many thousands, even millions of atoms) in terms of just a small number of coordinates or states.  
 The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expressing the average or summed behavior of all the Boltzmann factors contained in a state: the definition requires that the probability (or population) $\peq$ of a state in equilibrium be proportional to the Boltzmann factor of its conformational free energy: $\peq_A \sim \exp(-F_A/k_BT)$.  
-Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_AB = \peq_B k_BA$, which is a consequence of ``detailed balance''.
+Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_{AB} = \peq_B k_{BA}$, which is a consequence of ``detailed balance''.
 There is a closely related connection for on- and off-rates with the binding equilibrium constant.   
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.  
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.  
-These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$ , the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.  
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.  
@@ -321,7 +321,7 @@ Non-equilibrium molecular concepts pertinent to cell biology have been discussed
 Books which we recommend as particularly helpful in this area include:
 \begin{itemize}
 \item Reif's ``Fundamentals of Statistical and Thermal Physics''~\cite{Reif:2009:}
-\item McQuarrie ``Statistical Mechanics''~\cite{McQuarrie:2000:}
+\item McQuarrie's ``Statistical Mechanics''~\cite{McQuarrie:2000:}
 \item Dill and Bromberg's ``Molecular Driving Forces''~\cite{DillBook}
 \item Hill's ``Statistical Mechanics: Principles and Selected Applications''~\cite{Hill:1987:}
 \item Shell's ``Thermodynamics and Statistical Mechanics''~\cite{ShellBook}
@@ -355,7 +355,7 @@ Atom-atom interactions are thus necessarily long range compared to other interac
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
 %\item Polarizability, dielectric constants
-The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions falling off as $\frac{1}{\epsilon_r}$. 
+The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions reduced by $\frac{1}{\epsilon_r}$. 
 Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower. 
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water. 
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a nearby charge.
@@ -490,7 +490,7 @@ Specifically, settings such as the use of constraints, the treatment of cut-offs
 Thus, to replicate a particular force field as described previously, such settings should be matched to prior work such as the work which parameterized the force field.
 The choice of how to apply a cutoff, such as through direct truncation, shifting of the potential energy function, or through the use of switching functions, should be maintained if identical matches to prior work computing the properties of interest are desired.
 This is especially important for the purposes of free energy calculations, where the potential energy itself is recorded.
-However, force fields are in some cases slow to adapt to changes in protocol, so current best practices seem to suggest that lattice-sum electrostatics should be used for Coulomb electrostatics in condensed phase systems, even if the chosen force field was fitted with cutoff electrostatics, and in many cases long-range dispersion corrections should be applied to the energy and pressure to account for truncated Lennard-Jones interactions~\cite{Shirts:2007:JPhysChemB, Isele-Holder:2012:J.Chem.Phys.}.
+However, force fields are in some cases slow to adapt to changes in protocol, so current best practices seem to suggest that lattice-sum electrostatics should be used for Coulomb electrostatics in condensed phase systems, even if the chosen force field was fitted with cutoff electrostatics, and in many cases long-range dispersion corrections should be applied to the energy and pressure to account for truncated Lennard-Jones interactions~\cite{Shirts:2007:JPhysChemB,Isele-Holder:2012:JChemPhys}.
 
 For almost all force fields, many versions, variants, and modifications exist, so if you are using a literature force field or one distributed with your simulation package of choice, it is important to pay particular attention (and make note of) exactly what version you are using and how you obtained it so you will be able to accurately detail this in any subsequent publications.
 
@@ -711,7 +711,7 @@ Generally, if the temperature of the system must be maintained during the simula
 
 The temperature of a molecular dynamics simulation is typically measured using kinetic energies as defined using the equipartition theorem: $\frac{3}{2} N k_{\text{B}} T = \left<\sum_{i=1}^{N} \frac{1}{2} m_i v_i^2\right>$.
 The angled brackets indicate that the temperature is defined as a time-averaged quantity.
-If we use the equipartition theorem to calculate the temperature for a single snapshot in time of a molecular dynamics simulation instead of time-averaging, this quantity is referred to as the instantaneous temperature.
+If we use the equipartition theorem to calculate the temperature for a single snapshot in time of a molecular dynamics simulation~\cite{Zuckerman:2010:, LeachBook} instead of time-averaging, this quantity is referred to as the instantaneous temperature.
 The instantaneous temperature will not always be equal to the target temperature; in fact, in the canonical ensemble, the instantaneous temperature should undergo fluctuations around the target temperature.
 
 Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical (constant energy).
@@ -944,7 +944,7 @@ Energy conservation is also a desirable integrator property and is imperative in
 This is a much trickier property to examine, and varies with different integrators.
 For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
 The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
-\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated.}
+%\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated. Update: Still working through the literature here, but not yet at the point I have a set of citations I'm happy with - will work on this and hopefully revise at a later time.}
 When the energy does change over the course of a simulation, it is said to ``drift.''
 The most common reason for energy drift is due to a timestep that is overly long.
 If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
@@ -1072,7 +1072,7 @@ Ewald method is based on replacing the point charge distributions by smooth char
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{ewald.pdf}
-    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge. }
+    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge.}
 \label{charges_ewald}
 \end{figure}
 
@@ -1087,7 +1087,7 @@ Unlike the potential due to the original charge, the potential due to direct spa
 \centering
 \includegraphics[width=\linewidth]{decay_comparison.pdf}
     \caption{Comparison of decay of original $r^{-1}$ term(blue,*), erfc(r) in direct space(black,-) and $r^{-6}$ in van der waals term (red, -.).  }
-\label{charges_ewald}
+\label{decay}
 \end{figure}
 
 
@@ -1205,7 +1205,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{checklist}{Determine handling of cutoffs}
 \begin{itemize}
 \item As a general rule, electrostatics are long-range enough that either the cutoff needs to be larger than the system size (for finite systems) or
-periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{lr_electrostatics})
+periodicity is needed along with full treatment of long-range electrostatics (Section~\ref{sec:classical_electrostatics} % changed section ref since the folloing does not currently exist (Section~\ref{lr_electrostatics})
 \item Nonpolar interactions can often be safely treated with cutoffs of 1-1.5 nm as long as the system size is at least twice that, but long-range dispersion corrections may be needed (Section~\ref{sec:force_fields})
 \end{itemize}
 \end{checklist}
@@ -1243,6 +1243,7 @@ periodicity is needed along with full treatment of long-range electrostatics (Se
 A critical question \emph{before} preparing an MD simulation of your system is whether you even \emph{should} use MD for your system in view of the resources you have and what information you hope to obtain.
 MD is a tool, but it may not be the right tool for your problem.
 Before beginning any study, it is critical to sort out what questions you want to answer, what resources (computational and otherwise) you have at your disposal, and whether you have any information about your system(s) of interest that indicate you can realistically expect to answer those questions given a set of MD simulations.
+Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:2009:AnnuRepComputChem} and \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) and use these to make an educated guess regarding your chances of extracting pertinent and reliable information from your simulation.
 
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
 Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
