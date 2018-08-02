@@ -1020,28 +1020,13 @@ Here we describe the motivation for the different treatments of these terms, and
 
 \subsubsection{Motivation}
 
-Calculation of non-bonded interaction is generally the most time-consuming step of classical energy calculation. While the number of type of bonded interactions remain unchanged during the course of MD simulation, the ones for non-bonded interactions have to be updated frequently as molecules move into and out of the cutoff regions specified for extramolecular interactions. Furthermore, $r^{-1} $ dependence  of coulombic interaction in a 3D space complicates the calculation in the following two ways :
-\begin{itemize}
-\item Coulombic potential is conditionally convergent. What do we mean by this? Consider for example the alternating harmonic series : \\
-\[
-\sum_{k=1}^{\infty} \frac{-1^{k+1}}{k} = 1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ... = ln 2 
-\]
+The calculation of non-bonded interactions is generally the most time-consuming step of classical energy calculation.
+While the number of type of bonded interactions remain unchanged during the course of MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds. 
 
-But if we now change the order of the summation to, lets say :
-\[
-( 1 - \frac{1}{2})  - \frac{1}{4} + (\frac{1}{3} - \frac{1}{6}) - \frac{1}{8} + (\frac{1}{5} - \frac{1}{10}) - \frac{1}{12} + (\frac{1}{7} - \frac{1}{14}) - \frac{1}{16} + ...
-\]
-\[
-= \frac{1}{2} - \frac{1}{4} + \frac{1}{6} - \frac{1}{8} + \frac{1}{10} - ...
-\]
-\[
-= \frac{1}{2} (1 - \frac{1}{2} + \frac{1}{3} - \frac{1}{4} + \frac{1}{5} - ...) = \frac{1}{2} ln 2
-\]
+Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
+First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order of operations~\cite{LeachBook}, meaning we must exercise extreme care.
+Second, even very long-range interactions may be relevant, but even determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
-Using a different order might give us a different result. Thus the order of summation matters !
-
-\item Coulombic potential is a slow-decaying, long range potential. This means that we need to account for non-bonded pairs over larger pairwise distances in order to minimize the errors. As enlisting atom-pairs is fundamentally an $O(n^2) $ operation, the time taken to compute non-bonded pairs increases quadratically with respect to an increase in the number of atoms.
-\end{itemize}
 
 As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).
 
