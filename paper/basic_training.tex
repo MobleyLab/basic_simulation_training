@@ -1013,14 +1013,10 @@ Many such enhanced timestepping algorithms exist such as multiple-timestep metho
 \subsection{Long range electrostatics}
 \todo[inline, color={yellow!20}]{DLM: I need to edit this section after we get Samarjeet's changes in; skipping for now.}
 \label{sec:lr_electrostatics}
-\begin{itemize}
-\item Cut-off is bad
-\item Need for special treatment
-\item Idea of an Ewald sum
-\item PPPM
-\item How to choose parameters
-\end{itemize}
 
+
+In view of the long-range nature of Coulombic interactions (Section~\ref{sec:classical_electrostatics}), handling of electrostatics is particularly important in many systems.
+Here we describe the motivation for the different treatments of these terms, and give an overview of the core idea of the basic algorithms typically employed.
 
 \subsubsection{Motivation}
 
