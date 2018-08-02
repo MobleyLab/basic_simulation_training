@@ -154,8 +154,9 @@ Modern implementations of classical simulations also rely on a large body of kno
 
 \section{Science topics}
 \label{sec:science}
-A new simulationist does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
-However, grasping some key concepts from each of these disciplines, described below, is essential for every practitioner of molecular simulations. This section serves as a preface for Section~\ref{sec:basics} and suggestions for further reading on these subjects are provided throughout the document.
+A new practitioner does not have to be an expert in all of the fields that provide the foundation for our simulation methods and analysis of the data produced by these methods. 
+However, grasping some key concepts from each of these disciplines, described below, is essential.
+This section serves as a preface for Section~\ref{sec:basics} and suggestions for further reading on these subjects are provided throughout the document.
 In each subsection, we begin by highlighting some of the critical topics from the corresponding area, then describe what these are and why they are important to molecular simulations.
 
 \subsection{Classical mechanics}
@@ -313,7 +314,7 @@ Non-equilibrium molecular concepts pertinent to cell biology have been discussed
 Notably, many experiments are conducted at non-equilibrium conditions; for example, membrane diffusion coefficients are commonly measured by setting up a concentration gradient across the membrane and measuring the flux.
 It can be tempting to the beginner to setup an MD simulation in the same manner as such an experiment.
 However, maintaining non-equilibrium conditions is typically more complicated in an MD simulation than in an experiment as large reservoirs are commonly required.
-Frequently there exist equilibrium methods that can be used to obtain the same or similar information as a non-equilibrium experiment; users should seek to obtain familiarity with such methods before choosing to conduct a non-equilibrium MD simulation.
+Frequently, equilibrium methods can provide the same or similar information as a non-equilibrium experiment; users should seek to obtain familiarity with such methods before choosing to conduct a non-equilibrium MD simulation.
 
 
 \subsubsection{Books}
@@ -1101,7 +1102,7 @@ While the original PME method uses Lagrangian interpolation for charge assignmen
 
 \item Transformation of the grid back to real space: An Inverse FFT is used to convert the reciprocal space potential back to the real space. 
 \item Force calculation: The force is given by the gradient of the potential.
-PME, SPME and P3M use different methods for calculating the force given the resulting potential. 
+PME~\cite{Darden:1993:JChemPhys}, SPME~\cite{Essman:1995} and P3M~\cite{EASTWOOD1980215} use different methods for calculating the force given the resulting potential. 
 \end{enumerate}
 
 
