@@ -99,7 +99,7 @@ We also provide a checklist of key issues to consider before and while setting u
 
 Molecular simulation techniques play a very important role in our quest to understand and predict the properties, structure, and function of molecular systems, and are a key tool as we seek to enable predictive molecular design.
 Simulation methods are extremely useful for studying the structure and dynamics of complex systems that are too complicated for pen and paper theory, helping interpret experimental data in terms of molecular motions.
-Additionally, they see increasing use for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
+Additionally, they are increasing used for quantitative prediction of properties of use in molecular design and other applications~\cite{Nussinov2014,Towns2014,Kirchmair2015,Sresht2017,Bottaro2018}.
 
 The basic idea of any molecular simulation method is straightforward; a particle-based description of the system under investigation is constructed and then the system is propagated by either deterministic or probabilistic rules to generate a trajectory describing its evolution over the course of the simulation~\cite{Frenkel:2001:,LeachBook}.
 Relevant properties can be calculated for each ``snapshot'' (a stored configuration of the system, also called a ``frame'') and averaged over the the entire trajectory to compute estimates of desired properties.
@@ -403,9 +403,16 @@ Key interactions between atoms and within or between molecules are typically tho
 While these arise from similar or related physical effects (ultimately all tracing back to QM and the basic laws of physics) they are typically treated in rather distinct manners in molecular simulations so it is important to consider the two categories
 separately.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{potentials_basic_horiz.pdf}
+\caption{Standard MM force fields include terms that represent (a) bond and angle stretching around equilibrium values, using harmonic potentials with spring constants fit to the molecules and atoms to which they are applied. (b) Rotation around dihedral angles (green arrow) are defined using four atoms.}
+\label{potentials}
+\end{figure}
+
 %Bonded interactions
 Bonded interactions are those between atoms which are connected, or nearly so, and relating to the bonds connecting these atoms. 
-In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles. 
+In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles, as shown in Figure \ref{potentials_basic}. 
 Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper''
 torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring). 
 It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
@@ -421,6 +428,16 @@ These are particularly common in polarizable force fields such as the AMOEBA mod
 Often, the energy functions used by molecular simulations explicitly neglect nonbonded interactions between atoms which are immediately bonded to one
 another, and atoms which are separated by only one intervening atom, partly to make it easier to ensure that these atoms have preferred geometries dictated by their defined equilibrium lengths/angles regardless of the nonbonded interactions which would otherwise be present.
 This neglect of especially short range nonbonded interactions between near neighbors is called ``exclusion'', and energy functions typically specify which interactions are excluded.
+
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{simplelandscapes.pdf}
+    \caption{Energy landscapes.  (a) A highly simplified landscape used to illustrate rate concepts and (b) a schematic of a more complex landscape with numerous minima and ambiguous state boundaries.}
+    \label{landscapes}
+\end{figure}
+
+
 
 The transition to torsions, especially proper torsions, is where exclusions typically end.
 However, many all-atom energy functions commonly used in biomolecular simulations retain only \emph{partial} nonbonded interactions between terminal atoms involved in a torsion. 
