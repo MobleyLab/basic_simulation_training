@@ -1171,6 +1171,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
 \item Determine reference states that you are trying to emulate/discover.
 \item What temperature, pressure, etc. are you interested in?
+\item What force field properly describes your system?
 \item What is already known in the literature and what data do you wish to compare to?
 \end{itemize}
 \end{checklist}
@@ -1180,7 +1181,7 @@ Optimizing the performance of grid based methods is tricky as many of the choice
 \begin{itemize}
 \item Choose a simulation package suitable for simulating that ensemble with your target force field
 \item Determine whether you are simulating a bulk (typically periodic) or finite system and choose the appropriate cutoff types and periodicity (full periodicity for bulk systems, partial periodicity for interfaces, etc.) as discussed in Section~\ref{sec:periodic}
-\item Prepare your system, paying particular attention to ensuring it contains the chemical components you want with the structures you want, and that force field parameters are assigned as intended
+\item Prepare your system, paying particular attention to ensuring it contains the chemical components you want with the structures you want, and that force field parameters are assigned as intended (it is good practice to ensure that you properly implemented the force field by replicating energies, forces, or other observables from prior publications)
 \end{itemize}
 \end{checklist}
 
