@@ -629,6 +629,13 @@ A more difficult portion of equilibration is to ensure that other properties of 
 At equilibrium, a system may still undergo slow fluctuations with time, especially if it has slow internal degrees of freedom -- but key properties should no longer show systematic trends away from their starting structure.
 Thus, for example, for biomolecular simulations it is common to examine the root mean squared deviation (RMSD) of the molecules involved as a function of time, and potentially other properties like the number of hydrogen bonds between the biomolecules present and water, as these may be slower to equilibrate than system-wide properties like the temperature and pressure.
 
+\begin{figure}[h]
+\centering
+\includegraphics[width=\linewidth]{Equilibration_fig.png}
+\caption{For some system properties, equilibration may be relatively rapid (top panel), while for others it may be much slower (bottom panel). If it there is ambiguity as to whether or not a key property is still systematically changing, as in the bottom panel, equilibration should be extended.}
+\label{equilibration}
+\end{figure}
+
 Once the kinetic and potential energies fluctuate around constant values and other key properties are no longer changing with time, the equilibration period has reached its end.
 
 Depending on the target ensemble for production, the procedure for the end of equilibration is somewhat different.
@@ -937,7 +944,7 @@ Energy conservation is also a desirable integrator property and is imperative in
 This is a much trickier property to examine, and varies with different integrators.
 For instance, some classes of integrators better-preserve energy over short times, while others better-preserve energy at long times.
 The latter is generally preferred, though it may necessitate other sacrifices such as greater energy fluctuations away from the desired, exact system energy.
-\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated.}
+%\todo[inline, color={green!20}]{JIM: Should show citations for this section where people analyze energy conservation of different integrators and make comment directing people to this. Update: I'm having trouble finding good citations here. The work is either very theoretical and involved or very old. This is really true for this entire section, so help is appreciated. Update: Still working through the literature here, but not yet at the point I have a set of citations I'm happy with - will work on this and hopefully revise at a later time.}
 When the energy does change over the course of a simulation, it is said to ``drift.''
 The most common reason for energy drift is due to a timestep that is overly long.
 If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
