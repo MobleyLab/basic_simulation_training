@@ -1021,7 +1021,7 @@ Many such enhanced timestepping algorithms exist such as multiple-timestep metho
 
 
 \subsection{Long range electrostatics}
-\todo[inline, color={yellow!20}]{DLM: I need to edit this section after we get Samarjeet's changes in; skipping for now.}
+\todo[inline, color={yellow!20}]{DLM: Section needs editing. I've begun editing but more is needed.}
 \label{sec:lr_electrostatics}
 
 
@@ -1038,45 +1038,42 @@ First, calculating all Coulomb interactions over a periodic system results in ne
 Second, even very long-range interactions may be relevant, but even determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
 
-As discussed earlier, simulations are generally performed under periodic boundary conditions, i.e. potential at any point is due to all the other charges in the system as well as their infinite images. Hence different methods have been developed to optimize the electrostatic potential. An obsolete method is to just use spherical truncation, i.e. only consider the interactions within a cutoff distance $(r_c)$. This method has been shown to suffer from the following artifact : Consider the radius-rc sphere around a particle. In general, this sphere would be charged as exactly same number of positive and negative charges would be required to make it neutral. During the course of dynamics, charged particles can move back and forth the boundary at $r_c$, thus creating an artificial effect due the boundary(ref: Allen and Teldsley).
+As discussed in Section~\ref{sec:periodic}, simulations designed to represent bulk systems are generally performed under periodic boundary conditions, so that the electrostatic potential at any point is due to all the other charges in the system including all of their periodic copies. 
+Given that this is the goal, a set of different methods have been developed to efficiently compute the electrostatic potential due to this infinite, periodic system. 
+
+In the early days of simulations, electrostatic interactions were often simply truncated at a particular cutoff radius $(r_c)$.
+This, however, creates artificial boundary effects and other problems~\cite{allen_computer_2017}, as well as neglecting important long-range interactions.
+
 
 \subsubsection{ Ewald Summation}
 
-One way of handling the aforementioned issues in an efficient manner is to use the Ewald summation technique (ref, Ewald 1921). To understand this technique, lets represent the relation between the charge distribution and the coulombic potential  in the differential form (Poisson equation) :
+The Ewald summation technique [ref Ewald, 1921] provides one way to efficiently handle long-range electrostatics in periodic systems.
+To understand this technique, consider the relationship between the charge distribution and the Coulombic potential written in the differential form (the Poisson equation):
+\todo[inline, color={yellow!20}]{DLM: Fill in Ewald reference}
 
 \[
 \Delta \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x}) 
 \] 
 
-where,   $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permissivity of the medium. 
-This equation is an elliptical partial differential equation(pde) of the second order. 
-The standard way to determine the potential from this equation is a two step method - discretization of the equation followed by solution. These techniques however depend on the smoothness of the functions - $\rho$ and $\phi$ - involved. 
-However, in the case of charge distribution in our simulation system, $\rho$ is a set of delta functions which are clearly not smooth! 
-As $\rho$ is not smooth, $\phi$ is not smooth either. \\
-
+where  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permittivity of the medium. 
+The standard way to determine the potential from this equation is to first discretize the equation and then solve, but this requires the functions  $\rho$ and $\phi$ to be smooth.
+However, here, because we use point charge electrostatics, $\rho$ is a set of delta functions.
    
-Ewald method is based on replacing the point charge distributions by smooth charge distributions in order to use the fast solution techniques of the pde. The most common smooth function used in Ewald method is the gaussian distribution although other distributions have been used as well. Thus,
-
-\[ \rho = \rho^{sr} + \rho^{lr} \]
-
-\[ \rho^{sr} = q\delta(\boldsymbol{x}-\boldsymbol{x_i}) - qG\] 
-
-\[ \rho^{lr} = qG \]
-
+The Ewald method is based on (temporarily) replacing the point charge distributions by smooth charge distributions in order to apply existing numerical techniques to solve this partial differential equation (PDE).
+The most common smooth function used in Ewald method is the Gaussian distribution, although other distributions have been used as well.
+Thus the overall charge distribution is divided into a short-range or ``direct space'' component ($rho^{sr}$) involving the original point charges screened by the Gaussian-distributed charge of the same magnitude (Figure~\ref{fig:screening}) but opposite sign, and a long-range component involving Gaussian-distributed charges of the original sign ($\rho^{lr}$.
 
 \begin{figure}[h]
 \centering
 \includegraphics[width=\linewidth]{ewald.pdf}
-    \caption{Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge. }
+    \caption{\label{fig:screening}Screening charge distribution. (top) Original charge distribution. (bottom)Point charges can be split into Direct space(blue) and Reciprocal space charges(red). Direct space charge consists of the original charges and gaussian-distributed screening charge. Reciprocal space charge is only the gaussian-distributed charge. }
 \label{charges_ewald}
 \end{figure}
 
-Direct space or short range charge ($\rho^{sr}$) consists of the original point charge screened by the gaussian-distributed charge (G)of the same magnitude. 
-\[
-E^{sr} = \frac{1}{2} \sum_{n \in Z^3}^{'} \sum_{i,j}q_i q_j \frac{erfc(\alpha|r_{ij} + nL|}{|r_{ij} + nL|}
-\]
+Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{fig:charges_ewald}).
+In fact, it decays even faster than the Van der Waals term $r^{-6}$ and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions.
 
-Unlike the potential due to the original charge, the potential due to direct space charge decays rapidly as shown in the figure. This is due to erfc function which decays very fast. In fact, it decays even faster than the Van der Waals term $r^{-6}$ and hence the cutoff used for Van der Waals can be used for direct space coulombic potential calculation as well.
+%DLM: THIS IS WHERE I STOPPED EDITING.
 
 \begin{figure}[h]
 \centering
