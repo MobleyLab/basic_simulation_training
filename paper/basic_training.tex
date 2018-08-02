@@ -268,14 +268,8 @@ Key concepts from statistical mechanics are particularly important and prevalent
 \end{itemize}
 
 Traditional discussions of classical statistical mechanics, especially concise ones, tend to focus first or primarily on macroscopic thermodynamics and microscopic \emph{equilibrium} behavior based on the Boltzmann factor, which tells us that configurations $\conf$ occur with (relative) probability $\exp[-U(\conf)/k_B T]$, based on potential energy function $U$ and temperature $T$ in Kelvin units.  
-Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.  
-But in both fundamental and practical ways, this ordering is wrong.  
-Think Arrhenius first, then Boltzmann.
-
-MD simulation, like nature itself, runs dynamics.  
-Any equilibrium phenomena may (or may not) occur as a consequence and equilibrium behavior is hardly automatic~\cite{Zuckerman:2010:}.  
-In fact, based on current and foreseeable computational technology, it is much safer to assume that your simulation will not exhibit equilibrium behavior.  
-However, an MD simulation is guaranteed to exhibit dynamical behavior.
+Dynamical phenomena and their connection to equilibrium tend to be treated later in discussion, if at all.
+However, as the laws of statistical mechanics arise naturally from dynamical equations, we will discuss dynamics first.
 
 \begin{figure}[h]
 \centering
@@ -610,6 +604,8 @@ For a more involved discussion of minimization algorithms utilized in molecular 
 Minimization ideally takes us to a state from which we can begin numerical integration of the equations of motion without overly large displacements (see \citet{LeachBook}, section 7.3.4); however, to begin a simulation, we need not just positions but also velocities.
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
+The actual assignment process is typically unimportant, as the Maxwell-Boltzmann distribution will quickly arise naturally from the equations of motion.
+Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, the last particle is typically assigned a velocity to guarantee that the center-of-mass momentum is zero, preventing the simulation box from drifting.
 
 In some cases, we seek to obtain multiple separate and independent simulations of different instances or realizations of a particular system to assess error, collect better statistics, or help gauge dependence of results on the starting structure.
 It is worth noting that even very small differences in initial configuration, such as even a difference in position of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
@@ -666,7 +662,7 @@ Typically this phase is called ``production''.
 The main difference between equilibration and production is simply that in the production simulation, we plan to retain and analyze the collected data.
 Production must always be preceded by equilibration appropriate for the target production ensemble, and production data should never be collected immediately after a change in conditions (such as rescaling a box size, energy minimizing, or suddenly changing the temperature or pressure) except in very specific applications where this is the goal.
 
-For bookkeeping purposes, sometimes practitioners choose to discard some initial production data as additional equilibration; usually this is simply to allow additional equilibration time after a change in protocol (such as a switch from NVT to NPT), and the usual considerations for equilibration apply in such cases (see \citet{ShellNotes}, lecture on Computing Properties). 
+For bookkeeping purposes, sometimes practitioners choose to discard some initial production data as additional equilibration; usually this is simply to allow additional equilibration time after a change in protocol (such as a switch from NPT to NVT), and the usual considerations for equilibration apply in such cases (see \citet{ShellNotes}, lecture on Computing Properties).
 
 Analysis of production is largely outside the scope of this work, but requires considerable care in computing observables and assessing the uncertainty in any computed properties.
 Usually, analysis involves computing expectation values of particular observables, and a key consideration is to obtain \emph{converged} estimates of these properties --- that is, estimates that are based on adequate simulation data so that they no longer depend substantially on the length of the simulation which was run or on its initial conditions.
