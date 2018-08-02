@@ -993,11 +993,8 @@ If one is only interested in configurational or thermodynamic properties of the 
 If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:JChemTheoryComput}.
 \todo[inline, color={yellow!20}]{DLM: I need to review the paragraphing here; some of these are rather long and cover a lot. }
 
-%\todo[inline, color={green!20}]{JIM: Happy to introduce Trotter decompositions, but is it really necessary? Also, we need to add information on constrained dynamics.  Anything else?  Needs more details, or just send people to citations?}
-%\todo[inline, color={yellow!20}]{DLM: I don't think necessary to introduce, but in favor of adding citations to useful work/additional resources.}
 
-\subsubsection{How to choose an appropriate timestep?}
-%\todo[inline, color={yellow!20}]{DLM: Above should be broken into subsubsections for consistency with thermostats/barostats and because a subsection with only one subsubsection doesn't make sense.}
+\subsubsection{Choosing an appropriate timestep}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
 For the commonly-used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
