@@ -1010,7 +1010,7 @@ For example, if hydrogen molecules are present in the simulation box and the H-H
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
-Many such enhanced timestepping algorithms exist such as multiple-timestep methods which separately integrate high-frequency and low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
+Some examples of these enhanced timestepping algorithms are multiple-timestep methods which separately integrate high-frequency motion from  low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
 
 \subsection{Long range electrostatics}
