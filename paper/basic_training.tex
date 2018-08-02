@@ -1081,60 +1081,31 @@ In this subsection, we give an overview of the grid-based approach.
 Grid-based Ewald summation approaches involve five general steps :
 \begin{enumerate}
 \item Charge assignment: In this step, charges are interpolated onto the grid.
-While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines (hence the name Smooth-PME). These interpolation functions make sure that the charge density is distributed over the neighboring grid points. 
+While the original PME method uses Lagrangian interpolation for charge assignment, the SPME method uses the smoother cardinal B-splines (hence the name Smooth-PME) to distribute charge onto the grid. 
 
-%\[
-%Q(k_1,k_2,k_3) = \sum_{i=0}^{N}\sum_{p_a=0}^{K_a-1} q_i \prod_{d=1}^3 %M_n(u_i^d - k_d - p_dK_d)
-%\]
-\item Transformation of the grid to reciprocal space : Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent fourier space structure factors.
-%\[
-%S(m) = \sum_j q_j \exp(mr_j)
-%\]
-%\[
-%=\prod_{i=1}^{3} b_i(m_i)F(Q)(m_1,m_2,m_3)
-%\]
-%where
-%\[
-%b_i(m_i) = \exp(2\pi i (n-1)m_iK_i) X
-%\]
-%\[ [\sum_{k=0}^{n-2}M_n(m+1)\exp{2\pi im_ik/Ki}]^{-1}
-%\] 
+\item Transformation of the grid to reciprocal space: A Fast Fourier Transform (FFT) is used to convert the charges on the grid to their equivalent Fourier space structure factors.
 
-\item Energy calculation : Reciprocal space potential  is calculated by solving the Poisson equation in Fourier space. As noted earlier, solving the Poisson equation in Fourier space is simply a division by  $k^2$, where k is the reciprocal space frequency. At the same time, the grid is modified to store the reciprocal space potential.
+\item Energy calculation: The reciprocal space potential is calculated by solving the Poisson equation in Fourier space. At the same time, the grid is modified to store the reciprocal space potential. 
+\todo[inline, color={yellow!20}]{DLM: What does ``the grid is modified'' mean here and is it important? Does this mean just that the potential is stored at for each grid point?}
 
-%\[
-%E^{rec} = \frac{1}{2} \sum_{m_a=1}^{K_a-1} Q(m_1,m_2,m_3)(\theta_{rec}%*Q)(m_1,m_2,m_3)
-%\]
-%where
-%\[
-%\theta_{rec} = F(BXC)
-%\]
-%
-%\[
-%B(m_1,m_2,m_3) = \prod_{i=1}^{3} |b_i(m_i)|^2
-%\]
-%and
-%\[
-%C(m_1,m_2,m_3) = \frac{1}{\pi V} \frac{ \exp{- \pi^2 m^2 \beta^2}}{m^2}
-%\]
-%Here * is the convolution operation which is simply a product in the %reciprocal space. 
 
-\item Transformation of the grid back to real space : Inverse FFT is used to convert the reciprocal space potential back to the real space. 
-\item Force calculation : Force is given by the gradient of the energy. PME, SPME and P3M use different methods for calculating it. SPME specifically calculated it by analytic differentiation in the real space. 
-%\[
-%\frac{\delta E_{rec}}{\delta r_i^a}  = \sum_{m_a=0}^{K_a-1} \frac{\delta Q_{rec}}{\delta r_i^a}(m_1,m_2,m_3) (\theta_{rec}*Q)(m_1,m_2,m_3)
-%\]
+\item Transformation of the grid back to real space: An Inverse FFT is used to convert the reciprocal space potential back to the real space. 
+\item Force calculation: The force is given by the gradient of the potential.
+PME, SPME and P3M use different methods for calculating the force given the resulting potential. 
 \end{enumerate}
 
 
-
-Optimizing the performance of grid based methods is tricky as many of the choices would already have been made in the implementation of the method. As a user, there are a few ways to tweak the performance of the SPME : 
+Optimizing the performance of grid based methods can be somewhat challenging; many key choices are made in method implementation and only relative few settings are exposed to the user.
+Some typical options include: 
  
 \begin{itemize}
-\item Grid dimensions : A fine grid would be slower as the interpolation and calculations would have to be done at larger number of points. However its accuracy will be higher than a coarse grid.
-\item Screening function : Some variants of Ewald summation have used screening function other than  gaussian. In SPME implementations, one uses the Gaussian. The screening function can be varied via the spread of the gaussian.  However, as discussed earlier, it is tightly coupled with direct space cutoff.
-\item Cutoff of the direct space : Although it can be changed, it is generally kept the same as van der waals cutoff for the ease of implementation. Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
+\item Grid dimensions or spacing: A fine grid would be slower, requiring interpolation and calculations for more grid points, but in principle accuracy should be higher.
+\item Screening function: The width of the Gaussian screening function can often be tuned, but the ideal width is coupled with the direct space cutoff giving limited room for tuning. In some cases alternate, non-Gaussian screening functions are available.
+\item Direcf-space cutoff: This is typically kept at or near the value used for the van der Waals cutoff.
+Decreasing the cutoff improves the direct space performance but increases the complexity of the reciprocal space calculations. 
 \end{itemize}
+
+
 
 
 \begin{Checklists*}[p!]
