@@ -676,7 +676,19 @@ Depending on the relaxation timescales involved, one may only realize after anal
 A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}). 
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
-\todo[inline, color={yellow!20}]{DLM: Probably need to add something here about how often to store data.}
+One other key consideration in production is what data to store, and how often.
+Storing data especially frequently can be tempting, but utilizes a great deal of storage space and does not actually provide significant value in most situations.
+Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
+Thus, storing data more frequently than intervals of the autocorrelation time is generally unnecessary.
+Disk space may also be a limiting factor that dictates the frequency of storing data, and should at least be considered.
+Trajectory snapshots can be particularly large.
+However, if there are no disk space limitations it may be best to avoid discarding uncorrelated data so sampling \emph{at} intervals of the autocorrelation time may be appropriate.
+
+If disk space proves limiting, various strategies can be used to reduce storage use, such as storing full-precision trajectory snapshots only less frequently and storing reduced-precision ones, or snapshots for only a portion of the system, more often.
+However, these choices will depend on the desired analysis.
+
+For many applications, it will likely be desirable to store energies and trajectory snapshots at the same time points in case structural analysis is needed along with analysis of energies.
+Since energies typically use far less space, however, these can be stored more often if desired.
 
 \subsection{Thermostats}
 \label{sec:thermostats}
