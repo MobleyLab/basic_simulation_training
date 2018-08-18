@@ -1055,6 +1055,7 @@ However, here, because we use point charge electrostatics, $\rho$ is a set of de
 The Ewald method is based on (temporarily) replacing the point charge distributions by smooth charge distributions in order to apply existing numerical techniques to solve this partial differential equation (PDE).
 The most common smooth function used in the Ewald method is the Gaussian distribution, although other distributions have been used as well.
 Thus the overall charge distribution is divided into a short-range or ``direct space'' component ($\rho^{sr}$) involving the original point charges screened by the Gaussian-distributed charge of the same magnitude (Figure~\ref{fig:screening}) but opposite sign, and a long-range component involving Gaussian-distributed charges of the original sign ($\rho^{lr}$).
+Sum of the short-range $\rho^{sr}$ and the long-range $\rho^{lr}$ charge distributions is still the same as the original charge distribution. 
 
 \begin{figure}[h]
 \centering
