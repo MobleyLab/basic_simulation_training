@@ -302,8 +302,8 @@ The conformational free energy of a state, e.g., $F_A$ or $F_B$ is a way of expr
 Because equilibrium behavior is caused by dynamics, there is a fundamental connection between rates and equilibrium, namely that $\peq_A k_{AB} = \peq_B k_{BA}$, which is a consequence of ``detailed balance''.
 There is a closely related connection for on- and off-rates with the binding equilibrium constant. 
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.  
-Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy quantifies the \emph{width} of a basin.
-One way to visualize it is that entropy of a state is the \emph{volume} of 6N-dimensional phase space that the state occupies -  which in the one-dimensional case is just the \emph{width}.  
+Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy describes the \emph{width} of a basin or the number of arrangements a system can have within a particular state.
+One way to think of this it is that entropy of a state relates to the \emph{volume} of 6N-dimensional phase space that the state occupies, which in the one-dimensional case is just the \emph{width}.  
 These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.  
@@ -1056,7 +1056,8 @@ However, here, because we use point charge electrostatics, $\rho$ is a set of de
 The Ewald method is based on (temporarily) replacing the point charge distributions by smooth charge distributions in order to apply existing numerical techniques to solve this partial differential equation (PDE).
 The most common smooth function used in the Ewald method is the Gaussian distribution, although other distributions have been used as well.
 Thus the overall charge distribution is divided into a short-range or ``direct space'' component ($\rho^{sr}$) involving the original point charges screened by the Gaussian-distributed charge of the same magnitude (Figure~\ref{fig:screening}) but opposite sign, and a long-range component involving Gaussian-distributed charges of the original sign ($\rho^{lr}$).
-Sum of the short-range $\rho^{sr}$ and the long-range $\rho^{lr}$ charge distributions is still the same as the original charge distribution. 
+The screening distribution is of opposite sign to allow the screened interactions to fall off rapidly with distance, as we will see below.
+The sum of the short-range $\rho^{sr}$ and the long-range $\rho^{lr}$ charge distributions is still the same as the original charge distribution. 
 
 \begin{figure}[h]
 \centering
