@@ -35,7 +35,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% ARTICLE SETUP
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\title{Best Practices for Foundations in Molecular Simulations : v\versionnumber}
+\title{Best Practices for Foundations in Molecular Simulations [Article V1.0] v\versionnumber}
 
 \author[1]{Efrem Braun}
 \author[2]{Justin Gilmer}
@@ -86,9 +86,9 @@ We also provide a checklist of key issues to consider before and while setting u
 \end{frontmatter}
 
 
-% List TODOs here
-\todototoc
-\listoftodos
+%% List TODOs here
+%\todototoc
+%\listoftodos
 
 \section{Introduction}
 \label{sec:intro}
@@ -112,7 +112,7 @@ Either method can be carried out with different underlying physical theories to 
 If a quantum mechanics (QM) description of matter is used, electrons are explicitly represented in the model and interaction energy is calculated by solving the electronic structure of the molecules in the system with no (or few) empirical parameters, but with various approximations to the physics for tractability.
 In a molecular mechanics (MM) description, molecules are represented by particles representing atoms or groups of atoms. Each atom may be assigned an electric charge and a potential energy function with a large number of empirical parameters (fitted to experiment, QM, or other data) used to calculate non-bonded and bonded interactions. Unless otherwise specified, MD simulations employ MM force fields, which calculate the forces that determine the system dynamics.
 MM simulations are much faster than quantum simulations, making them the methods of choice for vast majority of molecular simulation studies on biomolecular systems in the condensed phase.
-However, typically, they are of lower-accuracy than QM simulations and cannot simulate bond rearrangements.
+However, typically, they are of lower accuracy than QM simulations and cannot simulate bond rearrangements.
 QM simulations may be too computationally expensive to allow simulations of the time and length scales required to describe the system of interest~\cite{Bottaro2018}.
 The size of the system amenable for to QM simulation also depends on what method is chosen, from high-level ab initio methods to semi-empirical methods; discussion of these methods are outside the scope of this article, and useful references are separately available~\cite{Jensen2007}.
 Computational resources available are also an important consideration in deciding whether QM simulations are tractable. Roughly, QM simulations might be tractable with hundreds of atoms or fewer, while MD simulations routinely have tens or hundreds of thousands of atoms in the system. Much above that level, coarse-graining methods are used.
@@ -120,7 +120,7 @@ They reduce resolution and computational cost. Although many of the approaches f
 %\todo[inline, color={red!20}]{Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good. Also add in general, that the topology does not change--most FF do not allow chemical reactions}
 
 Speed is a particular concern when describing condensed phase systems, as we are often interested in the properties of molecules (even biomacromolecules) in solution, meaning that systems will consist of thousands to hundreds of thousands or millions of atoms.
-While system size alone does not require a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not just sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
+While system size alone does not dictate a classical description, if we are interested in calculations of free energies or transport properties at finite (often laboratory) temperatures, these include entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not only sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
 Furthermore, many systems of interest, such as polymers (biological and otherwise) have slow motions that must be captured for accurate calculation of properties.
 For example, for proteins, relevant timescales span from nanoseconds to seconds or more, and even rearrangements of buried amino acid sidechains can in some cases take microseconds or more, with larger conformational changes and protein folding taking even longer~\cite{Schlick:2010:, Mobley:2012:JComputAidedMolDes}.
 Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range.
@@ -171,12 +171,12 @@ Critical concepts from classical mechanics include:
 \item Holonomic constraints
 \end{itemize}
 
-Molecular simulation methods work on many particle systems following the rules of classical mechanics.
+Molecular simulation methods work on many-particle systems following the rules of classical mechanics.
 Basic knowledge of key concepts of classical mechanics is important for understanding simulation methods.
 Here, we will assume you are already familiar with Newtonian mechanics.
 
-Classical molecular models typically consist of point particles carrying mass and electric charge, as well as potentially additional interactions such as van der Waals interactions and bonded interactions of various types.
-Sometimes it is much more efficient to freeze the internal degrees of freedoms and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
+Classical molecular models typically consist of point particles carrying mass and electric charge with bonded interactions (describing bond lengths, angles, and torsions) and non-bonded interactions (describing electrostatic and van der Waals forces).
+Sometimes it is much more efficient to freeze the internal degrees of freedom and treat the molecule as a rigid body where the particles do not change their relative orientation as the whole body moves; this is commonly done, for example, for rigid models of the water molecule.
 The timestep for simulation is determined by the fastest frequency motion.
 Due to the high frequency of the O-H vibrations, accurately treating water classically would require solving the equations of motion with a small timestep (commonly 1 fs).
 Thus, for computational efficiency water is often instead treated as a rigid body to allow a larger timestep (often double the length).
@@ -197,7 +197,7 @@ A variety of good books on classical mechanics are also available and give furth
 \label{sec:thermodynamics}
 
 \subsubsection{Key concepts}
-A variety of thermodynamic concepts are particularly important for molecular simulations:
+A variety of thermodynamic concepts are important for molecular simulations:
 \begin{itemize}
 \item Temperature and pressure % removed stress; seems out of place
 \item Internal energy and enthalpy
@@ -227,7 +227,7 @@ For instance, if energy is not conserved, the first law is not satisfied and we 
 In this sense, the laws of thermodynamics provide us rigorous sanity checks in addition to many useful mathematical relations for computing properties.
 Basic thermodynamic principles thus also dictate proper simulation protocols and associated best practices.
 
-The concept of the thermodynamic limit is particularly important here.
+The concept of the thermodynamic limit is important here.
 Specifically, as the size of a finite system is increased, keeping the particle number density roughly constant, at some point it is said to reach the thermodynamic limit where its behavior is bulk-like and no longer depends on the extent of the system.
 Thus, small systems will exhibit unique behaviors that reflect their microscopic size, but sufficiently large systems are said to have reached the thermodynamic limit and macroscopic thermodynamics applied.
 This is due to the fact that the effect of interfaces or boundaries have largely been removed, and, more importantly, that averages of system properties are now over a sufficiently large number of molecules that any instantaneous snapshot of the system roughly corresponds to average behavior (i.e. fluctuations in properties become negligible with increasing system size).
@@ -279,7 +279,7 @@ The two are literally reciprocals of one another.
 In Fig.\ \ref{landscapes}(a), assume you have started an MD simulation in basin A.
 The trajectory is likely to remain in that basin for a period of time -- the ``dwell'' timescale -- which increases exponentially with the barrier height, $(U^\ddagger - U_A)$.
 Barriers many times the thermal energy $k_BT$ imply long dwell timescales, approximated as the reciprocal of $\exp[(U^\ddagger - U_A)/(k_B T)]$.
-The rate coefficient $k_{AB}$, which relates to the transition probability per unit time per amount of reactant(s).
+The rate coefficient $k_{AB}$ relates to the transition probability per unit time per amount of reactant(s).
 All transitions occur in a random, \emph{stochastic} fashion and are predictable only in terms of average behavior.
 More detailed discussions of rates and rate coefficients can be found in numerous textbooks (e.g.,~\cite{DillBook, Zuckerman:2010:}).
 
@@ -304,12 +304,12 @@ There is a closely related connection for on- and off-rates with the binding equ
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy describes the \emph{width} of a basin or the number of arrangements a system can have within a particular state.
 One way to think of this it is that entropy of a state relates to the \emph{volume} of 6N-dimensional phase space that the state occupies, which in the one-dimensional case is just the \emph{width}.
-These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g.., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.
 However, in a living cell where there is no shortage of time, biomolecules may exhibit non-equilibrium behavior for a quite different reason -- because they are \emph{driven} by the continual addition and removal of (possibly energy-carrying) substrate and product molecules.
-In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann factor distribution.
+In this type of non-equilibrium situation, the distribution of configurations will not follow a Boltzmann distribution.
 Specialized simulation approaches are available to study such systems~\cite{Chong:2017:CurrentOpinioninStructuralBiology,  Zuckerman:2017:AnnuRevBiophys} but they are not beginner-friendly.
 Non-equilibrium molecular concepts pertinent to cell biology have been discussed at an introductory level (e.g. \url{http://www.physicallensonthecell.org/}).
 Notably, many experiments are conducted at non-equilibrium conditions; for example, membrane diffusion coefficients are commonly measured by setting up a concentration gradient across the membrane and measuring the flux.
@@ -358,7 +358,7 @@ This means atoms or molecules separated by considerable distances can still have
 
 %\item Polarizability, dielectric constants
 The static dielectric constant of a medium, or relative permittivity $\epsilon_r$ (relative to that of vacuum), affects the prefactor for the decay of these long range interactions, with interactions reduced by $\frac{1}{\epsilon_r}$.
-Water has a relatively high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower.
+Water has a high relative permittivity or dielectric constant close to 80, whereas non-polar compounds such as n-hexane may have relative permittivities near 2 or even lower.
 This means that interactions in non-polar media such as non-polar solvents, or potentially even within the relatively non-polar core of a larger molecule such as a protein, are effectively much longer-range even than those in water.
 The dielectric constant of a medium also relates to the degree of its electrostatic response to the presence of a charge; larger dielectric constants correspond to larger responses to the presence of a nearby charge.
 
@@ -417,7 +417,7 @@ Bonded interactions are those between atoms which are connected, or nearly so, a
 In typical molecular simulations these consist of bond stretching terms, angle bending terms, and terms describing the rotation of torsional angles, as shown in Figure \ref{potentials}.
 Torsions typically involve four atoms and are often of two types -- ``proper'' torsions, around bonds connecting groups of atoms, and ``improper''
 torsions which involve neighbors of a central atom; these are often used to ensure the appropriate degree of planarity or non-planarity around a particular group (such as planarity of an aromatic ring).
-It is important to note that the presence of bonded interactions between atoms does not necessarily preclude their also having nonbonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
+It is important to note that the presence of bonded interactions between atoms does not preclude their also having non-bonded interactions with one another (see discussion of exclusions and 1-4 interactions, below).
 
 %\item Different types of nonbonded interactions
 Nonbonded interactions between atoms are all interactions which are included in the potential energy of the system \emph{aside} from bonded interactions.
@@ -437,6 +437,7 @@ The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3,
 These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
 For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
 1-4 interactions are essentially considered the borderline between the bonded and non-bonded regions.
+These short-range interactions can be quite strong and there is potentially a risk of them overwhelming longer-range interactions, hence their typical reduction.
 
 
 %\end{itemize}
@@ -462,7 +463,7 @@ For our purposes here, the distinction between a force field library and a param
 Most of the terms included in potential energy functions have already been detailed in Section~\ref{sec:mol_interactions}, with the most common being Coulombic, Lennard-Jones, bond, angle, and torsional (dihedral) terms (Figure \ref{potentials}).
 Here, we very briefly describe the mathematical forms used to represent such interactions.
 
-Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6$
+Non-bonded interactions of the Lennard-Jones form are well-described throughout the literature (for instance see Ch. 4 of \citet{LeachBook}); these model a short-range repulsion that scales as $1/r^{12}$ and a long-range attraction that scales as $1/r^6$.
 Coulombic interactions, including both short and long-range components, are described in detail elsewhere in this document.
 To represent bonded interactions, harmonic potentials are often employed.
 The same is true for angles between three bonded atoms, but the harmonic potential is applied with respect to the angle formed and not the distance between atoms.
@@ -593,8 +594,7 @@ A key consideration when building a system is that the starting structure ideall
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
 In some sense, having a good starting structure is only a convenience to reduce equilibration times (if the force field is adequate); however, for some systems, equilibration times might otherwise be prohibitively long.
 
-System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention.
-Specifically, if your system preparation is flawed, such flaws may prove fatal.
+System preparation is arguably the most critical stage of a simulation and in many cases receives the least attention; if your system preparation is flawed, such flaws may prove fatal.
 Potentially the worst possible outcome is if the prepared system is not what you intended (e.g. it contains incorrect molecules or protonation states) but is chemically valid and well described by your force field and thus proceeds without error through the remaining steps --- and in fact this is a  frequent outcome of problems in system preparation.
 It should not be assumed that a system has been prepared correctly if it is well-behaved in subsequent equilibration steps; considerable care should be taken here.
 
@@ -613,11 +613,13 @@ Minimization ideally takes us to a state from which we can begin numerical integ
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
 The actual assignment process is typically unimportant, as the Maxwell-Boltzmann distribution will quickly arise naturally from the equations of motion.
-Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, the last particle is typically assigned a velocity to guarantee that the center-of-mass momentum is zero, preventing the simulation box from drifting.
+Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, this quantity is typically set to zero by removing the center-of-mass velocity from all particles after random assignment, preventing the simulation box from drifting.
 
 In some cases, we seek to obtain multiple separate and independent simulations of different instances or realizations of a particular system to assess error, collect better statistics, or help gauge dependence of results on the starting structure.
-It is worth noting that even very small differences in initial configuration, such as even a difference in position of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
-Still, an even better way to generate independent realizations is to begin with different starting configurations, such as different conformations of the molecule(s) being simulated, as this leads to behavior which is immediately different.
+It is worth noting that even very small differences in initial configuration, such as small changes in the coordinates of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
+An even better way to generate independent realizations is to begin with different starting configurations, such as different conformations of the molecule(s) being simulated, as this leads to behavior which is immediately different.
+When rigid molecules are present, care must be taken to prevent components of velocities assigned along constraints from being forced to zero \citep{Joswiak2013}.
+With a thermostat present, this only delays system equilibration, but for NVE simulations, such as might be used in hybrid MC/MD simulations, it can result in violations of equipartition and large subsequent errors \citep{Palmer2018}.
 
 \subsubsection{Equilibration}
 
@@ -655,7 +657,7 @@ This is necessary due to the fact that only the average temperature is obtained 
 If the target is a simulation in the NVT ensemble at a particular density, equilibration should be done in the NPT ensemble.
 In this case, the system may be scaled to the desired average volume before starting a production simulation (and if rescaling is done, additional equilibration might be needed).
 
-The schematic below (\ref{eqworkflow}) demonstrates what is generally an appropriate equilibration work-flow for common production ensembles.
+The schematic below (Figure \ref{eqworkflow}) demonstrates what is generally an appropriate equilibration work-flow for common production ensembles.
 Clearly, this schematic cannot cover every case of interest, but should provide some idea of the general approach.
 For more information on equilibration procedures, see \citet{LeachBook}, section 7.4 and \citet{ShellNotes}, lectures on Molecular dynamics and Computing properties.
 
@@ -683,9 +685,9 @@ For bookkeeping purposes, sometimes practitioners choose to discard some initial
 Analysis of production is largely outside the scope of this work, but requires considerable care in computing observables and assessing the uncertainty in any computed properties.
 Usually, analysis involves computing expectation values of particular observables, and a key consideration is to obtain \emph{converged} estimates of these properties --- that is, estimates that are based on adequate simulation data so that they no longer depend substantially on the length of the simulation which was run or on its initial conditions.
 This is closely related to the above discussion of equilibration.
-Depending on the relaxation timescales involved, one may only realize after analysis of a ``production'' trajectory that the system was still equilibrating in some sense.
+Depending on the relaxation timescales involved, one may realize only after analysis of a ``production'' trajectory that the system was still equilibrating in some sense.
 
-A separate Best Practices document addresses these critical issues of convergence and error analysis (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+A separate Best Practices document addresses the critical issues of convergence and error analysis; we refer the reader there for more details (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
 One other key consideration in production is what data to store, and how often.
@@ -748,14 +750,14 @@ This is not an exhaustive study of available thermostats, but is instead a surve
         Clearly, this thermostat does not sample the canonical distribution; it instead samples the isokinetic (constant kinetic energy) ensemble.
         However, the isokinetic ensemble samples the same configurational phase space as the canonical ensemble, so position-dependent (structural) equilibrium properties can be obtained equivalently with either ensemble~\cite{Minary:2003:JChemPhysAlgorithms}.
         However, velocity-dependent (dynamical) properties will not be equivalent between the ensembles.
-        This thermostat is generally only used in certain advanced applications~\cite{Minary:2003:JChemPhysAlgorithms}.
+        This thermostat is used only in certain advanced applications~\cite{Minary:2003:JChemPhysAlgorithms}.
 
     \item \textbf{Simple Velocity Rescaling}
 
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement; however, this thermostat is also one of the most non-physical thermostats.
         This thermostat relies on rescaling the momenta of the particles such that the simulation's instantaneous temperature exactly matches the target temperature~\cite{thermostatAlgorithms2005}.
         Similarly to the Gaussian thermosat, simple velocity rescaling aims to sample the isokinetic ensemble rather than the canonical ensemble.
-        However, it has been shown that the sample velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018}.
+        However, it has been shown that the simple velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018}.
         Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018}.
 
     \item \textbf{Berendsen}
@@ -782,11 +784,11 @@ This is not an exhaustive study of available thermostats, but is instead a surve
 
         The Langevin\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
         It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
-        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
+        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical\footnote{With no damping this does not reduce to the Andersen thermostat, since no damping also means no random force because the magnitude of the damping is coupled to the magnitude of the random force by the fluctuation/dissipation theorem.}, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
     \item {\bf{Nos\'{e}-Hoover}}
 
-        The Nos\'{e}-Hoover thermostat~\cite{thermostatAlgorithms2005} abstracts away the thermal bath from the previous thermostats and condenses it into a singular additional degree of freedom.
+        The Nos\'{e}-Hoover thermostat~\cite{thermostatAlgorithms2005} abstracts away the thermal bath from the previous thermostats and condenses it into a single additional degree of freedom.
         This fictitious degree of freedom has a ``mass'' that can be changed to interact with the particles in the system in a predictable and reproducible way while maintaining the canonical ensemble.
         The choice of ``mass'' of the fictitious particle (which in many simulation packages is instead expressed as a time damping parameter) can be important as it affects the fluctuations that will be observed.
         For many reasonable choices of the mass, dynamics are well-preserved~\cite{Basconi:2013:JChemTheoryComput}.
@@ -798,7 +800,7 @@ This is not an exhaustive study of available thermostats, but is instead a surve
 \end{enumerate}
 
 \subsubsection{Summary}
-To summarize, observe (Table \ref{tstat_summary}), as a general summary and guide for exploring the usage of various thermostats.
+Table \ref{tstat_summary} serves as a general summary and guide for exploring the usage of various thermostats.
 Knowing the system you are simulating and the benefits and weaknesses to each thermostat is crucial to successfully and efficiently collect meaningful, physical data.
 If you are only interested in sampling structural properties such as radial distribution functions, many of the given thermostats can be used, including the Gaussian, Bussi, Andersen, Langevin, and Nos\'{e}-Hoover thermostats.
 If dynamical properties will be sampled, it is preferable to turn off the thermostat before beginning production cycles, but the Bussi and Nos\'{e}-Hoover thermostats (and in cases with implicit solvent, the Langevin thermostat), can often be used without overly affecting the calculation of dynamical properties.
@@ -832,15 +834,15 @@ Overall, the Bussi thermostat has been shown to work well for most purposes, and
 Here, we discuss why barostats are used, give their background, discuss roughly how they work, describe some popular options, and summarize with some recommendations.
 
 \subsubsection{Motivation}
-Typically, thermodynamic properties of interest are measured under open air conditions in a laboratory, which (for short timescales) means at they are measured at essentially constant temperature and pressure.
+Typically, thermodynamic properties of interest are measured under open-air conditions in a laboratory, which (for short timescales) means at they are measured at essentially constant temperature and pressure.
 To obtain a non-atmospheric pressure, some device, like a piston, inert gas, etc\@., would be needed to control the pressure and volume of the system~\cite{tuckermanBook, ShellNotes}.
-Such conditions correspond to what is called the isothermal-isobaric ensemble, probably one of the most popular ensembles for MD simulationsl.
+Such conditions correspond to what is called the isothermal-isobaric ensemble, probably one of the most popular ensembles for MD simulations.
 As is the case with thermostats, if the pressure must be maintained in a simulation, a barostat algorithm will be needed to sample this ensemble.
 
 \subsubsection{Background and How They Work}
 
-Barostat algorithms control pressure alone, not temperature, so if the target ensemble is isothermal-isobaric, they must also be applied with a thermostat.
-If a barostat is applied without a thermostat, only the number of particles (N), the pressure (P), and the enthalpy (H) of the system is held constant.
+Barostat algorithms control pressure alone, not temperature, so if the target ensemble is isothermal-isobaric, they must be applied with a thermostat.
+If a barostat is applied without a thermostat, only the number of particles (N), the pressure (P), and the enthalpy (H) of the system are held constant.
 This is known as the isoenthalpic-isobaric ensemble (NPH).
 To sample from the isothermal-isobaric ensemble (NPT), a thermostating algorithm like the ones discussed earlier must also be applied.
 
@@ -854,10 +856,10 @@ The instantaneous pressure will not always be equal to the target pressure; in f
 For the purpose of molecular modeling, consider a hypothetical system that is being compressed and/or expanded by a fictitious piston that has some mass which acts in all directions uniformly.
 Since the piston is acting on the system from all directions, it can be considered as applying a uniform compression or expansion.
 The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
-These impacts from the particles on the ``enclosure'' will impart a stress on the system box which can be related to the stress the surroundings are imparting on the system.
-
+These impacts from the particles on the ``enclosure'' will impart a stress on the system box from the surroundings and serve as a type of barostat.
 
 The next section will describe the main differences between the many barostats that are available, and give some recommendations for proper use.
+Some barostats work based on scaling or rescaling the coordinates in the system (the volume and the center-of-mass coordinates of the molecules involved), whereas others work by modifying the equations of motion to ensure constant pressure.
 
 \subsubsection{Popular Barostats}
 Here, we introduce a few notable barostats and give a high-level summary of each, noting some key issues.
@@ -897,15 +899,16 @@ This is not an exhaustive list of barostats and barostat algorithms, just a samp
     \item \textbf{Martyna-Tuckerman-Tobias-Klein (MTTK)}
 
         The MTTK barostat has substantial similarity to the Parrinello-Rahman and Andersen barostats.
-        When Parr\-inello-Rah\-man's equations of motion were discovered to only hold true in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
+        When Parr\-inello-Rah\-man's equations of motion were discovered to hold true only in the limit of large systems, the MTTK barostat introduced alternate equations of motion to correctly sample the ensemble for smaller systems as well~\cite{martyna1994constant, martyna1996explicit}.
         Thus, MTTK~\cite{martyna1994constant, martyna1996explicit} is usually seen as an improvement over Parrinello-Rahman~\cite{Parrinello1981} for such systems.
 
     \item \textbf{Monte Carlo}
 
         Constant pressure may also be achieved by periodically performing Monte Carlo moves that adjust the system volume.
         For an explanation of how such moves are accepted or rejected, see ``Monte Carlo simulations in other ensembles'' in~\citet{ShellNotes}.
-        These MC barostats are computationally advantageous in that the Virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
-        However, they rigorously only explore the correct distribution of volumes in the NPT ensemble without any attempt at preserving the dynamic fluctuations involved in this sampling.
+        These MC barostats are computationally advantageous in that the virial need not be computed, and they may be easily extended to accommodate anisotropic systems.
+        They rigorously explore the correct distribution of volumes in the NPT ensemble.
+         However, they do not preserve dynamic fluctuations.
         Unlike for extended system barostats, there is no sense of relaxation time over which the volume of the system responds.
         Instead, the rate at which the volume may respond is limited by the frequency with which MC moves are performed and the maximum allowed change in volume.
         Thus, long-time dynamics are not accurately reproduced in any sense for MC barostats.
@@ -922,7 +925,7 @@ Extended ensemble barostats are suitable for the production runs of most systems
 It is usually not recommended to use these for the equilibration process, as these barostats do not behave as well when not near the target pressure.
 These can be affected by the starting configuration and pressure values much more than the Berendsen or simple volume rescaling barostats.
 MTTK and Parinello-Rahman allow for more flexibility in terms of the shape modulation of the simulation box.
-Ultimately, however, one's choice often is limited by which extended-ensemble barostat has been implemented in your simulation engine of choice.
+However, not all extended-ensemble barostats have been implemented all simulation engines, limiting user choice.
 It is recommended to begin with the Berendsen barostat to quickly bring the system to the target pressure, and then switch to an extended ensemble barostat for final equilibration and production.
 
 \subsection{Integrators}
@@ -936,14 +939,14 @@ Here, we explain the need for integrators, discuss key criteria like energy cons
 
 \subsubsection{Desirable integrator properties}
 
-So-called ``good'' integrators contain certain features that are appealing for molecule simulations.
+So-called ``good'' integrators contain certain features that are appealing for molecular simulations.
 We start with the most obvious feature, which is that the integrator induces little error in the dynamics.
 Since integration is fundamentally about taking discrete steps to approximate continuous dynamics, this discretization process introduces errors (as can be observed by comparison to analytically soluble problems, like the harmonic oscillator).
 These errors are termed discretization errors, whereas additional errors called truncation errors are also accumulated through loss of precision during computer calculations.
 As will be discussed shortly, there are many strategies for avoiding discretization errors.
 For truncation errors, the only solution is to utilize a higher precision data type during calculations (i.e. use doubles instead of floats).
 
-Integrators that minimize discretization error should preserve phase space volume and conserve energy.
+Integrators that minimize discretization error should preserve phase-space volume and conserve energy.
 If phase space volume is not preserved, then the sampled ensemble at a later timestep will not be the same as that in which the system was initialized.
 This means that the collected data will not in fact reflect the ensemble of interest.
 Luckily, this issue may be avoided simply by guaranteeing that the integrator is reversible~\cite{Frenkel:2001:}.
@@ -957,7 +960,7 @@ The latter is generally preferred, though it may necessitate other sacrifices su
 When the energy does change over the course of a simulation, it is said to ``drift.''
 The most common reason for energy drift is due to a timestep that is overly long.
 If the timestep is much too long, the system can become unstable and blow up (energies become very large) due to overlap of atoms.
-More subtly, the timestep may be long enough that the system is still stable over long times, but too long for the chosen integrator to conserve energy.
+Even when the timestep is long enough that the system is still stable over long times, it may be too long for the chosen integrator to conserve energy.
 Other simulation parameters may also impact energy drift, such as the method of truncating forces and energies, as well as the choice of numerical precision.
 The latter effect, due to truncation errors, will become obvious if two simulations with different timesteps are compared.
 Shorter timesteps, and hence more steps to achieve a simulation of the same length, will result in \textit{more} drift, since errors get larger with the number of calculations performed by the computer.
@@ -998,20 +1001,22 @@ In practice these issues are easily remedied through an appropriate choice of ti
 
 Stochastic dynamics necessarily perturbs dynamics.
 Specifically, with Langevin or Brownian dynamics, calculations of any dynamic properties with longer timescales than the application of the random forces will be very different than those from deterministic trajectories.
-If one is only interested in configurational or thermodynamic properties of the system, this is of no consequence.
+If one is interested in only configurational or thermodynamic properties of the system, this is of no consequence.
 If dynamics are of interest, the dependence of these properties on the integrator parameters (e.g. friction factor) should be assessed~\cite{Basconi:2013:JChemTheoryComput}.
 
 
 \subsubsection{Choosing an appropriate timestep}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+For the commonly used second order integrators, such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
 For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system with its force field harmonic force constant set to 500 N/m, the oscillation period can be calculated using the equation for simple harmonic motion ($T=2\pi\sqrt{\frac{\mu}{k}}$, where $\mu$ is the reduced mass and $k$ is the force constant) to be 8 fs; thus, a 0.5 fs timestep can be used.
 As another example, if an ab initio MD simulation is being conducted in which C-H bond vibrations are known to be the highest-frequency motion, infrared spectra can be consulted to find that this bond vibration frequency will be approximately 3000 cm$^{-1}$, which is 11 fs; thus, either a 0.5 or 1.0 fs timestep would be recommended.
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+The timestep should also be short enough that properties calculated from the simulation, regardless of ensemble, are independent of the chosen timestep.
+This is because an inappropriately large timetep can lead to subtle changes to the ensemble being simulated and alter computed thermodynamic and transport properties, especially in stochastic simulations or those coupled to thermostats or barostats.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
 Some examples of these enhanced timestepping algorithms include multiple-timestep methods which separately integrate high-frequency motion from low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
@@ -1029,8 +1034,8 @@ The calculation of non-bonded interactions is generally the most time-consuming 
 While the number of type of bonded interactions remain unchanged during an MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds.
 
 Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
-First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order of operations~\cite{LeachBook}, meaning we must exercise extreme care.
-Second, even very long-range interactions may be relevant, but even determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
+First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order \emph{in which it is evaluated}~\cite{LeachBook}, meaning we must exercise extreme care or the result will be ambiguous.
+Second, long-range interactions may be relevant, but determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
 
 As discussed in Section~\ref{sec:periodic}, simulations designed to represent bulk systems are generally performed under periodic boundary conditions, so that the electrostatic potential at any point is due to all the other charges in the system including all of their periodic copies.
@@ -1046,10 +1051,10 @@ The Ewald summation technique~\cite{Ewald_1921} provides one way to efficiently 
 To understand this technique, consider the relationship between the charge distribution and the Coulombic potential written in the differential form (the Poisson equation):
 
 \[
-\Delta \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x})
+\nabla^2 \phi(\boldsymbol{x}) = - \frac{1}{\epsilon} \rho(\boldsymbol{x})
 \]
 
-where  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permittivity of the medium.
+\noindent where  $\phi(\boldsymbol{x})$ is the potential at point $\boldsymbol{x}$, $\rho(\boldsymbol{x})$ is the charge density at point $\boldsymbol{x}$ and $\epsilon$ is the permittivity of the medium.
 The standard way to determine the potential from this equation is to first discretize the equation and then solve, but this requires the functions  $\rho$ and $\phi$ to be smooth.
 However, here, because we use point charge electrostatics, $\rho$ is a set of delta functions.
 
@@ -1067,7 +1072,7 @@ The sum of the short-range $\rho^{sr}$ and the long-range $\rho^{lr}$ charge dis
 \label{charges_ewald}
 \end{figure}
 
-Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly (Figure~\ref{charges_ewald}).
+Unlike the original, full potential, the direct space screened interaction (Figure~\ref{fig:screening}, top) decays rapidly.
 In fact, it decays even faster than Van der Waals interactions ($1/r^{6}$) and hence relative short cutoffs, comparable to those used for Van der Waals interactions, can be used for handling direct-space Coulomb interactions (Figure~\ref{decay}).
 
 \begin{figure}[h]
@@ -1130,7 +1135,7 @@ For novice users, we suggest typically using well-validated or default settings 
 
 \begin{itemize}
 \item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation. Would the questions you want to answer be better addressed a different way?
-\item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
+\item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$)\footnote{For mixtures, the semi-grand ensemble (or osmotic ensemble) may be of interest, where the number of particles is fixed but their identities can change~\cite{allen_computer_2017} allowing, e.g., a constant chemical potential for salt ions to be maintained~\cite{Ross:2018:J.Phys.Chem.B}}
 \item Determine reference states that you are trying to emulate/discover.
 \item What temperature, pressure, etc. are you interested in?
 \item What force field properly describes your system?
@@ -1138,7 +1143,7 @@ For novice users, we suggest typically using well-validated or default settings 
 \end{itemize}
 \end{checklist}
 
-\begin{checklist}{Prepare to implement your plans and make critical decisions the system}
+\begin{checklist}{Prepare to implement your plans and make critical decisions about the system}
 
 \begin{itemize}
 \item Choose a simulation package suitable for simulating that ensemble with your target force field
@@ -1242,7 +1247,7 @@ Our focus here has been on the basics --- focusing on things you need to underst
 Additionally, we have primarily focused on issues relating to how simulations are conducted, and leave data analysis for a separate treatment.
 As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 
-Please remember that this is an updatable work, so we welcome contributions and suggestions via our GitHub issue tracker so that we can make this a valuable resource for the field which clearly addresses the key fundamentals.
+Please remember that this is an updatable work, so we welcome contributions and suggestions via our GitHub issue tracker at \url{https://github.com/MobleyLab/basic_simulation_training}.
 
 
 
