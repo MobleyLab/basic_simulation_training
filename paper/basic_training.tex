@@ -612,11 +612,13 @@ Minimization ideally takes us to a state from which we can begin numerical integ
 Minimization, however, provides only a final set of positions.
 Thus, starting velocities must be assigned; usually this is done by assigning random initial velocities to atoms in a way such that the correct Maxwell-Boltzmann distribution at the desired temperature is achieved as a starting point.
 The actual assignment process is typically unimportant, as the Maxwell-Boltzmann distribution will quickly arise naturally from the equations of motion.
-Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, the last particle is typically assigned a velocity to guarantee that the center-of-mass momentum is zero, preventing the simulation box from drifting.
+Since the momentum of the center-of-mass of the simulation box is conserved by Newtonian dynamics, this quantity is typically set to zero by removing the center-of-mass velocity from all particles after random assignment, preventing the simulation box from drifting.
 
 In some cases, we seek to obtain multiple separate and independent simulations of different instances or realizations of a particular system to assess error, collect better statistics, or help gauge dependence of results on the starting structure.
-It is worth noting that even very small differences in initial configuration, such as even a difference in position of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times.
-Still, an even better way to generate independent realizations is to begin with different starting configurations, such as different conformations of the molecule(s) being simulated, as this leads to behavior which is immediately different.
+It is worth noting that even very small differences in initial configuration, such as small changes in the coordinates of a single atom, lead to exponential divergence of the time evolution of the system~\cite{allen_computer_2017}, meaning that simply running different simulations starting with different initial velocities will lead to dramatically different time evolution over long enough times. 
+An even better way to generate independent realizations is to begin with different starting configurations, such as different conformations of the molecule(s) being simulated, as this leads to behavior which is immediately different.
+When rigid molecules are present, care must be taken to prevent components of velocities assigned along constraints from being forced to zero \citep{Joswiak2013}.
+With a thermostat present, this only delays system equilibration, but for NVE simulations, such as might be used in hybrid MC/MD simulations, it can result in violations of equipartition and large subsequent errors \citep{Palmer2018}.
 
 \subsubsection{Equilibration}
 
@@ -1005,13 +1007,15 @@ If dynamics are of interest, the dependence of these properties on the integrato
 \subsubsection{Choosing an appropriate timestep}
 
 The maximum timestep for a molecular dynamics simulation is dependent on the choice of integrator and the assumptions used in the integrator's derivation.
-For the commonly used second order integrators such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
+For the commonly used second order integrators, such as the Verlet and Leapfrog algorithms, the velocities and accelerations should be approximately constant over the timestep.
 Thus, the timestep is limited by the highest frequency motion present in the system, which for all-atom simulations is usually bond vibrations.
 It is commonly found that using a timestep that is one tenth of this vibration's characteristic period is sufficient to conserve energy in the microcanonical ensemble.
 For example, if hydrogen molecules are present in the simulation box and the H-H bond vibration is the highest-frequency motion in the system with its force field harmonic force constant set to 500 N/m, the oscillation period can be calculated using the equation for simple harmonic motion ($T=2\pi\sqrt{\frac{\mu}{k}}$, where $\mu$ is the reduced mass and $k$ is the force constant) to be 8 fs; thus, a 0.5 fs timestep can be used.
 As another example, if an ab initio MD simulation is being conducted in which C-H bond vibrations are known to be the highest-frequency motion, infrared spectra can be consulted to find that this bond vibration frequency will be approximately 3000 cm$^{-1}$, which is 11 fs; thus, either a 0.5 or 1.0 fs timestep would be recommended.
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
+The timestep should also be short enough that properties calculated from the simulation, regardless of ensemble, are independent of the chosen timestep.
+This is because an inappropriately large timetep can lead to subtle changes to the ensemble being simulated and alter computed thermodynamic and transport properties, especially in stochastic simulations or those coupled to thermostats or barostats.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
 Some examples of these enhanced timestepping algorithms include multiple-timestep methods which separately integrate high-frequency motion from low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
