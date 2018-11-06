@@ -856,10 +856,10 @@ The instantaneous pressure will not always be equal to the target pressure; in f
 For the purpose of molecular modeling, consider a hypothetical system that is being compressed and/or expanded by a fictitious piston that has some mass which acts in all directions uniformly.
 Since the piston is acting on the system from all directions, it can be considered as applying a uniform compression or expansion.
 The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
-These impacts from the particles on the ``enclosure'' will impart a stress on the system box from the surroundings.
-
+These impacts from the particles on the ``enclosure'' will impart a stress on the system box from the surroundings and serve as a type of barostat.
 
 The next section will describe the main differences between the many barostats that are available, and give some recommendations for proper use.
+Some barostats work based on scaling or rescaling the coordinates in the system (the volume and the center-of-mass coordinates of the molecules involved), whereas others work by modifying the equations of motion to ensure constant pressure.
 
 \subsubsection{Popular Barostats}
 Here, we introduce a few notable barostats and give a high-level summary of each, noting some key issues.
