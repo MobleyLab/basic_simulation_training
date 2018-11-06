@@ -437,7 +437,7 @@ The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3,
 These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
 For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
 1-4 interactions are essentially considered the borderline between the bonded and non-bonded regions.
-Because these are short-range interactions, they are potentially quite strong and there is potentially a risk of them overwhelming longer-range interactions, hence their typical reduction.
+These short-range interactions can be quite strong and there is potentially a risk of them overwhelming longer-range interactions, hence their typical reduction.
 
 
 %\end{itemize}
@@ -1034,7 +1034,7 @@ The calculation of non-bonded interactions is generally the most time-consuming 
 While the number of type of bonded interactions remain unchanged during an MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds.
 
 Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
-First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order in which it is evaluated~\cite{LeachBook}, meaning we must exercise extreme care or the result will be ambiguous.
+First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order \emph{in which it is evaluated}~\cite{LeachBook}, meaning we must exercise extreme care or the result will be ambiguous.
 Second, long-range interactions may be relevant, but determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
 
