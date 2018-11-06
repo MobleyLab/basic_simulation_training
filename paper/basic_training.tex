@@ -120,7 +120,7 @@ They reduce resolution and computational cost. Although many of the approaches f
 %\todo[inline, color={red!20}]{Put in a few-sentence discussion re the size \& timescales of systems and the appropriate method; perhaps like the images often in papers; what are typical sizes and timescales that are tractable? This of course changes with time, but this is a living document so we're good. Also add in general, that the topology does not change--most FF do not allow chemical reactions}
 
 Speed is a particular concern when describing condensed phase systems, as we are often interested in the properties of molecules (even biomacromolecules) in solution, meaning that systems will consist of thousands to hundreds of thousands or millions of atoms.
-While system size alone does not dictate a classical description, if we are interested in calculations of thermodynamic properties like free energy at finite (often laboratory) temperatures, these include entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not only sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
+While system size alone does not dictate a classical description, if we are interested in calculations of free energies or transport properties at finite (often laboratory) temperatures, these include entropic contributions (as further discussed below) meaning that fluctuations and correlations of motions within the system affect computed properties, meaning that simulations must not only sample single optimal states but instead must sample the correct distribution of states -- requiring simulations of some length.
 Furthermore, many systems of interest, such as polymers (biological and otherwise) have slow motions that must be captured for accurate calculation of properties.
 For example, for proteins, relevant timescales span from nanoseconds to seconds or more, and even rearrangements of buried amino acid sidechains can in some cases take microseconds or more, with larger conformational changes and protein folding taking even longer~\cite{Schlick:2010:, Mobley:2012:JComputAidedMolDes}.
 Recent hardware innovations have made microsecond-length simulations for biological systems of 50-100,000 atoms relatively routine, and herculean efforts have pushed the longest simulations out past the millisecond range.
@@ -437,7 +437,7 @@ The atoms involved in a torsion, if numbered beginning with 1, would be 1, 2, 3,
 These interactions are often present but reduced, though the exact amount of reduction differs by the energy function or force field family.
 For example, the AMBER family force fields usually reduce 1-4 electrostatics to $\frac{1}{1.2}$ of their original value, and 1-4 Lennard-Jones interactions to $\frac{1}{2}$ of their original value.
 1-4 interactions are essentially considered the borderline between the bonded and non-bonded regions.
-Because these are short-range interactions, they are potentially quite strong and there is potentially a risk of them overwhelming longer-range interactions, hence their typical reduction.
+These short-range interactions can be quite strong and there is potentially a risk of them overwhelming longer-range interactions, hence their typical reduction.
 
 
 %\end{itemize}
@@ -784,7 +784,7 @@ This is not an exhaustive study of available thermostats, but is instead a surve
 
         The Langevin\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
         It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
-        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
+        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical\footnote{With no damping this does not reduce to the Andersen thermostat, since no damping also means no random force because the magnitude of the damping is coupled to the magnitude of the random force by the fluctuation/dissipation theorem.}, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
     \item {\bf{Nos\'{e}-Hoover}}
 
@@ -856,10 +856,10 @@ The instantaneous pressure will not always be equal to the target pressure; in f
 For the purpose of molecular modeling, consider a hypothetical system that is being compressed and/or expanded by a fictitious piston that has some mass which acts in all directions uniformly.
 Since the piston is acting on the system from all directions, it can be considered as applying a uniform compression or expansion.
 The mass of the piston can be tuned to change the compression of the system, which will change how often the particles in the system will interact with the system enclosure.
-These impacts from the particles on the ``enclosure'' will impart a stress on the system box from the surroundings.
-
+These impacts from the particles on the ``enclosure'' will impart a stress on the system box from the surroundings and serve as a type of barostat.
 
 The next section will describe the main differences between the many barostats that are available, and give some recommendations for proper use.
+Some barostats work based on scaling or rescaling the coordinates in the system (the volume and the center-of-mass coordinates of the molecules involved), whereas others work by modifying the equations of motion to ensure constant pressure.
 
 \subsubsection{Popular Barostats}
 Here, we introduce a few notable barostats and give a high-level summary of each, noting some key issues.
@@ -1034,7 +1034,7 @@ The calculation of non-bonded interactions is generally the most time-consuming 
 While the number of type of bonded interactions remain unchanged during an MD simulation, the strength and importance of non-bonded interactions varies substantially as a simulation proceeds.
 
 Additionally, Coulombic interactions fall off only very slowly with distance, as $r^{-1} $, further complicating handling of non-bonded interactions in two different ways.
-First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order in which it is evaluated~\cite{LeachBook}, meaning we must exercise extreme care or the result will be ambiguous.
+First, calculating all Coulomb interactions over a periodic system results in needing to compute a sum which is conditionally convergent --- that is, the value of the sum depends on the order \emph{in which it is evaluated}~\cite{LeachBook}, meaning we must exercise extreme care or the result will be ambiguous.
 Second, long-range interactions may be relevant, but determining pairwise distances is an expensive computation that grows with the square of the number of atoms involved.
 
 
@@ -1135,7 +1135,7 @@ For novice users, we suggest typically using well-validated or default settings 
 
 \begin{itemize}
 \item \textbf{Count the cost: } Think about what you know about the timescales of what you want to observe and determine whether it is tractable to simulate this given the size of your system, your computational resources, and the expense of the simulation. Would the questions you want to answer be better addressed a different way?
-\item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$, $\mu PT$)
+\item Pick the desired ensemble ($NVT$, $NPT$, $NVE$, $\mu VT$)\footnote{For mixtures, the semi-grand ensemble (or osmotic ensemble) may be of interest, where the number of particles is fixed but their identities can change~\cite{allen_computer_2017} allowing, e.g., a constant chemical potential for salt ions to be maintained~\cite{Ross:2018:J.Phys.Chem.B}}
 \item Determine reference states that you are trying to emulate/discover.
 \item What temperature, pressure, etc. are you interested in?
 \item What force field properly describes your system?
