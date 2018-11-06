@@ -784,7 +784,7 @@ This is not an exhaustive study of available thermostats, but is instead a surve
 
         The Langevin\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
         It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
-        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
+        Careful consideration must be taken when choosing the friction damping parameter; in the limit of a zero damping parameter, the dynamics are microcanonical\footnote{With no damping this does not reduce to the Andersen thermostat, since no damping also means no random force because the magnitude of the damping is coupled to the magnitude of the random force by the fluctuation/dissipation theorem.}, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
     \item {\bf{Nos\'{e}-Hoover}}
 
