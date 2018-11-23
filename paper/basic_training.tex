@@ -244,7 +244,7 @@ Equilibrium thermodynamics is taught in most undergraduate programs in physics, 
 Depending on the background, the practitioner can choose one or more of the following books to either learn or refresh their basic knowledge of thermodynamics.
 Here are some works we find particularly helpful:
 \begin{itemize}
-\item Atkins and De Paula's ``Physical Chemistry'' \cite{AtkinsBook}, chapters 1 to 4.
+\item Atkins and De Paula's ``Physical Chemistry'' ~\cite{AtkinsBook}, chapters 1 to 4.
 \item McQuarrie and Simon's extensive work, ``Physical Chemistry: A Molecular Approach''~\cite{McQuarrie:1997:}
 \item Dill's ``Molecular Driving Forces''~\cite{DillBook}
 \item Kittel and Kroemer's ``Thermal Physics''~\cite{Kittel:1980:}
@@ -304,7 +304,7 @@ There is a closely related connection for on- and off-rates with the binding equ
 For a \emph{continuous} coordinate (e.g., the distance between two residues in a protein), the probability-determining free energy is called the ``potential of mean force'' (PMF); the Boltzmann factor of a PMF gives the relative probability of a given coordinate.
 Any kind of free energy implicitly includes \emph{entropic} effects; in terms of an energy landscape (Fig.\ \ref{landscapes}), the entropy describes the \emph{width} of a basin or the number of arrangements a system can have within a particular state.
 One way to think of this it is that entropy of a state relates to the \emph{volume} of 6N-dimensional phase space that the state occupies, which in the one-dimensional case is just the \emph{width}.
-These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g., $F$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.
+These points are discussed in textbooks, as are the differences between free energies for different thermodynamic ensembles -- e.g., $A$, the Helmholtz free energy, when $T$ is constant, and $G$, the Gibbs free energy, when both $T$ and pressure are constant -- which are not essential to our introduction~\cite{DillBook, Zuckerman:2010:}.\footnote{Occasionally $F$ is used to refer to either appropriate free energy, $A$ or $G$, but this is not standard.}
 
 A final essential topic is the difference between equilibrium and non-equilibrium systems.
 We noted above that an MD trajectory is not likely to represent the equilibrium ensemble because the trajectory is probably too short.
@@ -353,7 +353,7 @@ Key concepts from classical electrostatics include
 %\item Long range nature of the Coulomb interaction
 Electrostatic interactions are both some of the longest-range interactions in molecular systems and the strongest, with the interaction (often called
 ``Coulombic'' after Coulomb's law) between charged particles falling off as $1/r$ where $r$ is the distance separating the particles.
-Atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off a $1/r^3$ or faster).
+Atom-atom interactions are thus necessarily long range compared to other interactions in these systems (which fall off as $1/r^3$ or faster).
 This means atoms or molecules separated by considerable distances can still have quite strong electrostatic interactions, though this also depends on the degree of shielding of the intervening medium (or its relative permittivity or dielectric constant).
 
 %\item Polarizability, dielectric constants
@@ -588,7 +588,7 @@ Loosely speaking, system preparation can be thought of as consisting of two \emp
 One comprises building the configuration of the system in the desired chemical state and the other applying force field parameters.
 
 For building systems, freely available tools for constructing systems are available and can be a reasonable option (though their mention here should not be taken as an endorsement that they necessarily encapsulate best practices).
-Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate, Packmol, and Atomsk.
+Examples include tools for constructing specific crystal structures, proteins, and lipid membranes, such as Moltemplate~\cite{Jewett:2018:moltemplate}, Packmol~\cite{Martinez:2009:JournalofComputationalChemistry}, and Atomsk~\cite{Hirel:2015:ComputerPhysicsCommunications}.
 
 A key consideration when building a system is that the starting structure ideally ought to resemble the equilibrium structure of the system at the thermodynamic state point of interest.
 For instance, highly energetically unfavorable configurations of the system, such as blatant atomic overlaps, should be avoided.
@@ -694,6 +694,7 @@ One other key consideration in production is what data to store, and how often.
 Storing data especially frequently can be tempting, but utilizes a great deal of storage space and does not actually provide significant value in most situations.
 Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
 Thus, storing data more frequently than intervals of the autocorrelation time is generally unnecessary.
+Of course, the autocorrelation time is not known \emph{a priori} which can make it necessary to store \emph{some} redundant data.
 Disk space may also be a limiting factor that dictates the frequency of storing data, and should at least be considered.
 Trajectory snapshots can be particularly large.
 However, if there are no disk space limitations it may be best to avoid discarding uncorrelated data so sampling \emph{at} intervals of the autocorrelation time may be appropriate.
@@ -727,7 +728,7 @@ The instantaneous temperature will not always be equal to the target temperature
 
 Thermostat algorithms work by altering the Newtonian equations of motion that are inherently microcanonical (constant energy).
 Thus, it is preferable that a thermostat not be used if it is desired to calculate dynamical properties such as diffusion coefficients; instead, the thermostat should be turned off after equilibrating the system to the desired temperature.
-However, while all thermostats give non-physical dynamics, some have been found to have little effect on the calculation of particular dynamical properties, and they are commonly used during the production simulation as well\cite{Basconi:2013:JChemTheoryComput}.
+However, while all thermostats give non-physical dynamics, some have been found to have little effect on the calculation of particular dynamical properties, and they are commonly used during the production simulation as well~\cite{Basconi:2013:JChemTheoryComput}.
 
 There are several ways to categorize the many thermostatting algorithms that have been developed.
 For example, thermostats can be either deterministic or stochastic depending on whether they use random numbers to guide the dynamics, and they can be either global or local depending on whether they are coupled to the dynamics of the full system or of a small subset.
@@ -757,32 +758,32 @@ This is not an exhaustive study of available thermostats, but is instead a surve
         The simple velocity rescaling thermostat is one of the easiest thermostats to implement; however, this thermostat is also one of the most non-physical thermostats.
         This thermostat relies on rescaling the momenta of the particles such that the simulation's instantaneous temperature exactly matches the target temperature~\cite{thermostatAlgorithms2005}.
         Similarly to the Gaussian thermosat, simple velocity rescaling aims to sample the isokinetic ensemble rather than the canonical ensemble.
-        However, it has been shown that the simple velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps\cite{Braun:2018}.
-        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018}.
+        However, it has been shown that the simple velocity rescaling fails to properly sample the isokinetic ensemble except in the limit of extremely small timesteps~\cite{Braun:2018}.
+        Its usage can lead to simulation artifacts, so it is not recommended~\cite{Harvey:1998:JCompChem,Braun:2018}.
 
     \item \textbf{Berendsen}
 
-        The Berendsen\cite{berendsen1984molecular} thermostat (also known as the weak coupling thermostat) is similar to the simple velocity rescaling thermostat, but instead of rescaling velocities completely and abruptly to the target kinetic energy, it includes a relaxation term to allow the system to more slowly approach the target.
+        The Berendsen~\cite{berendsen1984molecular} thermostat (also known as the weak coupling thermostat) is similar to the simple velocity rescaling thermostat, but instead of rescaling velocities completely and abruptly to the target kinetic energy, it includes a relaxation term to allow the system to more slowly approach the target.
         Although the Berendsen thermostat allows for temperature fluctuations, it samples neither the canonical distribution nor the isokinetic distribution.
-        Its usage can lead to simulation artifacts, so it is not recommended\cite{Harvey:1998:JCompChem,Braun:2018}.
+        Its usage can lead to simulation artifacts, so it is not recommended~\cite{Harvey:1998:JCompChem,Braun:2018}.
 
     \item \textbf{Bussi-Donadio-Parrinello (Canonical Sampling through Velocity Rescaling)}
 
-        The Bussi\cite{Bussi:2007:JChemPhys:Canonical} thermostat is similar to the simple velocity rescaling and Berendsen thermostats, but instead of rescaling to a single kinetic energy that corresponds to the target temperature, the rescaling is done to a kinetic energy that is stochastically chosen from the kinetic energy distribution dictated by the canonical ensemble.
+        The Bussi~\cite{Bussi:2007:JChemPhys:Canonical} thermostat is similar to the simple velocity rescaling and Berendsen thermostats, but instead of rescaling to a single kinetic energy that corresponds to the target temperature, the rescaling is done to a kinetic energy that is stochastically chosen from the kinetic energy distribution dictated by the canonical ensemble.
         Thus, this thermostat properly samples the canonical ensemble.
         Similarly to the Berendsen thermostat, a user-specified time coupling parameter can be chosen to vary how abruptly the velocity rescaling takes place
-        The choice of time coupling constant does not affect structural properties, and most dynamical properties are fairly independent of the coupling constant within a broad range\cite{Bussi:2007:JChemPhys:Canonical}.
+        The choice of time coupling constant does not affect structural properties, and most dynamical properties are fairly independent of the coupling constant within a broad range~\cite{Bussi:2007:JChemPhys:Canonical}.
 
     \item \textbf{Andersen}
 
-        The Andersen\cite{andersen1980molecular} thermostat works by selecting particles at random and having them ``collide'' with a heat bath by giving the particle a new velocity sampled from the Maxwell-Boltzmann distribution.
+        The Andersen~\cite{andersen1980molecular} thermostat works by selecting particles at random and having them ``collide'' with a heat bath by giving the particle a new velocity sampled from the Maxwell-Boltzmann distribution.
         The number of particles affected, the time between ``collisions'', and how often it is applied to the system are possible variations of this thermostat.
         The Andersen thermostat does reproduce the canonical ensemble.
         However, it should only be used to sample structural properties, as dynamical properties can be greatly affected by the abrupt collisions.
 
     \item \textbf{Langevin}
 
-        The Langevin\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
+        The Langevin~\cite{schneider1978molecular} thermostat supplements the microcanonical equations of motion with Brownian dynamics, thus including the viscosity and random collision effects of an implicit solvent.
         It uses a general equation of the form $F = F_{interaction} + F_{friction} + F_{random}$, where $F_{interaction}$ is the standard interactions calculated during the simulation, $F_{friction}$ is the damping used to tune the ``viscosity'' of the implicit bath, and $F_{random}$ effectively gives random collisions with solvent molecules.
         The frictional and random forces are coupled through a user-specified friction damping parameter. Careful consideration must be taken when choosing this parameter; in the limit of a zero damping parameter, both frictional and random forces go to zero and the dynamics become microcanonical, and in the limit of an infinite damping parameter, the dynamics are purely Brownian.
 
@@ -793,7 +794,7 @@ This is not an exhaustive study of available thermostats, but is instead a surve
         The choice of ``mass'' of the fictitious particle (which in many simulation packages is instead expressed as a time damping parameter) can be important as it affects the fluctuations that will be observed.
         For many reasonable choices of the mass, dynamics are well-preserved~\cite{Basconi:2013:JChemTheoryComput}.
         This is one of the most widely implemented and used thermostats.
-        However, it should be noted that with small systems, ergodicity can be an issue\cite{martyna1992nose,thermostatAlgorithms2005}.
+        However, it should be noted that with small systems, ergodicity can be an issue~\cite{martyna1992nose,thermostatAlgorithms2005}.
         This can become important even in systems with larger numbers of particles if a portion of the system does not interact strongly with the remainder of the system, such as in alchemical free energy calculations when a solute or ligand is non-interacting.
         Martyna et al.~\cite{martyna1992nose} discovered that by chaining thermostats, ergodicity can be enhanced, and most implementations of this thermostat use Nos\'{e}-Hoover chains.
 
@@ -847,7 +848,7 @@ This is known as the isoenthalpic-isobaric ensemble (NPH).
 To sample from the isothermal-isobaric ensemble (NPT), a thermostating algorithm like the ones discussed earlier must also be applied.
 
 Much of the background information on barostats is analogous to thermostats.
-The pressure of a molecular dynamics simulation is commonly measured using the virial theorem (an expectation value relating to positions and forces)\cite{ShellNotes, LeachBook}.
+The pressure of a molecular dynamics simulation is commonly measured using the virial theorem (an expectation value relating to positions and forces)~\cite{ShellNotes, LeachBook}.
 When pairwise interactions and periodic boundary conditions are considered, different approaches are often utilized~\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
 Regardless, these formulas give pressure as a time-averaged quantity, similar to the temperature.
 If we use these formulas to calculate the pressure for a single snapshot, this quantity is referred to as the instantaneous pressure.
@@ -1016,7 +1017,7 @@ As another example, if an ab initio MD simulation is being conducted in which C-
 For all-atom simulations with constraints on the high-frequency bonds, timesteps can be commonly increased to 2 fs; coarse-grained simulations with particles of higher mass and smaller force constants can have much larger timesteps.
 After choosing a timestep, a test simulation should be run in the microcanonical ensemble to ensure that the choice of timestep yields dynamics that conserve energy.
 The timestep should also be short enough that properties calculated from the simulation, regardless of ensemble, are independent of the chosen timestep.
-This is because an inappropriately large timetep can lead to subtle changes to the ensemble being simulated and alter computed thermodynamic and transport properties, especially in stochastic simulations or those coupled to thermostats or barostats.
+This is because an inappropriately large timetep can lead to subtle changes to the ensemble being simulated~\cite{LeachBook, allen_computer_2017} and alter computed thermodynamic and transport properties, especially in stochastic simulations or those coupled to thermostats or barostats~\cite{Fass2018}.
 Methods also exist to increase the timestep beyond the limit imposed by the system's highest-frequency motion.
 Some examples of these enhanced timestepping algorithms include multiple-timestep methods which separately integrate high-frequency motion from low-frequency motion and schemes which repartition atomic masses to decrease the highest-frequency motion seen in the system\cite{Berne:1999:Molecular,Hopkins:2015:JCTC:Long}.
 
