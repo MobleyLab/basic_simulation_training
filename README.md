@@ -32,3 +32,4 @@ This paper is being developed as a living document, open to changes from the com
 - Spring/early summer 2018: Finalize who will be involved and write/edit first version of the paper
 - Sept. 2, 2018: Final draft of version 1 submitted to LiveCoMS
 - Nov. 5-6, 2018: Make editorial revisions suggested by peer reviewers and Victoria Lim.
+- Nov. 23, 2018: Check references using [`fixbibtex`](https://github.com/jaimergp/fixbibtex), incorporate fixes for problems it caught.
