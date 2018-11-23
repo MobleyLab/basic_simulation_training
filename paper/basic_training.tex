@@ -694,6 +694,7 @@ One other key consideration in production is what data to store, and how often.
 Storing data especially frequently can be tempting, but utilizes a great deal of storage space and does not actually provide significant value in most situations.
 Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
 Thus, storing data more frequently than intervals of the autocorrelation time is generally unnecessary.
+Of course, the autocorrelation time is not known \emph{a priori} which can make it necessary to store \emph{some} redundant data.
 Disk space may also be a limiting factor that dictates the frequency of storing data, and should at least be considered.
 Trajectory snapshots can be particularly large.
 However, if there are no disk space limitations it may be best to avoid discarding uncorrelated data so sampling \emph{at} intervals of the autocorrelation time may be appropriate.
