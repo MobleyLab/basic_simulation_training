@@ -27,6 +27,10 @@ This paper is being developed as a living document, open to changes from the com
 ## List of Released Versions
 <!-- update this when you decide to release a version either by preprint or when submitted to LiveCoMS-->
 
+## Citing this work
+
+This work has not yet been formally published at LiveCoMS; however, you can cite v1.0 of it using the DOI [10.33011/livecoms.1.1.5957](http://dx.doi.org/10.33011/livecoms.1.1.5957).
+
 ## Changelog
 <!-- Here, record summaries of important changes. A granular discussion of changes will be kept in GitHub by issue tracking.-->
 - Sept. 8, 2017: D. Mobley created repo, put in initial files from LiveCoMS.
@@ -34,3 +38,4 @@ This paper is being developed as a living document, open to changes from the com
 - Sept. 2, 2018: Final draft of version 1 submitted to LiveCoMS
 - Nov. 5-6, 2018: Make editorial revisions suggested by peer reviewers and Victoria Lim.
 - Nov. 23, 2018: Check references using [`fixbibtex`](https://github.com/jaimergp/fixbibtex), incorporate fixes for problems it caught; addresses a number of typos/missing references caught by Michael Shirts.
+- Nov. 28, 2018: Add DOI, include citation to Grossfield et al. LiveCoMS article with DOI.

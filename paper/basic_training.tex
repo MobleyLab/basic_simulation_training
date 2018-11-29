@@ -75,7 +75,7 @@ visit the GitHub repository and participate via the issue tracker.}
  %%% Fill out these parameters when available
  %%% These are used when the "pubversion" option is invoked
  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
- \pubDOI{10.XXXX/YYYYYYY}
+ \pubDOI{10.33011/livecoms.1.1.5957}
  \pubvolume{1}
  \pubyear{<year>}
  \articlenum{<number>}
@@ -700,12 +700,12 @@ Usually, analysis involves computing expectation values of particular observable
 This is closely related to the above discussion of equilibration.
 Depending on the relaxation timescales involved, one may realize only after analysis of a ``production'' trajectory that the system was still equilibrating in some sense.
 
-A separate Best Practices document addresses the critical issues of convergence and error analysis; we refer the reader there for more details (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+A separate Best Practices document addresses the critical issues of convergence and error analysis; we refer the reader there for more details~\cite{Grossfield:2019:LivingJ.Comput.Mol.Sci.} (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
 For more specific details on procedures and parameters used in production simulations, see the appropriate best practices document for the system of interest.
 
 One other key consideration in production is what data to store, and how often.
 Storing data especially frequently can be tempting, but utilizes a great deal of storage space and does not actually provide significant value in most situations.
-Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
+Particularly, observations made in MD simulations are correlated in time (e.g. see \url{https://github.com/dmzuckerman/Sampling-Uncertainty}~\cite{Grossfield:2019:LivingJ.Comput.Mol.Sci.}) so storing data more frequently than the autocorrelation time results in storage of essentially redundant data.
 Thus, storing data more frequently than intervals of the autocorrelation time is generally unnecessary.
 Of course, the autocorrelation time is not known \emph{a priori} which can make it necessary to store \emph{some} redundant data.
 Disk space may also be a limiting factor that dictates the frequency of storing data, and should at least be considered.
@@ -1208,7 +1208,7 @@ periodicity is needed along with full treatment of long-range electrostatics (Se
 A critical question \emph{before} preparing an MD simulation of your system is whether you even \emph{should} use MD for your system in view of the resources you have and what information you hope to obtain.
 MD is a tool, but it may not be the right tool for your problem.
 Before beginning any study, it is critical to sort out what questions you want to answer, what resources (computational and otherwise) you have at your disposal, and whether you have any information about your system(s) of interest that indicate you can realistically expect to answer those questions given a set of MD simulations.
-Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:2009:AnnuRepComputChem} and \url{https://github.com/dmzuckerman/Sampling-Uncertainty}) and use these to make an educated guess regarding your chances of extracting pertinent and reliable information from your simulation.
+Try to understand basic concepts of statistical uncertainty (\cite{Grossfield:2009:AnnuRepComputChem} and \url{https://github.com/dmzuckerman/Sampling-Uncertainty}~\cite{Grossfield:2019:LivingJ.Comput.Mol.Sci.}) and use these to make an educated guess regarding your chances of extracting pertinent and reliable information from your simulation.
 
 As noted above, the frequency of the fastest vibrational motions in a system of interest sets a fundamental limit on the timestep which, given fixed computational resources, sets a limit on how much simulation time can be covered with any reasonable amount of computer time.
 Thus, as noted in Section~\ref{sec:intro}, the longest all-atom MD simulations are on the microsecond to millisecond timescale.
@@ -1240,7 +1240,7 @@ This, then, leads us to one of the real dangers of molecular simulations: A simu
 For example, even a very short, unequilibrated MD simulation can produce movies which appear interesting and, by virtue of the fact that they result from MD, reveal the positions of all the atoms in a system as a function of time.
 It's easy to run several short MD simulations where (for example) the composition of the system is varied, and conclude that any observed differences are a result of variations in composition.
 But as noted in Section~\ref{sec:velocities}, even simulations started from the \emph{same} structure but slightly different initial positions or velocities will diverge over time yielding different results, so perhaps any differences are simply a result of this divergence rather than due to the change in conditions.
-Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+Thus, analysis will require great care and caution to avoid overinterpreting data, and error analysis becomes particularly critical (as discussed in \url{https://github.com/dmzuckerman/Sampling-Uncertainty}~\cite{Grossfield:2019:LivingJ.Comput.Mol.Sci.}).
 
 In summary, then, do not use MD simulations simply to make movies and inspect these. Considerable care must be exercised to avoid overinterpeting the full atomistic detail they provide.
 While movies in some cases can be useful, proper error analysis is always essential.
@@ -1260,7 +1260,7 @@ This document also provides a checklist covering some of the key points raised i
 
 Our focus here has been on the basics --- focusing on things you need to understand before beginning to prepare simulations for yourself.
 Additionally, we have primarily focused on issues relating to how simulations are conducted, and leave data analysis for a separate treatment.
-As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}).
+As a starting point relating to data analysis, readers should probably review the Best Practices document on sampling and uncertainty estimation (\url{https://github.com/dmzuckerman/Sampling-Uncertainty}~\cite{Grossfield:2019:LivingJ.Comput.Mol.Sci.}).
 
 Please remember that this is an updatable work, so we welcome contributions and suggestions via our GitHub issue tracker at \url{https://github.com/MobleyLab/basic_simulation_training}.
 
