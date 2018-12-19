@@ -19,6 +19,7 @@ The current focus is on MD; Monte Carlo (MC) will be addressed in a separate doc
 - Avisek Das (helped with outline and early brainstorming/planning of this document)
 - Victoria Tran Lim provided [valuable editorial feedback](https://github.com/MobleyLab/basic_simulation_training/issues/89#issue-351693860) on the document
 - Michael Shirts caught a variety of typos and other minor issues, and suggested some improvements.
+- Emmanuel Karagiorgos caught some duplicated references
 
 ## Paper writing as code development
 <!-- This discussion is so that people know how to contribute to your document. -->
@@ -39,3 +40,4 @@ This work has not yet been formally published at LiveCoMS; however, you can cite
 - Nov. 5-6, 2018: Make editorial revisions suggested by peer reviewers and Victoria Lim.
 - Nov. 23, 2018: Check references using [`fixbibtex`](https://github.com/jaimergp/fixbibtex), incorporate fixes for problems it caught; addresses a number of typos/missing references caught by Michael Shirts.
 - Nov. 28, 2018: Add DOI, include citation to Grossfield et al. LiveCoMS article with DOI.
+- Dec. 18, 2018: Fix dupliated references.

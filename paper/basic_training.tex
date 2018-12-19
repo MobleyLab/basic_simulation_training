@@ -862,7 +862,7 @@ To sample from the isothermal-isobaric ensemble (NPT), a thermostating algorithm
 
 Much of the background information on barostats is analogous to thermostats.
 The pressure of a molecular dynamics simulation is commonly measured using the virial theorem (an expectation value relating to positions and forces)~\cite{ShellNotes, LeachBook}.
-When pairwise interactions and periodic boundary conditions are considered, different approaches are often utilized~\cite{allenTildesleyLiquids, tuckermanBook, ShellNotes}.
+When pairwise interactions and periodic boundary conditions are considered, different approaches are often utilized~\cite{allen_computer_2017, tuckermanBook, ShellNotes}.
 Regardless, these formulas give pressure as a time-averaged quantity, similar to the temperature.
 If we use these formulas to calculate the pressure for a single snapshot, this quantity is referred to as the instantaneous pressure.
 The instantaneous pressure will not always be equal to the target pressure; in fact, in the NPH and NPT ensembles, the instantaneous pressure should undergo fluctuations around the target pressure.
@@ -1004,7 +1004,7 @@ Such integrators are not applicable, however, for simulations involving stochast
 \subsubsection{Stochastic integrators}
 
 Stochastic dynamics simulations include application of a random force to each particle, and represent discretizations of either Langevin or Brownian dynamics.
-A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrieStatMechBook}, Chapter 20.
+A detailed description of such stochastic dynamics may be found in McQuarrie~\cite{McQuarrie:2000:}, Chapter 20.
 As detailed in Section \ref{sec:thermostats}, it is common to apply temperature control through the use of Langevin dynamics.
 As a brief aside, this highlights the fact that the choice of integrator is often tightly coupled to the choice of thermostat and/or barostat.
 Different combinations may demonstrate better performance and for expanded ensemble methods it is necessary to utilize an integrator specific to the selected temperature- or pressure-control algorithm.
