@@ -30,7 +30,9 @@ This paper is being developed as a living document, open to changes from the com
 
 ## Citing this work
 
-This work has not yet been formally published at LiveCoMS; however, you can cite v1.0 of it using the DOI [10.33011/livecoms.1.1.5957](http://dx.doi.org/10.33011/livecoms.1.1.5957).
+Version 1.0 of this work is being published in the Living Journal of Computaitonal Molecular Science (LiveCoMS) volume 1, issue 1, page/article 5957 (2019).    It is available at this DOI: [10.33011/livecoms.1.1.5957](http://dx.doi.org/10.33011/livecoms.1.1.5957).
+
+Ongoing (non-peer reviewed) versions of this article will be assigned unique DOIs via Zenodo which will be posted here and can be cited by these DOIs; subsequent peer reviewed versions (when applicable) are planned to be published in LiveCoMS.
 
 ## Changelog
 <!-- Here, record summaries of important changes. A granular discussion of changes will be kept in GitHub by issue tracking.-->
@@ -40,4 +42,5 @@ This work has not yet been formally published at LiveCoMS; however, you can cite
 - Nov. 5-6, 2018: Make editorial revisions suggested by peer reviewers and Victoria Lim.
 - Nov. 23, 2018: Check references using [`fixbibtex`](https://github.com/jaimergp/fixbibtex), incorporate fixes for problems it caught; addresses a number of typos/missing references caught by Michael Shirts.
 - Nov. 28, 2018: Add DOI, include citation to Grossfield et al. LiveCoMS article with DOI.
-- Dec. 18, 2018: Fix dupliated references.
+- Dec. 18, 2018: Fix duplicated references.
+- Dec. 29, 2018: Finalize formatting for publication.
